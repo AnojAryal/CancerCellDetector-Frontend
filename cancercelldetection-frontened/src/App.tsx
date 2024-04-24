@@ -1,21 +1,18 @@
-import React from 'react';
+import { Grid, GridItem, Show } from '@chakra-ui/react';
 
-const Welcome: React.FC = () => {
-  return (
-    <div>
-      <h1>Welcome to Your Cancer Cell Detection Application!</h1>
-      <p>This application helps you detect cancer cells in images.</p>
-      <p>we are in development phase...</p>
-    </div>
-  );
-}
 
-const App: React.FC = () => {
-  return (
-    <div>
-      <Welcome />
-    </div>
-  );
+function App () {
+  return <Grid templateAreas={{
+    base:`"nav" "main"`,
+    lg:`"nav nav" "aside main"`
+    
+  }}>
+    <GridItem area='nav' bg='coral'>Nav</GridItem>
+    <Show above='lg'>
+    <GridItem area='aside' bg='red'>Aside</GridItem>
+    </Show>
+    <GridItem area='main' bg='green'>Main</GridItem>
+  </Grid>
 }
 
 export default App;
