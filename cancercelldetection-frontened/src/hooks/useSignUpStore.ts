@@ -9,7 +9,8 @@ interface SignUpFormState {
     fullName: string,
     gender: string,
     contactNo: string,
-    bloodGroup: string
+    bloodGroup: string,
+    address: string,
   }) => void;
 }
 
@@ -39,6 +40,9 @@ export const useSignUpStore = create<SignUpFormState>((set) => ({
     }
     if (!formData.bloodGroup) {
       errors.bloodGroup = 'Blood group is required';
+    }
+    if (!formData.address) {
+      errors.address = 'Address is required';
     }
 
     if (Object.keys(errors).length > 0) {
