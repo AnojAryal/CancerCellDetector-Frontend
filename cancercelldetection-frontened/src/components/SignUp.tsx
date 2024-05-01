@@ -14,7 +14,7 @@ import {
   InputGroup,
   InputRightElement,
 } from "@chakra-ui/react";
-import { useSignUpStore } from "../hooks/useSignUpStore";
+import { signUpStore } from "../store/signUpStore";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const SignUp = () => {
@@ -32,7 +32,7 @@ const SignUp = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const { signUp, formErrors } = useSignUpStore();
+  const { signUp, formErrors } = signUpStore();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
