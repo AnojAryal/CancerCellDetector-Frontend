@@ -14,7 +14,7 @@ interface SignUpFormState {
   }) => void;
 }
 
-export const useSignUpStore = create<SignUpFormState>((set) => ({
+export const signUpStore = create<SignUpFormState>((set) => ({
   formErrors: {},
   signUp: async (formData) => {
     set({ formErrors: {} });
