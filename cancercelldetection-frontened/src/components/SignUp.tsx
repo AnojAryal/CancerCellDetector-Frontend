@@ -14,8 +14,8 @@ import {
   InputGroup,
   InputRightElement,
 } from "@chakra-ui/react";
-import { signUpStore } from "../store/signUpStore";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useSignUp } from "../hooks/useSignUp";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -32,7 +32,7 @@ const SignUp = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const { signUp, formErrors } = signUpStore();
+  const { signUp, formErrors } = useSignUp();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -44,13 +44,17 @@ const SignUp = () => {
     }));
   };
 
-  const handlePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    signUp(formData);
+    try {
+      await signUp(formData);
+    } catch (error) {
+      console.error("Signup failed:", error);
+    }
+  };
+
+  const handlePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -68,7 +72,7 @@ const SignUp = () => {
           <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
             <GridItem colSpan={{ base: "auto", md: 1 }}>
               <Stack spacing="4">
-                <FormControl isInvalid={!!formErrors.username}>
+                <FormControl isInvalid={!!formErrors?.username}>
                   <FormLabel>Username</FormLabel>
                   <Input
                     type="text"
@@ -77,10 +81,10 @@ const SignUp = () => {
                     onChange={handleChange}
                     placeholder="Enter your username"
                   />
-                  <FormErrorMessage>{formErrors.username}</FormErrorMessage>
+                  <FormErrorMessage>{formErrors?.username}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={!!formErrors.email}>
+                <FormControl isInvalid={!!formErrors?.email}>
                   <FormLabel>Email address</FormLabel>
                   <Input
                     type="email"
@@ -89,10 +93,10 @@ const SignUp = () => {
                     onChange={handleChange}
                     placeholder="Enter your email"
                   />
-                  <FormErrorMessage>{formErrors.email}</FormErrorMessage>
+                  <FormErrorMessage>{formErrors?.email}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={!!formErrors.fullName}>
+                <FormControl isInvalid={!!formErrors?.fullName}>
                   <FormLabel>Full Name</FormLabel>
                   <Input
                     type="text"
@@ -101,10 +105,10 @@ const SignUp = () => {
                     onChange={handleChange}
                     placeholder="Enter your full name"
                   />
-                  <FormErrorMessage>{formErrors.fullName}</FormErrorMessage>
+                  <FormErrorMessage>{formErrors?.fullName}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={!!formErrors.address}>
+                <FormControl isInvalid={!!formErrors?.address}>
                   <FormLabel>Address</FormLabel>
                   <Input
                     type="text"
@@ -113,10 +117,10 @@ const SignUp = () => {
                     onChange={handleChange}
                     placeholder="Enter your address"
                   />
-                  <FormErrorMessage>{formErrors.address}</FormErrorMessage>
+                  <FormErrorMessage>{formErrors?.address}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={!!formErrors.bloodGroup}>
+                <FormControl isInvalid={!!formErrors?.bloodGroup}>
                   <FormLabel>Blood Group</FormLabel>
                   <Input
                     type="text"
@@ -125,13 +129,13 @@ const SignUp = () => {
                     onChange={handleChange}
                     placeholder="Enter your blood group"
                   />
-                  <FormErrorMessage>{formErrors.bloodGroup}</FormErrorMessage>
+                  <FormErrorMessage>{formErrors?.bloodGroup}</FormErrorMessage>
                 </FormControl>
               </Stack>
             </GridItem>
             <GridItem colSpan={{ base: "auto", md: 1 }}>
               <Stack spacing="4">
-                <FormControl isInvalid={!!formErrors.gender}>
+                <FormControl isInvalid={!!formErrors?.gender}>
                   <FormLabel>Gender</FormLabel>
                   <Select
                     name="gender"
@@ -143,10 +147,10 @@ const SignUp = () => {
                     <option value="female">Female</option>
                     <option value="other">Other</option>
                   </Select>
-                  <FormErrorMessage>{formErrors.gender}</FormErrorMessage>
+                  <FormErrorMessage>{formErrors?.gender}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={!!formErrors.contactNo}>
+                <FormControl isInvalid={!!formErrors?.contactNo}>
                   <FormLabel>Contact Number</FormLabel>
                   <Input
                     type="text"
@@ -155,10 +159,10 @@ const SignUp = () => {
                     onChange={handleChange}
                     placeholder="Enter your contact number"
                   />
-                  <FormErrorMessage>{formErrors.contactNo}</FormErrorMessage>
+                  <FormErrorMessage>{formErrors?.contactNo}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={!!formErrors.password}>
+                <FormControl isInvalid={!!formErrors?.password}>
                   <FormLabel>Password</FormLabel>
                   <InputGroup>
                     <Input
@@ -181,10 +185,10 @@ const SignUp = () => {
                       />
                     </InputRightElement>
                   </InputGroup>
-                  <FormErrorMessage>{formErrors.password}</FormErrorMessage>
+                  <FormErrorMessage>{formErrors?.password}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={!!formErrors.confirmPassword}>
+                <FormControl isInvalid={!!formErrors?.confirmPassword}>
                   <FormLabel>Confirm Password</FormLabel>
                   <InputGroup>
                     <Input
@@ -208,7 +212,7 @@ const SignUp = () => {
                     </InputRightElement>
                   </InputGroup>
                   <FormErrorMessage>
-                    {formErrors.confirmPassword}
+                    {formErrors?.confirmPassword}
                   </FormErrorMessage>
                 </FormControl>
 
