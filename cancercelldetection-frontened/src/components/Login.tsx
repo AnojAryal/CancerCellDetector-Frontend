@@ -16,13 +16,12 @@ import { useLogin } from "../hooks/useLogin";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
+  const { login, formErrors } = useLogin();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
     showPassword: false,
   });
-
-  const { login, formErrors } = useLogin();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
