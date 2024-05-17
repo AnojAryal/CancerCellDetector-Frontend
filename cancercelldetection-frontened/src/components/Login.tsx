@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useLogin } from "../hooks/useLogin";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const { login, formErrors } = useLogin();
@@ -22,6 +23,7 @@ const Login = () => {
     password: "",
     showPassword: false,
   });
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -109,7 +111,7 @@ const Login = () => {
               <Link color="blue.500" href="/forgot-password">
                 Forgot Password?
               </Link>
-              <Link color="blue.500" href="/signup">
+              <Link color="blue.500" onClick={() => navigate("/signup")}>
                 Don't have an account? Sign up
               </Link>
             </Stack>

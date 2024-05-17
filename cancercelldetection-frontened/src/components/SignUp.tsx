@@ -13,8 +13,11 @@ import {
   IconButton,
   InputGroup,
   InputRightElement,
+  Text,
+  Link,
 } from "@chakra-ui/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Link as RouterLink } from "react-router-dom";
 import { useSignUp } from "../hooks/useSignUp";
 
 const SignUp = () => {
@@ -141,7 +144,7 @@ const SignUp = () => {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    placeholder=""
+                    placeholder="Select your gender"
                   >
                     <option value="male">Male</option>
                     <option value="female">Female</option>
@@ -202,7 +205,7 @@ const SignUp = () => {
                     <InputRightElement width="4.5rem">
                       <IconButton
                         aria-label={
-                          showPassword ? "show password" : "Hide password"
+                          showPassword ? "Show password" : "Hide password"
                         }
                         h="1.75rem"
                         size="sm"
@@ -225,6 +228,14 @@ const SignUp = () => {
             </GridItem>
           </Grid>
         </form>
+        <Flex justify="center" mt="4">
+          <Text>
+            Already have an account?{" "}
+            <Link as={RouterLink} to="/login" color="blue.500">
+              Log in
+            </Link>
+          </Text>
+        </Flex>
       </div>
     </div>
   );
