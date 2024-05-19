@@ -61,182 +61,201 @@ const SignUp = () => {
   };
 
   return (
-    <div>
+    <div style={{ maxWidth: "600px", margin: "auto" }}>
       <div
         style={{
-          maxWidth: "100%",
-          width: "100%",
-          padding: "6px",
-          borderRadius: "lg",
-          boxShadow: "md",
+          textAlign: "center",
+          fontSize: "lg",
+          color: "gray.600",
+          marginBottom: "24px",
         }}
       >
-        <form onSubmit={handleSubmit}>
-          <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
-            <GridItem colSpan={{ base: "auto", md: 1 }}>
-              <Stack spacing="4">
-                <FormControl isInvalid={!!formErrors?.username}>
-                  <FormLabel>Username</FormLabel>
-                  <Input
-                    type="text"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    placeholder="Enter your username"
-                  />
-                  <FormErrorMessage>{formErrors?.username}</FormErrorMessage>
-                </FormControl>
-
-                <FormControl isInvalid={!!formErrors?.email}>
-                  <FormLabel>Email address</FormLabel>
-                  <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Enter your email"
-                  />
-                  <FormErrorMessage>{formErrors?.email}</FormErrorMessage>
-                </FormControl>
-
-                <FormControl isInvalid={!!formErrors?.fullName}>
-                  <FormLabel>Full Name</FormLabel>
-                  <Input
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                  />
-                  <FormErrorMessage>{formErrors?.fullName}</FormErrorMessage>
-                </FormControl>
-
-                <FormControl isInvalid={!!formErrors?.address}>
-                  <FormLabel>Address</FormLabel>
-                  <Input
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    placeholder="Enter your address"
-                  />
-                  <FormErrorMessage>{formErrors?.address}</FormErrorMessage>
-                </FormControl>
-
-                <FormControl isInvalid={!!formErrors?.bloodGroup}>
-                  <FormLabel>Blood Group</FormLabel>
-                  <Input
-                    type="text"
-                    name="bloodGroup"
-                    value={formData.bloodGroup}
-                    onChange={handleChange}
-                    placeholder="Enter your blood group"
-                  />
-                  <FormErrorMessage>{formErrors?.bloodGroup}</FormErrorMessage>
-                </FormControl>
-              </Stack>
-            </GridItem>
-            <GridItem colSpan={{ base: "auto", md: 1 }}>
-              <Stack spacing="4">
-                <FormControl isInvalid={!!formErrors?.gender}>
-                  <FormLabel>Gender</FormLabel>
-                  <Select
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                    placeholder="Select your gender"
-                  >
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </Select>
-                  <FormErrorMessage>{formErrors?.gender}</FormErrorMessage>
-                </FormControl>
-
-                <FormControl isInvalid={!!formErrors?.contactNo}>
-                  <FormLabel>Contact Number</FormLabel>
-                  <Input
-                    type="text"
-                    name="contactNo"
-                    value={formData.contactNo}
-                    onChange={handleChange}
-                    placeholder="Enter your contact number"
-                  />
-                  <FormErrorMessage>{formErrors?.contactNo}</FormErrorMessage>
-                </FormControl>
-
-                <FormControl isInvalid={!!formErrors?.password}>
-                  <FormLabel>Password</FormLabel>
-                  <InputGroup>
-                    <Input
-                      pr="4.5rem"
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      placeholder="Enter your password"
-                    />
-                    <InputRightElement width="4.5rem">
-                      <IconButton
-                        aria-label={
-                          showPassword ? "Show password" : "Hide password"
-                        }
-                        h="1.75rem"
-                        size="sm"
-                        onClick={handlePasswordVisibility}
-                        icon={showPassword ? <FaEye /> : <FaEyeSlash />}
-                      />
-                    </InputRightElement>
-                  </InputGroup>
-                  <FormErrorMessage>{formErrors?.password}</FormErrorMessage>
-                </FormControl>
-
-                <FormControl isInvalid={!!formErrors?.confirmPassword}>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <InputGroup>
-                    <Input
-                      pr="4.5rem"
-                      type={showPassword ? "text" : "password"}
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      placeholder="Confirm your password"
-                    />
-                    <InputRightElement width="4.5rem">
-                      <IconButton
-                        aria-label={
-                          showPassword ? "Show password" : "Hide password"
-                        }
-                        h="1.75rem"
-                        size="sm"
-                        onClick={handlePasswordVisibility}
-                        icon={showPassword ? <FaEye /> : <FaEyeSlash />}
-                      />
-                    </InputRightElement>
-                  </InputGroup>
-                  <FormErrorMessage>
-                    {formErrors?.confirmPassword}
-                  </FormErrorMessage>
-                </FormControl>
-
-                <Flex justify="center">
-                  <Button type="submit" colorScheme="blue" size="lg">
-                    Sign Up
-                  </Button>
-                </Flex>
-              </Stack>
-            </GridItem>
-          </Grid>
-        </form>
-        <Flex justify="center" mt="4">
-          <Text>
-            Already have an account?{" "}
-            <Link as={RouterLink} to="/login" color="blue.500">
-              Log in
-            </Link>
-          </Text>
-        </Flex>
+        Sign up to get started with our services.
       </div>
+      <form onSubmit={handleSubmit}>
+        <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
+          <GridItem colSpan={{ base: "auto", md: 1 }}>
+            <Stack spacing="4">
+              <FormControl isInvalid={!!formErrors?.username}>
+                <FormLabel htmlFor="username">Username</FormLabel>
+                <Input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="Enter your username"
+                  autoComplete="username"
+                />
+                <FormErrorMessage>{formErrors?.username}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={!!formErrors?.email}>
+                <FormLabel htmlFor="email">Email address</FormLabel>
+                <Input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Enter your email"
+                  autoComplete="email"
+                />
+                <FormErrorMessage>{formErrors?.email}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={!!formErrors?.fullName}>
+                <FormLabel htmlFor="fullName">Full Name</FormLabel>
+                <Input
+                  type="text"
+                  id="fullName"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
+                  autoComplete="name"
+                />
+                <FormErrorMessage>{formErrors?.fullName}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={!!formErrors?.address}>
+                <FormLabel htmlFor="address">Address</FormLabel>
+                <Input
+                  type="text"
+                  id="address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Enter your address"
+                  autoComplete="street-address"
+                />
+                <FormErrorMessage>{formErrors?.address}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={!!formErrors?.bloodGroup}>
+                <FormLabel htmlFor="bloodGroup">Blood Group</FormLabel>
+                <Input
+                  type="text"
+                  id="bloodGroup"
+                  name="bloodGroup"
+                  value={formData.bloodGroup}
+                  onChange={handleChange}
+                  placeholder="Enter your blood group"
+                  autoComplete="off"
+                />
+                <FormErrorMessage>{formErrors?.bloodGroup}</FormErrorMessage>
+              </FormControl>
+            </Stack>
+          </GridItem>
+          <GridItem colSpan={{ base: "auto", md: 1 }}>
+            <Stack spacing="4">
+              <FormControl isInvalid={!!formErrors?.gender}>
+                <FormLabel htmlFor="gender">Gender</FormLabel>
+                <Select
+                  id="gender"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  placeholder="Select your gender"
+                  autoComplete="sex"
+                >
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </Select>
+                <FormErrorMessage>{formErrors?.gender}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={!!formErrors?.contactNo}>
+                <FormLabel htmlFor="contactNo">Contact Number</FormLabel>
+                <Input
+                  type="text"
+                  id="contactNo"
+                  name="contactNo"
+                  value={formData.contactNo}
+                  onChange={handleChange}
+                  placeholder="Enter your contact number"
+                  autoComplete="tel"
+                />
+                <FormErrorMessage>{formErrors?.contactNo}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={!!formErrors?.password}>
+                <FormLabel htmlFor="password">Password</FormLabel>
+                <InputGroup>
+                  <Input
+                    pr="4.5rem"
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Enter your password"
+                    autoComplete="new-password"
+                  />
+                  <InputRightElement width="4.5rem">
+                    <IconButton
+                      aria-label={
+                        showPassword ? "Show password" : "Hide password"
+                      }
+                      h="1.75rem"
+                      size="sm"
+                      onClick={handlePasswordVisibility}
+                      icon={showPassword ? <FaEye /> : <FaEyeSlash />}
+                    />
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage>{formErrors?.password}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={!!formErrors?.confirmPassword}>
+                <FormLabel htmlFor="confirmPassword">
+                  Confirm Password
+                </FormLabel>
+                <InputGroup>
+                  <Input
+                    pr="4.5rem"
+                    type={showPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Confirm your password"
+                    autoComplete="new-password"
+                  />
+                  <InputRightElement width="4.5rem">
+                    <IconButton
+                      aria-label={
+                        showPassword ? "Show password" : "Hide password"
+                      }
+                      h="1.75rem"
+                      size="sm"
+                      onClick={handlePasswordVisibility}
+                      icon={showPassword ? <FaEye /> : <FaEyeSlash />}
+                    />
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage>
+                  {formErrors?.confirmPassword}
+                </FormErrorMessage>
+              </FormControl>
+            </Stack>
+          </GridItem>
+        </Grid>
+        <Flex justify="center" mt="4">
+          <Button type="submit" colorScheme="blue" size="lg">
+            Sign Up
+          </Button>
+        </Flex>
+      </form>
+      <Flex justify="center" mt="4">
+        <Text>
+          Already have an account?{" "}
+          <Link as={RouterLink} to="/login" color="blue.500">
+            Log in
+          </Link>
+        </Text>
+      </Flex>
     </div>
   );
 };
