@@ -81,7 +81,7 @@ export const useSignUp = create<SignUpFormState>((set) => ({
             formErrors: {},
             successMessage: "Your account has been created.",
           });
-          onSuccess(); // Trigger success callback
+          onSuccess();
         } else {
           console.error("Unexpected response during signup:", response);
           set({
