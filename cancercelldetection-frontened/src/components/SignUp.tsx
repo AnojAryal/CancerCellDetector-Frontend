@@ -50,7 +50,9 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await signUp(formData);
+      await signUp(formData, () => {
+        window.location.href = "/login";
+      });
     } catch (error) {
       console.error("Signup failed:", error);
     }
@@ -59,7 +61,6 @@ const SignUp = () => {
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
   return (
     <div style={{ maxWidth: "600px", margin: "auto" }}>
       <div

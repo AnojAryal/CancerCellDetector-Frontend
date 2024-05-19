@@ -4,17 +4,21 @@ import { AxiosError } from "axios";
 
 interface SignUpFormState {
   formErrors: { [key: string]: string };
-  signUp: (formData: {
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    fullName: string;
-    gender: string;
-    contactNo: string;
-    bloodGroup: string;
-    address: string;
-  }) => void;
+  successMessage: string | null;
+  signUp: (
+    formData: {
+      username: string;
+      email: string;
+      password: string;
+      confirmPassword: string;
+      fullName: string;
+      gender: string;
+      contactNo: string;
+      bloodGroup: string;
+      address: string;
+    },
+    onSuccess: () => void
+  ) => void;
 }
 
 interface ErrorResponseData {
@@ -23,7 +27,8 @@ interface ErrorResponseData {
 
 export const useSignUp = create<SignUpFormState>((set) => ({
   formErrors: {},
-  signUp: async (formData) => {
+  successMessage: null,
+  signUp: async (formData, onSuccess) => {
     const errors: { [key: string]: string } = {};
     if (!formData.username) {
       errors.username = "Username is required";
@@ -72,7 +77,11 @@ export const useSignUp = create<SignUpFormState>((set) => ({
 
         if (response.status === 201) {
           console.log("Signup successful", response.data);
-          set({ formErrors: {} });
+          set({
+            formErrors: {},
+            successMessage: "Your account has been created.",
+          });
+          onSuccess(); // Trigger success callback
         } else {
           console.error("Unexpected response during signup:", response);
           set({
