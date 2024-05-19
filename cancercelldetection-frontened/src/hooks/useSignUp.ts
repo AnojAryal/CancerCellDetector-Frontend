@@ -103,8 +103,7 @@ export const useSignUp = create<SignUpFormState>((set) => ({
           console.error("Error during signup:", error);
           set({
             formErrors: {
-              server:
-                "An error occurred during signup. Please try again later.",
+              server: "An error occurred during signup.Please try again later.",
             },
           });
         }
