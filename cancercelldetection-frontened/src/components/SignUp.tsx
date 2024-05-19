@@ -51,7 +51,9 @@ const SignUp = () => {
     e.preventDefault();
     try {
       await signUp(formData, () => {
-        window.location.href = "/login";
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 5000);
       });
     } catch (error) {
       console.error("Signup failed:", error);
