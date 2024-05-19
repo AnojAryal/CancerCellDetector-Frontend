@@ -23,7 +23,16 @@ export const useLogin = create<LoginFormState>((set) => ({
 
     if (Object.keys(errors).length === 0) {
       try {
-        const response = await apiClient.post("/login", formData);
+        const form = new FormData();
+        form.append("username", formData.username);
+        form.append("password", formData.password);
+
+        const response = await apiClient.post("/login", form, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
         if (response.status === 200) {
           localStorage.setItem("accessToken", response.data.access_token);
           set({ formErrors: {} });
