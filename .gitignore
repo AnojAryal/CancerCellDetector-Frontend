@@ -1,0 +1,57 @@
+# Node.js dependency directory
+node_modules/
+
+# Vite build output
+dist/
+
+# Logs
+logs/
+*.log
+
+# Local environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm/
+
+# Optional yarn cache directory
+.yarn/
+
+# Ignore specific Yarn/PNPM files
+.pnp.*
+.yarnrc.yml
+
+# Optional lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# MacOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+
+# Coverage directory used by testing tools
+coverage/
+
+# Build directories
+build/
+out/
+lib/
