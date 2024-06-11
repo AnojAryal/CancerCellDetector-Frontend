@@ -66,27 +66,31 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <Stack spacing="6">
             <FormControl isInvalid={!!formErrors?.username}>
-              <FormLabel>Username</FormLabel>
+              <FormLabel htmlFor="username">Username</FormLabel>
               <Input
                 type="text"
+                id="username"
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Enter your username"
+                autoComplete="username"
               />
               <FormErrorMessage>{formErrors?.username}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={!!formErrors?.password}>
-              <FormLabel>Password</FormLabel>
+              <FormLabel htmlFor="password">Password</FormLabel>
               <InputGroup>
                 <Input
                   pr="4.5rem"
                   type={formData.showPassword ? "text" : "password"}
+                  id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
+                  autoComplete="current-password"
                 />
                 <InputRightElement width="4.5rem">
                   <IconButton
