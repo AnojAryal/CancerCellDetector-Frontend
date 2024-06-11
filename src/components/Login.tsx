@@ -36,7 +36,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await login(formData);
+      await login(formData, navigate);
     } catch (error) {
       console.error("Login failed:", error);
     }
