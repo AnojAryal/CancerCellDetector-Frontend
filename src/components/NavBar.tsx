@@ -7,6 +7,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  MenuDivider,
   AlertDialog,
   AlertDialogOverlay,
   AlertDialogContent,
@@ -14,13 +15,13 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
 } from "@chakra-ui/react";
-import { FiUser } from "react-icons/fi";
+import { FiUser, FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.webp";
-import ColorModeSwitch from "./ColorModeSwitch";
+
 
 const NavBar = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
   const token = localStorage.getItem("accessToken");
   const username = localStorage.getItem("username");
   const [displayWelcome, setDisplayWelcome] = useState(true);
@@ -34,6 +35,7 @@ const NavBar = () => {
 
     return () => clearTimeout(timer);
   }, [displayWelcome]);
+
   useEffect(() => {
     setDisplayWelcome(true);
   }, [token]);
@@ -48,13 +50,18 @@ const NavBar = () => {
     setIsOpen(false);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("username");
-    navigate("/login");
+    navigate("/login"); 
+  };
+
+  const handleSettingsClick = () => {
+    console.log("Settings clicked");
+    // Navigate to settings page
+    navigate("/settings"); 
   };
 
   return (
     <HStack justifyContent="space-between" padding="10px">
       <Image src={logo} boxSize="50px" />
-      <ColorModeSwitch />
       {token && (
         <>
           <Menu>
@@ -62,7 +69,13 @@ const NavBar = () => {
               {displayWelcome ? `Welcome, ${username}` : username}
             </MenuButton>
             <MenuList>
-              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              <MenuItem onClick={handleSettingsClick} icon={<FiSettings />}>
+                Setting
+              </MenuItem>
+              <MenuDivider />
+              <MenuItem onClick={handleLogout} icon={<FiLogOut />}>
+                Logout
+              </MenuItem>
             </MenuList>
           </Menu>
           <AlertDialog
@@ -75,11 +88,9 @@ const NavBar = () => {
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
                 Logout
               </AlertDialogHeader>
-
               <AlertDialogBody>
                 Are you sure you want to logout?
               </AlertDialogBody>
-
               <AlertDialogFooter>
                 <Button ref={cancelRef} onClick={onClose}>
                   No
