@@ -51,15 +51,13 @@ const SignUp = () => {
     e.preventDefault();
     try {
       await signUp(formData, () => {
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 5000);
+        alert("Signup successful");
       });
     } catch (error) {
       console.error("Signup failed:", error);
     }
   };
-
+  
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };

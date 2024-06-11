@@ -21,44 +21,24 @@ interface SignUpFormState {
   ) => void;
 }
 
-interface ErrorResponseData {
-  errors: { [key: string]: string };
-}
-
 export const useSignUp = create<SignUpFormState>((set) => ({
   formErrors: {},
   successMessage: null,
   signUp: async (formData, onSuccess) => {
     const errors: { [key: string]: string } = {};
-    if (!formData.username) {
-      errors.username = "Username is required";
-    }
-    if (!formData.email) {
-      errors.email = "Email is required";
-    }
-    if (!formData.password) {
-      errors.password = "Password is required";
-    }
-    if (!formData.fullName) {
-      errors.fullName = "Full name is required";
-    }
-    if (!formData.gender) {
-      errors.gender = "Gender is required";
-    }
-    if (!formData.contactNo) {
-      errors.contactNo = "Contact number is required";
-    }
-    if (!formData.bloodGroup) {
-      errors.bloodGroup = "Blood group is required";
-    }
-    if (!formData.address) {
-      errors.address = "Address is required";
-    }
-    if (!formData.confirmPassword) {
+
+    if (!formData.username) errors.username = "Username is required";
+    if (!formData.email) errors.email = "Email is required";
+    if (!formData.password) errors.password = "Password is required";
+    if (!formData.confirmPassword)
       errors.confirmPassword = "Confirm your password";
-    } else if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword)
       errors.confirmPassword = "Passwords do not match";
-    }
+    if (!formData.fullName) errors.fullName = "Full name is required";
+    if (!formData.gender) errors.gender = "Gender is required";
+    if (!formData.contactNo) errors.contactNo = "Contact number is required";
+    if (!formData.bloodGroup) errors.bloodGroup = "Blood group is required";
+    if (!formData.address) errors.address = "Address is required";
 
     set({ formErrors: errors });
 
@@ -91,14 +71,14 @@ export const useSignUp = create<SignUpFormState>((set) => ({
             },
           });
         }
-      } catch (error: unknown) {
-        if (
-          isAxiosError(error) &&
-          error.response &&
-          error.response.status === 422
-        ) {
-          const responseData = error.response.data as ErrorResponseData;
-          set({ formErrors: responseData.errors });
+      } catch (error) {
+        if (error instanceof AxiosError && error.response) {
+          set({
+            formErrors: error.response.data.errors || {
+              server:
+                "An error occurred during signup. Please try again later.",
+            },
+          });
         } else {
           console.error("Error during signup:", error);
           set({
@@ -112,7 +92,3 @@ export const useSignUp = create<SignUpFormState>((set) => ({
     }
   },
 }));
-
-function isAxiosError(error: unknown): error is AxiosError {
-  return (error as AxiosError).isAxiosError !== undefined;
-}
