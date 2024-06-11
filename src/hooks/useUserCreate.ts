@@ -2,10 +2,10 @@ import { create } from "zustand";
 import apiClient from "../services/api-client";
 import { AxiosError } from "axios";
 
-interface SignUpFormState {
+interface UserCreateFormState {
   formErrors: { [key: string]: string };
   successMessage: string | null;
-  signUp: (
+  userCreate: (
     formData: {
       username: string;
       email: string;
@@ -21,10 +21,10 @@ interface SignUpFormState {
   ) => void;
 }
 
-export const useSignUp = create<SignUpFormState>((set) => ({
+export const useUserCreate = create<UserCreateFormState>((set) => ({
   formErrors: {},
   successMessage: null,
-  signUp: async (formData, onSuccess) => {
+  userCreate: async (formData, onSuccess) => {
     const errors: { [key: string]: string } = {};
 
     if (!formData.username) errors.username = "Username is required";
@@ -56,18 +56,18 @@ export const useSignUp = create<SignUpFormState>((set) => ({
         });
 
         if (response.status === 201) {
-          console.log("Signup successful", response.data);
+          console.log("User Creation successful", response.data);
           set({
             formErrors: {},
-            successMessage: "Your account has been created.",
+            successMessage: "Account has been added to the system.",
           });
           onSuccess();
         } else {
-          console.error("Unexpected response during signup:", response);
+          console.error("Unexpected response during User creation:", response);
           set({
             formErrors: {
               server:
-                "An unexpected error occurred during signup. Please try again later.",
+                "An unexpected error occurred during User creation. Please try again later.",
             },
           });
         }
@@ -76,15 +76,15 @@ export const useSignUp = create<SignUpFormState>((set) => ({
           set({
             formErrors: error.response.data.errors || {
               server:
-                "An error occurred during signup. Please try again later.",
+                "An error occurred during User creation. Please try again later.",
             },
           });
         } else {
-          console.error("Error during signup:", error);
+          console.error("Error during User creation:", error);
           set({
             formErrors: {
               server:
-                "An error occurred during signup. Please try again later.",
+                "An error occurred during User creation. Please try again later.",
             },
           });
         }

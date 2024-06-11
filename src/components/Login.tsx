@@ -11,6 +11,7 @@ import {
   IconButton,
   InputGroup,
   InputRightElement,
+  Box,
 } from "@chakra-ui/react";
 import { useLogin } from "../hooks/useLogin";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -106,19 +107,19 @@ const Login = () => {
               </InputGroup>
               <FormErrorMessage>{formErrors?.password}</FormErrorMessage>
             </FormControl>
-
+            <Box />
             <Button type="submit" colorScheme="blue" width="100%">
               Login
             </Button>
 
-            <Stack direction="row" justify="space-between">
-              <Link color="blue.500" href="/forgot-password">
+            <Box display="flex" justifyContent="flex-end">
+              <Link
+                color="blue.500"
+                onClick={() => navigate("/forgot-password")}
+              >
                 Forgot Password?
               </Link>
-              <Link color="blue.500" onClick={() => navigate("/signup")}>
-                Don't have an account? Sign up
-              </Link>
-            </Stack>
+            </Box>
           </Stack>
         </form>
       </div>

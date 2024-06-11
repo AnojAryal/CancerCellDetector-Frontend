@@ -13,14 +13,12 @@ import {
   IconButton,
   InputGroup,
   InputRightElement,
-  Text,
-  Link,
+ 
 } from "@chakra-ui/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link as RouterLink } from "react-router-dom";
-import { useSignUp } from "../hooks/useSignUp";
+import { useUserCreate} from "../hooks/useUserCreate";
 
-const SignUp = () => {
+const UserCreate = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -35,7 +33,7 @@ const SignUp = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const { signUp, formErrors } = useSignUp();
+  const { userCreate, formErrors } = useUserCreate();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -50,11 +48,11 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await signUp(formData, () => {
-        alert("Signup successful");
+      await userCreate(formData, () => {
+        alert("Successfully created user");
       });
     } catch (error) {
-      console.error("Signup failed:", error);
+      console.error("User creation failed:", error);
     }
   };
   
@@ -71,7 +69,7 @@ const SignUp = () => {
           marginBottom: "24px",
         }}
       >
-        Sign up to get started with our services.
+        Add user to the system
       </div>
       <form onSubmit={handleSubmit}>
         <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
@@ -85,7 +83,7 @@ const SignUp = () => {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  placeholder="Enter your username"
+                  placeholder="Enter the username"
                   autoComplete="username"
                 />
                 <FormErrorMessage>{formErrors?.username}</FormErrorMessage>
@@ -99,7 +97,7 @@ const SignUp = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter your email"
+                  placeholder="Enter the email"
                   autoComplete="email"
                 />
                 <FormErrorMessage>{formErrors?.email}</FormErrorMessage>
@@ -113,7 +111,7 @@ const SignUp = () => {
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  placeholder="Enter your full name"
+                  placeholder="Enter the full name"
                   autoComplete="name"
                 />
                 <FormErrorMessage>{formErrors?.fullName}</FormErrorMessage>
@@ -127,7 +125,7 @@ const SignUp = () => {
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  placeholder="Enter your address"
+                  placeholder="Enter the address"
                   autoComplete="street-address"
                 />
                 <FormErrorMessage>{formErrors?.address}</FormErrorMessage>
@@ -141,7 +139,7 @@ const SignUp = () => {
                   name="bloodGroup"
                   value={formData.bloodGroup}
                   onChange={handleChange}
-                  placeholder="Enter your blood group"
+                  placeholder="Enter the blood group"
                   autoComplete="off"
                 />
                 <FormErrorMessage>{formErrors?.bloodGroup}</FormErrorMessage>
@@ -157,7 +155,7 @@ const SignUp = () => {
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
-                  placeholder="Select your gender"
+                  placeholder="Select the gender"
                   autoComplete="sex"
                 >
                   <option value="male">Male</option>
@@ -175,7 +173,7 @@ const SignUp = () => {
                   name="contactNo"
                   value={formData.contactNo}
                   onChange={handleChange}
-                  placeholder="Enter your contact number"
+                  placeholder="Enter the contact number"
                   autoComplete="tel"
                 />
                 <FormErrorMessage>{formErrors?.contactNo}</FormErrorMessage>
@@ -191,7 +189,7 @@ const SignUp = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="Enter your password"
+                    placeholder="Enter the password"
                     autoComplete="new-password"
                   />
                   <InputRightElement width="4.5rem">
@@ -221,7 +219,7 @@ const SignUp = () => {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    placeholder="Confirm your password"
+                    placeholder="Confirm the password"
                     autoComplete="new-password"
                   />
                   <InputRightElement width="4.5rem">
@@ -245,20 +243,12 @@ const SignUp = () => {
         </Grid>
         <Flex justify="center" mt="4">
           <Button type="submit" colorScheme="blue" size="lg">
-            Sign Up
+            Create User
           </Button>
         </Flex>
       </form>
-      <Flex justify="center" mt="4">
-        <Text>
-          Already have an account?{" "}
-          <Link as={RouterLink} to="/login" color="blue.500">
-            Log in
-          </Link>
-        </Text>
-      </Flex>
     </div>
   );
 };
 
-export default SignUp;
+export default UserCreate;

@@ -1,11 +1,11 @@
+import { Box } from "@chakra-ui/react";
+
 const Home = () => {
   return (
-    <div>
-      <center>
-      <div>Home</div>
-      </center>
-      
-    </div>
+    <Box textAlign="center" mt="4">
+      <h1>Home</h1>
+      <p>Welcome to the Home page!</p>
+    </Box>
   );
 };
 
