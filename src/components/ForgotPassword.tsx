@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import apiClient from "../services/api-client";
 import {
@@ -13,15 +13,31 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 
-const ForgotPassword: React.FC = () => {
+function ForgotPassword() {
   const [email, setEmail] = useState<string>("");
   const [emailSent, setEmailSent] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [countdown, setCountdown] = useState<number>(60);
+  const [timerRunning, setTimerRunning] = useState<boolean>(false);
 
   const bgColor = useColorModeValue("white", "gray.700");
   const borderColor = useColorModeValue("gray.300", "gray.600");
   const textColor = useColorModeValue("black", "white");
   const errorColor = useColorModeValue("red.500", "red.300");
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+
+    if (timerRunning && countdown > 0) {
+      timer = setTimeout(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+    } else if (countdown === 0) {
+      setTimerRunning(false);
+    }
+
+    return () => clearTimeout(timer);
+  }, [timerRunning, countdown]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,7 +46,6 @@ const ForgotPassword: React.FC = () => {
       return;
     }
     try {
-      //send the reset email
       const resetResponse = await apiClient.post("/send-reset-email", {
         email,
         token: "",
@@ -39,6 +54,7 @@ const ForgotPassword: React.FC = () => {
       });
       if (resetResponse.status === 200) {
         setEmailSent(true);
+        setTimerRunning(true);
       } else {
         throw new Error("Failed to send reset email");
       }
@@ -51,6 +67,12 @@ const ForgotPassword: React.FC = () => {
   const validateEmail = (email: string): boolean => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
+  };
+
+  const handleResendClick = () => {
+    setCountdown(60); // Reset countdown
+    setTimerRunning(true); // Start the timer
+    setEmailSent(false); // Reset email sent state
   };
 
   return (
@@ -68,12 +90,21 @@ const ForgotPassword: React.FC = () => {
       {emailSent ? (
         <>
           <Text mb={4}>
-            An email with instructions to reset your password has been sent to{" "}
+            An email with instructions to reset your password has been sent to:{" "}
             {email}.
           </Text>
-          <Link as={RouterLink} to="/login" color="blue.500">
-            Back to Login
-          </Link>
+          <Text>Resend in {countdown} seconds</Text>
+          <Flex justify="center" mt={4}>
+            <Button
+              onClick={handleResendClick}
+              colorScheme="blue"
+              borderRadius="xl"
+              disabled={timerRunning}
+              _hover={{ bg: "blue.600" }}
+            >
+              Resend Email
+            </Button>
+          </Flex>
         </>
       ) : (
         <form onSubmit={handleSubmit}>
@@ -107,15 +138,15 @@ const ForgotPassword: React.FC = () => {
               Send Reset Link
             </Button>
           </Flex>
-          <Text mt={4} fontSize="sm" textAlign="center">
-            <Link as={RouterLink} to="/login" color="blue.500">
-              Back to Login
-            </Link>
-          </Text>
         </form>
       )}
+      <Text mt={4} fontSize="sm" textAlign="center">
+        <Link as={RouterLink} to="/login" color="blue.500">
+          Back to Login
+        </Link>
+      </Text>
     </Box>
   );
-};
+}
 
 export default ForgotPassword;
