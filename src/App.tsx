@@ -8,6 +8,7 @@ import NavBar from "./components/NavBar";
 import Home from "./components/Home";
 import UserSetting from "./components/UserSetting";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Admin from "./components/Admin";
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
           <Route path="/create-user" element={<UserCreate />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/settings" element={<UserSetting />} />
+          <Route path="/admin" element={<Admin />} />
           <Route
             path="/home"
             element={

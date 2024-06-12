@@ -15,13 +15,14 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
 } from "@chakra-ui/react";
-import { FiUser, FiLogOut, FiSettings } from "react-icons/fi";
+import { FiUser, FiShield, FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.webp";
 
 interface DecodedToken {
   exp: number;
-  iat: number; //issued at
+  iat: number; // issued at
+  is_admin: boolean;
 }
 
 const decodeToken = (token: string): DecodedToken | null => {
@@ -55,20 +56,6 @@ const NavBar = () => {
     setDisplayWelcome(true);
   }, [token]);
 
-  useEffect(() => {
-    if (token) {
-      const decodedToken = decodeToken(token);
-      if (decodedToken) {
-        const currentTime = Date.now() / 1000;
-        if (decodedToken.exp < currentTime) {
-          handleLogoutConfirmed();
-        }
-      } else {
-        handleLogoutConfirmed();
-      }
-    }
-  }, [token]);
-
   const onClose = () => setIsOpen(false);
 
   const handleLogout = () => {
@@ -87,6 +74,15 @@ const NavBar = () => {
     navigate("/settings");
   };
 
+  const handleAdminClick = () => {
+    console.log("Admin clicked");
+    navigate("/admin");
+  };
+
+  // Decode token and check if user is an admin
+  const decodedToken = decodeToken(token || "");
+  const isAdmin = decodedToken ? decodedToken.is_admin : false;
+
   return (
     <HStack justifyContent="space-between" padding="10px">
       <Image src={logo} boxSize="50px" />
@@ -104,6 +100,15 @@ const NavBar = () => {
               <MenuItem onClick={handleLogout} icon={<FiLogOut />}>
                 Logout
               </MenuItem>
+              <MenuDivider />
+              {isAdmin && (
+                <>
+                  <MenuItem onClick={handleAdminClick} icon={<FiShield />}>
+                    Admin
+                  </MenuItem>
+                  <MenuDivider />
+                </>
+              )}
             </MenuList>
           </Menu>
           <AlertDialog
