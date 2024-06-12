@@ -19,14 +19,29 @@ import { FiUser, FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.webp";
 
+interface DecodedToken {
+  exp: number;
+  iat: number; //issued at
+}
+
+const decodeToken = (token: string): DecodedToken | null => {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64String = atob(base64Url);
+    return JSON.parse(base64String) as DecodedToken;
+  } catch (error) {
+    console.error("Error decoding token:", error);
+    return null;
+  }
+};
 
 const NavBar = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const token = localStorage.getItem("accessToken");
   const username = localStorage.getItem("username");
   const [displayWelcome, setDisplayWelcome] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const cancelRef = useRef(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,6 +55,20 @@ const NavBar = () => {
     setDisplayWelcome(true);
   }, [token]);
 
+  useEffect(() => {
+    if (token) {
+      const decodedToken = decodeToken(token);
+      if (decodedToken) {
+        const currentTime = Date.now() / 1000;
+        if (decodedToken.exp < currentTime) {
+          handleLogoutConfirmed();
+        }
+      } else {
+        handleLogoutConfirmed();
+      }
+    }
+  }, [token]);
+
   const onClose = () => setIsOpen(false);
 
   const handleLogout = () => {
@@ -50,13 +79,12 @@ const NavBar = () => {
     setIsOpen(false);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("username");
-    navigate("/login"); 
+    navigate("/login");
   };
 
   const handleSettingsClick = () => {
     console.log("Settings clicked");
-    // Navigate to settings page
-    navigate("/settings"); 
+    navigate("/settings");
   };
 
   return (
@@ -70,7 +98,7 @@ const NavBar = () => {
             </MenuButton>
             <MenuList>
               <MenuItem onClick={handleSettingsClick} icon={<FiSettings />}>
-                Setting
+                Settings
               </MenuItem>
               <MenuDivider />
               <MenuItem onClick={handleLogout} icon={<FiLogOut />}>
