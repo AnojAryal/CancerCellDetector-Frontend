@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { FiUser, FiShield, FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/logo.webp";
+import logo from "../../assets/logo.webp";
 
 interface DecodedToken {
   exp: number;

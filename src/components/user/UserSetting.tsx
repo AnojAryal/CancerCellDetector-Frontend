@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { AiOutlineClose } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import ColorModeSwitch from "./ColorModeSwitch";
+import ColorModeSwitch from "../generic/ColorModeSwitch";
 
 const UserSetting = () => {
   const navigate = useNavigate();
