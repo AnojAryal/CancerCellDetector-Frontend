@@ -16,7 +16,7 @@ import {
  
 } from "@chakra-ui/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useUserCreate} from "../hooks/useUserCreate";
+import { useUserCreate } from "../../hooks/useUserCreate";
 
 const UserCreate = () => {
   const [formData, setFormData] = useState({

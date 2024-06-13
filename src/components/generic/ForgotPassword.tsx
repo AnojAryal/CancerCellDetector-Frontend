@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import apiClient from "../services/api-client";
+import apiClient from "../../services/api-client";
 import {
   Box,
   Button,
