@@ -13,7 +13,7 @@ import {
   IconButton,
   InputGroup,
   InputRightElement,
- 
+  Checkbox,
 } from "@chakra-ui/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useUserCreate } from "../../hooks/useUserCreate";
@@ -27,8 +27,9 @@ const UserCreate = () => {
     bloodGroup: "",
     gender: "",
     contactNo: "",
+    hospital: "",
     password: "",
-    confirmPassword: "",
+    is_hospital_admin: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -45,6 +46,14 @@ const UserCreate = () => {
     }));
   };
 
+  const handleAdminChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      is_hospital_admin: checked,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -55,7 +64,7 @@ const UserCreate = () => {
       console.error("User creation failed:", error);
     }
   };
-  
+
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -104,7 +113,7 @@ const UserCreate = () => {
               </FormControl>
 
               <FormControl isInvalid={!!formErrors?.fullName}>
-                <FormLabel htmlFor="fullName">Full Name</FormLabel>
+                <FormLabel htmlFor="fullName">FullName</FormLabel>
                 <Input
                   type="text"
                   id="fullName"
@@ -179,6 +188,20 @@ const UserCreate = () => {
                 <FormErrorMessage>{formErrors?.contactNo}</FormErrorMessage>
               </FormControl>
 
+              <FormControl isInvalid={!!formErrors?.hospital}>
+                <FormLabel htmlFor="Hospital">Hospital</FormLabel>
+                <Input
+                  type="text"
+                  id="hospital"
+                  name="hospital"
+                  value={formData.hospital}
+                  onChange={handleChange}
+                  placeholder="Enter the hospital"
+                  autoComplete="hospital"
+                />
+                <FormErrorMessage>{formErrors?.hospital}</FormErrorMessage>
+              </FormControl>
+
               <FormControl isInvalid={!!formErrors?.password}>
                 <FormLabel htmlFor="password">Password</FormLabel>
                 <InputGroup>
@@ -207,36 +230,15 @@ const UserCreate = () => {
                 <FormErrorMessage>{formErrors?.password}</FormErrorMessage>
               </FormControl>
 
-              <FormControl isInvalid={!!formErrors?.confirmPassword}>
-                <FormLabel htmlFor="confirmPassword">
-                  Confirm Password
-                </FormLabel>
-                <InputGroup>
-                  <Input
-                    pr="4.5rem"
-                    type={showPassword ? "text" : "password"}
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="Confirm the password"
-                    autoComplete="new-password"
-                  />
-                  <InputRightElement width="4.5rem">
-                    <IconButton
-                      aria-label={
-                        showPassword ? "Show password" : "Hide password"
-                      }
-                      h="1.75rem"
-                      size="sm"
-                      onClick={handlePasswordVisibility}
-                      icon={showPassword ? <FaEye /> : <FaEyeSlash />}
-                    />
-                  </InputRightElement>
-                </InputGroup>
-                <FormErrorMessage>
-                  {formErrors?.confirmPassword}
-                </FormErrorMessage>
+              <FormControl>
+                <Checkbox
+                  id="isHospitalAdmin"
+                  name="isHospitalAdmin"
+                  isChecked={formData.is_hospital_admin}
+                  onChange={handleAdminChange}
+                >
+                  Hospital Admin
+                </Checkbox>
               </FormControl>
             </Stack>
           </GridItem>

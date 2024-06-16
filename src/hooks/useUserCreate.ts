@@ -10,10 +10,10 @@ interface UserCreateFormState {
       username: string;
       email: string;
       password: string;
-      confirmPassword: string;
       fullName: string;
       gender: string;
       contactNo: string;
+      hospital: string;
       bloodGroup: string;
       address: string;
     },
@@ -30,30 +30,47 @@ export const useUserCreate = create<UserCreateFormState>((set) => ({
     if (!formData.username) errors.username = "Username is required";
     if (!formData.email) errors.email = "Email is required";
     if (!formData.password) errors.password = "Password is required";
-    if (!formData.confirmPassword)
-      errors.confirmPassword = "Confirm your password";
-    if (formData.password !== formData.confirmPassword)
-      errors.confirmPassword = "Passwords do not match";
     if (!formData.fullName) errors.fullName = "Full name is required";
     if (!formData.gender) errors.gender = "Gender is required";
     if (!formData.contactNo) errors.contactNo = "Contact number is required";
+    if (!formData.hospital) errors.hospital = "Hospital is required";
     if (!formData.bloodGroup) errors.bloodGroup = "Blood group is required";
     if (!formData.address) errors.address = "Address is required";
 
     set({ formErrors: errors });
 
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken) {
+      console.error("Access token not found in localStorage.");
+      set({
+        formErrors: {
+          server: "Access token not found. Please login again.",
+        },
+      });
+      return;
+    }
+
     if (Object.keys(errors).length === 0) {
       try {
-        const response = await apiClient.post("/users", {
-          username: formData.username,
-          email: formData.email,
-          full_name: formData.fullName,
-          address: formData.address,
-          blood_group: formData.bloodGroup,
-          gender: formData.gender,
-          contact_no: formData.contactNo,
-          password: formData.password,
-        });
+        const response = await apiClient.post(
+          "/users",
+          {
+            username: formData.username,
+            email: formData.email,
+            full_name: formData.fullName,
+            address: formData.address,
+            blood_group: formData.bloodGroup,
+            gender: formData.gender,
+            contact_no: formData.contactNo,
+            password: formData.password,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
 
         if (response.status === 201) {
           console.log("User Creation successful", response.data);
