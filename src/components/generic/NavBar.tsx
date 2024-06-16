@@ -56,6 +56,18 @@ const NavBar = () => {
     setDisplayWelcome(true);
   }, [token]);
 
+  useEffect(() => {
+    if (token) {
+      const decodedToken = decodeToken(token);
+      if (decodedToken) {
+        const currentTime = Math.floor(Date.now() / 1000);
+        if (decodedToken.exp < currentTime) {
+          handleLogoutConfirmed();
+        }
+      }
+    }
+  }, [token]);
+
   const onClose = () => setIsOpen(false);
 
   const handleLogout = () => {

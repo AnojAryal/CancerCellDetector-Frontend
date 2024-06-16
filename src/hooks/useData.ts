@@ -15,8 +15,16 @@ const useData = <T>(endpoint: string, query: string = "") => {
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
+
+    const authToken = localStorage.getItem('accessToken');
+
+    const headers: Record<string, string> = authToken
+      ? { Authorization: `Bearer ${authToken}` }
+      : {};
+
     apiClient
       .get<FetchResponse<T>>(`${endpoint}?search=${query}`, {
+        headers,
         signal: controller.signal,
       })
       .then((res) => {
@@ -29,7 +37,10 @@ const useData = <T>(endpoint: string, query: string = "") => {
         setLoading(false);
       });
 
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+      setLoading(false);
+    };
   }, [endpoint, query]);
 
   return { data, error, isLoading };
