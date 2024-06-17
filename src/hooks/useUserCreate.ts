@@ -13,9 +13,10 @@ interface UserCreateFormState {
       fullName: string;
       gender: string;
       contactNo: string;
-      hospital: string;
+      hospital: string | null;
       bloodGroup: string;
       address: string;
+      is_hospital_admin: boolean;
     },
     onSuccess: () => void
   ) => void;
@@ -64,6 +65,8 @@ export const useUserCreate = create<UserCreateFormState>((set) => ({
             gender: formData.gender,
             contact_no: formData.contactNo,
             password: formData.password,
+            is_hospital_admin: formData.is_hospital_admin,
+            hospital_id: formData.hospital,
           },
           {
             headers: {

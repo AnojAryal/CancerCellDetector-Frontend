@@ -1,46 +1,46 @@
 import { useEffect, useState } from "react";
-import { CanceledError } from "axios";
 import apiClient from "../services/api-client";
 
-interface FetchResponse<T> {
+export interface FetchResponse<T> {
   count: number;
   results: T[];
 }
 
 const useData = <T>(endpoint: string, query: string = "") => {
   const [data, setData] = useState<T[]>([]);
-  const [error, setError] = useState("");
-  const [isLoading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("");
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    const controller = new AbortController();
     setLoading(true);
 
-    const authToken = localStorage.getItem('accessToken');
+    const fetchData = async () => {
+      try {
+        const authToken = localStorage.getItem("accessToken");
+        const headers: Record<string, string> = authToken
+          ? { Authorization: `Bearer ${authToken}` }
+          : {};
 
-    const headers: Record<string, string> = authToken
-      ? { Authorization: `Bearer ${authToken}` }
-      : {};
+        const response = await apiClient.get<FetchResponse<T>>(
+          `${endpoint}?search=${query}`,
+          {
+            headers,
+          }
+        );
 
-    apiClient
-      .get<FetchResponse<T>>(`${endpoint}?search=${query}`, {
-        headers,
-        signal: controller.signal,
-      })
-      .then((res) => {
-        setData(res.data.results);
+        setData(response.data.results);
         setLoading(false);
-      })
-      .catch((err) => {
-        if (err instanceof CanceledError) return;
-        setError(err.message);
+      } catch (err) {
+        if (err instanceof Error && err.message) {
+          setError(err.message);
+        } else {
+          setError("An error occurred");
+        }
         setLoading(false);
-      });
-
-    return () => {
-      controller.abort();
-      setLoading(false);
+      }
     };
+
+    fetchData();
   }, [endpoint, query]);
 
   return { data, error, isLoading };

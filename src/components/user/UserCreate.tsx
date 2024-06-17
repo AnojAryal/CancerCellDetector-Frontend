@@ -15,10 +15,13 @@ import {
   InputRightElement,
   Checkbox,
 } from "@chakra-ui/react";
+import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useUserCreate } from "../../hooks/useUserCreate";
+import HospitalSelect from "../generic/HospitalSelect";
 
 const UserCreate = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -27,7 +30,7 @@ const UserCreate = () => {
     bloodGroup: "",
     gender: "",
     contactNo: "",
-    hospital: "",
+    hospital: null as string | null,
     password: "",
     is_hospital_admin: false,
   });
@@ -65,9 +68,13 @@ const UserCreate = () => {
     }
   };
 
+  const goBack = () => {
+    navigate(-1);
+  }
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
   return (
     <div style={{ maxWidth: "600px", margin: "auto" }}>
       <div
@@ -189,17 +196,16 @@ const UserCreate = () => {
               </FormControl>
 
               <FormControl isInvalid={!!formErrors?.hospital}>
-                <FormLabel htmlFor="Hospital">Hospital</FormLabel>
-                <Input
-                  type="text"
-                  id="hospital"
-                  name="hospital"
+                <HospitalSelect
                   value={formData.hospital}
-                  onChange={handleChange}
-                  placeholder="Enter the hospital"
-                  autoComplete="hospital"
+                  onChange={(selectedHospitalId) =>
+                    setFormData((prevState) => ({
+                      ...prevState,
+                      hospital: selectedHospitalId,
+                    }))
+                  }
+                  error={formErrors?.hospital}
                 />
-                <FormErrorMessage>{formErrors?.hospital}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!formErrors?.password}>
@@ -244,6 +250,9 @@ const UserCreate = () => {
           </GridItem>
         </Grid>
         <Flex justify="center" mt="4">
+          <Button onClick={goBack} colorScheme="blue" size="lg" mr={4}>
+            Back
+          </Button>
           <Button type="submit" colorScheme="blue" size="lg">
             Create User
           </Button>
