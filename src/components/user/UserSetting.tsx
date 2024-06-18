@@ -24,7 +24,7 @@ const UserSetting = () => {
         </Heading>
         <IconButton
           icon={<AiOutlineClose />}
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/home")}
           aria-label="Close"
         />
       </HStack>
