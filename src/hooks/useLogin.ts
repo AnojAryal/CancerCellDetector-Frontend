@@ -4,6 +4,7 @@ import { NavigateFunction } from "react-router-dom";
 
 interface LoginFormState {
   formErrors: { [key: string]: string };
+  authError: string | null;
   login: (
     formData: { username: string; password: string },
     navigate: NavigateFunction
@@ -12,6 +13,7 @@ interface LoginFormState {
 
 export const useLogin = create<LoginFormState>((set) => ({
   formErrors: {},
+  authError: null,
   login: async (formData, navigate) => {
     const errors: { [key: string]: string } = {};
 
@@ -23,7 +25,7 @@ export const useLogin = create<LoginFormState>((set) => ({
       errors.password = "Password is required";
     }
 
-    set({ formErrors: errors });
+    set({ formErrors: errors, authError: null });
 
     if (Object.keys(errors).length === 0) {
       try {
@@ -40,25 +42,21 @@ export const useLogin = create<LoginFormState>((set) => ({
         if (response.status === 200) {
           localStorage.setItem("accessToken", response.data.access_token);
           localStorage.setItem("username", formData.username);
-          set({ formErrors: {} });
+          set({ formErrors: {}, authError: null });
           console.log("Login successful", response.data);
           navigate("/home");
         } else {
           console.error("Unexpected response during login:", response);
           set({
-            formErrors: {
-              server:
-                "An unexpected error occurred during login. Please try again later.",
-            },
+            formErrors: {},
+            authError: "An unexpected error occurred. Please try again later.",
           });
         }
       } catch (error) {
         console.error("Error during login:", error);
         set({
-          formErrors: {
-            server:
-              "An unexpected error occurred during login. Please try again later.",
-          },
+          formErrors: {},
+          authError: "An unexpected error occurred. Please try again with valid credentials.",
         });
       }
     }
