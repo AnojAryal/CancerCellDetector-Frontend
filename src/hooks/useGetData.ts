@@ -6,13 +6,13 @@ export interface FetchResponse<T> {
   results: T[];
 }
 
-const useData = <T>(endpoint: string, query: string = "") => {
+const useGetData = <T>(endpoint: string, query: string = "") => {
   const [data, setData] = useState<T[]>([]);
   const [error, setError] = useState<string>("");
-  // const [isLoading, setLoading] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    // setLoading(true);
+    setLoading(true);
 
     const fetchData = async () => {
       try {
@@ -29,21 +29,21 @@ const useData = <T>(endpoint: string, query: string = "") => {
         );
 
         setData(response.data.results);
-        // setLoading(false);
+        setLoading(false);
       } catch (err) {
         if (err instanceof Error && err.message) {
           setError(err.message);
         } else {
           setError("An error occurred");
         }
-        // setLoading(false);
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [endpoint, query]);
 
-  return { data, error};
+  return { data, error, isLoading};
 };
 
-export default useData;
+export default useGetData;

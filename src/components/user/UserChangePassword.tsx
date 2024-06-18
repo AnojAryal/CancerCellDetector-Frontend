@@ -22,7 +22,7 @@ import useChangePassword, {
   ChangePasswordValues,
 } from "../../hooks/useChangePassword";
 
-const ChangePassword = () => {
+const UserChangePassword = () => {
   const navigate = useNavigate();
   const { error, successMessage, validationSchema, handleChangePassword } =
     useChangePassword();
@@ -226,4 +226,4 @@ const ChangePassword = () => {
   );
 };
 
-export default ChangePassword;
+export default UserChangePassword;

@@ -2,14 +2,14 @@ import { useEffect } from "react";
 import { Grid, GridItem } from "@chakra-ui/react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Login from "./components/user/UserLogin.tsx";
-import UserCreate from "./components/user/UserCreate.tsx";
-import ForgotPassword from "./components/generic/ForgotPassword.tsx";
+import UserCreate from "./components/admin/CreateUser.tsx";
+import ForgotPassword from "./components/user/UserForgotPassword.tsx";
 import NavBar from "./components/generic/NavBar.tsx";
-import Home from "./components/generic/Home.tsx";
+import Home from "./components/user/UserHome.tsx";
 import UserSetting from "./components/user/UserSetting.tsx";
 import ProtectedRoute from "./components/generic/ProtectedRoute.tsx";
 import Admin from "./components/admin/Admin.tsx";
-import ChangePassword from "./components/generic/ChangePassword.tsx";
+import ChangePassword from "./components/user/UserChangePassword.tsx";
 
 
 function App() {

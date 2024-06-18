@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
 
-const Home = () => {
+const UserHome = () => {
   return (
     <Box textAlign="center" mt="4">
       <h1>Home</h1>
@@ -9,4 +9,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default UserHome;

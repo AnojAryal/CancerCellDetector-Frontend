@@ -17,10 +17,10 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useUserCreate } from "../../hooks/useUserCreate";
-import HospitalSelect from "../generic/HospitalSelect";
+import { useUserCreate } from "../../hooks/useCreateUser";
+import HospitalSelect from "./HospitalSelect";
 
-const UserCreate = () => {
+const CreateUser = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
@@ -262,4 +262,4 @@ const UserCreate = () => {
   );
 };
 
-export default UserCreate;
+export default CreateUser;
