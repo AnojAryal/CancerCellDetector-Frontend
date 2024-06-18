@@ -9,6 +9,7 @@ import Home from "./components/generic/Home.tsx";
 import UserSetting from "./components/user/UserSetting.tsx";
 import ProtectedRoute from "./components/generic/ProtectedRoute.tsx";
 import Admin from "./components/admin/Admin.tsx";
+import ChangePassword from "./components/generic/ChangePassword.tsx";
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/create-user" element={<UserCreate />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/settings" element={<UserSetting />} />
           <Route path="/admin" element={<Admin />} />
           <Route

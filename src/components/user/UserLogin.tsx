@@ -19,7 +19,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const { login, formErrors } = useLogin();
+  const { login, formErrors, authError } = useLogin();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -94,7 +94,7 @@ function Login() {
         </Heading>
         <form onSubmit={handleSubmit}>
           <Stack spacing="6">
-            <FormControl isInvalid={!!formErrors?.username}>
+            <FormControl isInvalid={!!formErrors.username}>
               <FormLabel htmlFor="username">Username</FormLabel>
               <Input
                 type="text"
@@ -106,10 +106,10 @@ function Login() {
                 autoComplete="username"
                 bg={useColorModeValue("white", "gray.700")}
               />
-              <FormErrorMessage>{formErrors?.username}</FormErrorMessage>
+              <FormErrorMessage>{formErrors.username}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isInvalid={!!formErrors?.password}>
+            <FormControl isInvalid={!!formErrors.password}>
               <FormLabel htmlFor="password">Password</FormLabel>
               <InputGroup>
                 <Input
@@ -135,9 +135,15 @@ function Login() {
                   />
                 </InputRightElement>
               </InputGroup>
-              <FormErrorMessage>{formErrors?.password}</FormErrorMessage>
+              <FormErrorMessage>{formErrors.password}</FormErrorMessage>
             </FormControl>
-            <Box />
+
+            {authError && (
+              <Box textAlign="center" color="red" mt="2">
+                {authError}
+              </Box>
+            )}
+
             <Button type="submit" colorScheme="blue" width="100%">
               Login
             </Button>
