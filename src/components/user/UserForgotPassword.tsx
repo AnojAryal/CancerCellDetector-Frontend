@@ -13,7 +13,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 
-function ForgotPassword() {
+function UserForgotPassword() {
   const [email, setEmail] = useState<string>("");
   const [emailSent, setEmailSent] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
@@ -149,4 +149,4 @@ function ForgotPassword() {
   );
 }
 
-export default ForgotPassword;
+export default UserForgotPassword;

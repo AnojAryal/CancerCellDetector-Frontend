@@ -2,7 +2,7 @@ import { create } from "zustand";
 import apiClient from "../services/api-client";
 import { AxiosError } from "axios";
 
-interface UserCreateFormState {
+interface CreateUserFormState {
   formErrors: { [key: string]: string };
   successMessage: string | null;
   userCreate: (
@@ -22,7 +22,7 @@ interface UserCreateFormState {
   ) => void;
 }
 
-export const useUserCreate = create<UserCreateFormState>((set) => ({
+export const useUserCreate = create<CreateUserFormState>((set) => ({
   formErrors: {},
   successMessage: null,
   userCreate: async (formData, onSuccess) => {
