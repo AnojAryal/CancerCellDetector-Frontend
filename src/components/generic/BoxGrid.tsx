@@ -29,9 +29,9 @@ const BoxGrid = ({ children }: BoxGridProps) => {
         boxShadow="lg"
         width="100%"
         maxWidth="400px"
-        height="70%"
+        height="75%"
         maxHeight="600px"
-        overflowY="auto"
+        overflowY="hidden"
         p={6}
         position="relative"
         overflow= "hidden"
