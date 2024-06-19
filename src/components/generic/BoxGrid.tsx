@@ -34,6 +34,7 @@ const BoxGrid = ({ children }: BoxGridProps) => {
         overflowY="auto"
         p={6}
         position="relative"
+        overflow= "hidden"
       >
         {children}
       </Box>
