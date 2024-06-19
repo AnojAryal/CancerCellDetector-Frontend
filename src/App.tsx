@@ -10,6 +10,7 @@ import UserSetting from "./components/user/UserSetting.tsx";
 import ProtectedRoute from "./components/generic/ProtectedRoute.tsx";
 import Admin from "./components/admin/Admin.tsx";
 import ChangePassword from "./components/user/UserChangePassword.tsx";
+import CreateHospital from "./components/admin/CreateHospital.tsx";
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/settings" element={<UserSetting />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/create-hospital" element={<CreateHospital />} />
           <Route
             path="/home"
             element={

@@ -18,7 +18,7 @@ const Admin = () => {
 
   const handleCreateHospital = () => {
     console.log("create hospital clicked");
-   
+    navigate("/create-hospital")
   };
 
   const handleCreateUser = () => {
