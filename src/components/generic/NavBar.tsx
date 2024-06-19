@@ -25,13 +25,15 @@ interface DecodedToken {
   is_admin: boolean;
 }
 
-const decodeToken = (token: string): DecodedToken | null => {
+const decodeToken = (token: string | null): DecodedToken | null => {
+  if (!token) {
+    return null;
+  }
   try {
     const base64Url = token.split(".")[1];
     const base64String = atob(base64Url);
     return JSON.parse(base64String) as DecodedToken;
-  } catch (error) {
-    console.error("Error decoding token:", error);
+  } catch {
     return null;
   }
 };
@@ -76,6 +78,7 @@ const NavBar = () => {
 
   const handleLogoutConfirmed = () => {
     setIsOpen(false);
+    console.log("Logout Success!")
     localStorage.removeItem("accessToken");
     localStorage.removeItem("username");
     navigate("/login");
