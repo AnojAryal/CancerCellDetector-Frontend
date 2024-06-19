@@ -8,19 +8,23 @@ import {
   VStack,
   HStack,
   IconButton,
+  Text,
 } from "@chakra-ui/react";
 import { AiOutlineClose } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import BoxGrid from "../generic/BoxGrid";
+import useCreateHospital from "../../hooks/useCreateHospital";
 
 const CreateHospital = () => {
   const navigate = useNavigate();
+  const { isLoading, error, createHospital } = useCreateHospital();
   const [formData, setFormData] = useState({
     name: "",
     address: "",
     phone: "",
     email: "",
   });
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,15 +34,20 @@ const CreateHospital = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form data:", formData);
-    setFormData({
-      name: "",
-      address: "",
-      phone: "",
-      email: "",
-    });
+    try {
+      await createHospital(formData);
+      setSuccessMessage("Hospital created successfully.");
+      setFormData({
+        name: "",
+        address: "",
+        phone: "",
+        email: "",
+      });
+    } catch (error) {
+      console.error("Error creating hospital:", error);
+    }
   };
 
   return (
@@ -54,7 +63,7 @@ const CreateHospital = () => {
         />
       </HStack>
       <form onSubmit={handleSubmit}>
-        <VStack spacing={3} align="stretch">
+        <VStack spacing={3.5} align="stretch">
           <FormControl>
             <FormLabel htmlFor="name">Hospital Name</FormLabel>
             <Input
@@ -107,9 +116,21 @@ const CreateHospital = () => {
             />
           </FormControl>
 
-          <Button type="submit" colorScheme="blue">
+          <Button type="submit" colorScheme="blue" isLoading={isLoading}>
             Create Hospital
           </Button>
+
+          {successMessage && (
+            <Text color="green" mt={2}>
+              {successMessage}
+            </Text>
+          )}
+
+          {error && (
+            <Text color="red" mt={2}>
+              Error: {error}
+            </Text>
+          )}
         </VStack>
       </form>
     </BoxGrid>
