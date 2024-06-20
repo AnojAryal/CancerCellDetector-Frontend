@@ -7,9 +7,10 @@ import {
   HStack,
   Text,
 } from "@chakra-ui/react";
-import { MdClose, MdBusiness, MdGroup } from "react-icons/md";
+import { MdClose, MdBusiness, MdGroup, MdManageAccounts } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import BoxGrid from "../generic/BoxGrid";
+import { FaStethoscope } from "react-icons/fa";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -20,6 +21,17 @@ const Admin = () => {
     console.log("create hospital clicked");
     navigate("/create-hospital")
   };
+
+  const handleManageHospital = () => {
+    console.log("Manage hospital clicked");
+    navigate("/manage-hospital");
+    
+  }
+
+  const handleManageUsers = () => {
+    console.log("Manage users clicked");
+    
+  }
 
   const handleCreateUser = () => {
     console.log("create user clicked");
@@ -59,11 +71,27 @@ const Admin = () => {
             />
           </HStack>
           <HStack justifyContent="space-between">
+            <Text>Manage Hospital</Text>
+            <IconButton
+              icon={<FaStethoscope/>}
+              onClick={handleManageHospital}
+              aria-label="Manage Hospital"
+            />
+          </HStack>
+          <HStack justifyContent="space-between">
             <Text>Create User</Text>
             <IconButton
               icon={<MdGroup />}
               onClick={handleCreateUser}
               aria-label="Create User"
+            />
+          </HStack>
+          <HStack justifyContent="space-between">
+            <Text>Manage Users</Text>
+            <IconButton
+              icon={<MdManageAccounts />}
+              onClick={handleManageUsers}
+              aria-label="Manage Users"
             />
           </HStack>
           <HStack justifyContent="space-between">

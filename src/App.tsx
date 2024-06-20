@@ -11,6 +11,8 @@ import ProtectedRoute from "./components/generic/ProtectedRoute.tsx";
 import Admin from "./components/admin/Admin.tsx";
 import ChangePassword from "./components/user/UserChangePassword.tsx";
 import CreateHospital from "./components/admin/CreateHospital.tsx";
+import UserProfile from "./components/user/userProfile.tsx";
+import ManageHospitals from "./components/admin/ManageHospitals.tsx";
 
 
 function App() {
@@ -40,14 +42,16 @@ function App() {
       </GridItem>
       <GridItem area="main">
         <Routes>
-          <Route path="/" element={<Navigate to="/home" />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/create-user" element={<UserCreate />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/settings" element={<UserSetting />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/create-hospital" element={<CreateHospital />} />
+          <Route path = "/" element={<Navigate to="/home" />} />
+          <Route path = "/login" element={<Login />} />
+          <Route path = "/create-user" element={<UserCreate />} />
+          <Route path = "/forgot-password" element={<ForgotPassword />} />
+          <Route path = "/change-password" element={<ChangePassword />} />
+          <Route path = "/settings" element={<UserSetting />} />
+          <Route path = "/admin" element={<Admin />} />
+          <Route path = "/create-hospital" element={<CreateHospital />} />
+          <Route path = "/user-profile" element = {<UserProfile />} />
+          <Route path = "/manage-hospital" element = {<ManageHospitals />} />
           <Route
             path="/home"
             element={
