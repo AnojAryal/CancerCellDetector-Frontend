@@ -75,7 +75,7 @@ const ManageHospitals = () => {
     }
   };
 
-  if (loading) return <Spinner size="xl" />;
+  if (loading) return <Spinner size="md" />;
   if (error)
     return (
       <Alert status="error">

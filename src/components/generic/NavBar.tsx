@@ -19,25 +19,7 @@ import { FiUser, FiShield, FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.webp";
 import { FaCircleUser } from "react-icons/fa6";
-
-interface DecodedToken {
-  exp: number;
-  iat: number; // issued at
-  is_admin: boolean;
-}
-
-const decodeToken = (token: string | null): DecodedToken | null => {
-  if (!token) {
-    return null;
-  }
-  try {
-    const base64Url = token.split(".")[1];
-    const base64String = atob(base64Url);
-    return JSON.parse(base64String) as DecodedToken;
-  } catch {
-    return null;
-  }
-};
+import { decodeToken } from "./DecodeToken";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -121,7 +103,6 @@ const NavBar = () => {
               <MenuItem onClick={handleSettingsClick} icon={<FiSettings />}>
                 Settings
               </MenuItem>
-
               <MenuDivider />
               {isAdmin && (
                 <>
@@ -129,11 +110,11 @@ const NavBar = () => {
                     Admin
                   </MenuItem>
                   <MenuDivider />
-                  <MenuItem onClick={handleLogout} icon={<FiLogOut />}>
-                    Logout
-                  </MenuItem>
                 </>
               )}
+              <MenuItem onClick={handleLogout} icon={<FiLogOut />}>
+                Logout
+              </MenuItem>
             </MenuList>
           </Menu>
           <AlertDialog
