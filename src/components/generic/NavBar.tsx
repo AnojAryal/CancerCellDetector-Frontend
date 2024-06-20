@@ -18,6 +18,7 @@ import {
 import { FiUser, FiShield, FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.webp";
+import { FaCircleUser } from "react-icons/fa6";
 
 interface DecodedToken {
   exp: number;
@@ -78,7 +79,7 @@ const NavBar = () => {
 
   const handleLogoutConfirmed = () => {
     setIsOpen(false);
-    console.log("Logout Success!")
+    console.log("Logout Success!");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("username");
     navigate("/login");
@@ -87,6 +88,11 @@ const NavBar = () => {
   const handleSettingsClick = () => {
     console.log("Settings clicked");
     navigate("/settings");
+  };
+
+  const handleProfileClick = () => {
+    console.log("Profile clicked");
+    navigate("/user-profile");
   };
 
   const handleAdminClick = () => {
@@ -108,13 +114,14 @@ const NavBar = () => {
               {displayWelcome ? `Welcome, ${username}` : username}
             </MenuButton>
             <MenuList>
+              <MenuItem onClick={handleProfileClick} icon={<FaCircleUser />}>
+                Your Profile
+              </MenuItem>
+              <MenuDivider />
               <MenuItem onClick={handleSettingsClick} icon={<FiSettings />}>
                 Settings
               </MenuItem>
-              <MenuDivider />
-              <MenuItem onClick={handleLogout} icon={<FiLogOut />}>
-                Logout
-              </MenuItem>
+
               <MenuDivider />
               {isAdmin && (
                 <>
@@ -122,6 +129,9 @@ const NavBar = () => {
                     Admin
                   </MenuItem>
                   <MenuDivider />
+                  <MenuItem onClick={handleLogout} icon={<FiLogOut />}>
+                    Logout
+                  </MenuItem>
                 </>
               )}
             </MenuList>
