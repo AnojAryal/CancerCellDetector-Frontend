@@ -11,9 +11,8 @@ import ProtectedRoute from "./components/generic/ProtectedRoute.tsx";
 import Admin from "./components/admin/Admin.tsx";
 import ChangePassword from "./components/user/UserChangePassword.tsx";
 import CreateHospital from "./components/admin/CreateHospital.tsx";
-import UserProfile from "./components/user/userProfile.tsx";
+import UserProfile from "./components/user/UserProfile.tsx";
 import ManageHospitals from "./components/admin/ManageHospitals.tsx";
-
 
 function App() {
   const navigate = useNavigate();
@@ -42,16 +41,20 @@ function App() {
       </GridItem>
       <GridItem area="main">
         <Routes>
-          <Route path = "/" element={<Navigate to="/home" />} />
-          <Route path = "/login" element={<Login />} />
-          <Route path = "/create-user" element={<UserCreate />} />
-          <Route path = "/forgot-password" element={<ForgotPassword />} />
-          <Route path = "/change-password" element={<ChangePassword />} />
-          <Route path = "/settings" element={<UserSetting />} />
-          <Route path = "/admin" element={<Admin />} />
-          <Route path = "/create-hospital" element={<CreateHospital />} />
-          <Route path = "/user-profile" element = {<UserProfile />} />
-          <Route path = "/manage-hospital" element = {<ManageHospitals />} />
+          <Route path="/" element={<Navigate to="/home" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/settings" element={<UserSetting />} />
+          <Route path="/user-profile" element={<UserProfile />} />
+
+          //only admin paths 
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/create-user" element={<UserCreate />} />
+          <Route path="/create-hospital" element={<CreateHospital />} />
+          <Route path="/manage-hospital" element={<ManageHospitals />} />
+          
+          //protected route 
           <Route
             path="/home"
             element={

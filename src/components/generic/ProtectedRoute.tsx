@@ -11,3 +11,5 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps): JSX.Element => {
 };
 
 export default ProtectedRoute;
+
+
