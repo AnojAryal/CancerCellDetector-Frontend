@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Grid, GridItem } from "@chakra-ui/react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Login from "./components/user/UserLogin.tsx";
@@ -13,6 +12,8 @@ import ChangePassword from "./components/user/UserChangePassword.tsx";
 import CreateHospital from "./components/admin/CreateHospital.tsx";
 import UserProfile from "./components/user/UserProfile.tsx";
 import ManageHospitals from "./components/admin/ManageHospitals.tsx";
+import { useEffect } from "react";
+import Forbidden from "./components/generic/Forbidden.tsx";
 
 function App() {
   const navigate = useNavigate();
@@ -20,8 +21,8 @@ function App() {
   useEffect(() => {
     // Checking if access token exists in local storage
     // If access token exists, do nothing (user is already logged in)
-    const Token = localStorage.getItem("accessToken");
-    if (!Token) {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
       navigate("/login");
     }
   }, []);
@@ -48,13 +49,41 @@ function App() {
           <Route path="/settings" element={<UserSetting />} />
           <Route path="/user-profile" element={<UserProfile />} />
 
-          //only admin paths 
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/create-user" element={<UserCreate />} />
-          <Route path="/create-hospital" element={<CreateHospital />} />
-          <Route path="/manage-hospital" element={<ManageHospitals />} />
-          
-          //protected route 
+          {/* Admin routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute isAdminRoute>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create-user"
+            element={
+              <ProtectedRoute isAdminRoute>
+                <UserCreate />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create-hospital"
+            element={
+              <ProtectedRoute isAdminRoute>
+                <CreateHospital />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manage-hospital"
+            element={
+              <ProtectedRoute isAdminRoute>
+                <ManageHospitals />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ProtectedRoute */}
           <Route
             path="/home"
             element={
@@ -63,6 +92,9 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route path="/403" element={<Forbidden />} />
+
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </GridItem>
