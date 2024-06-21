@@ -13,14 +13,15 @@ import {
   IconButton,
   InputGroup,
   InputRightElement,
-  Text,
-  Link,
+  Checkbox,
 } from "@chakra-ui/react";
+import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link as RouterLink } from "react-router-dom";
-import { useSignUp } from "../hooks/useSignUp";
+import { useUserCreate } from "../../hooks/useCreateUser";
+import HospitalSelect from "./HospitalSelect";
 
-const SignUp = () => {
+const CreateUser = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -29,13 +30,14 @@ const SignUp = () => {
     bloodGroup: "",
     gender: "",
     contactNo: "",
+    hospital: null as string | null,
     password: "",
-    confirmPassword: "",
+    is_hospital_admin: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const { signUp, formErrors } = useSignUp();
+  const { userCreate, formErrors } = useUserCreate();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -47,20 +49,32 @@ const SignUp = () => {
     }));
   };
 
+  const handleAdminChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      is_hospital_admin: checked,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await signUp(formData, () => {
-        alert("Signup successful");
+      await userCreate(formData, () => {
+        alert("Successfully created user");
       });
     } catch (error) {
-      console.error("Signup failed:", error);
+      console.error("User creation failed:", error);
     }
   };
-  
+
+  const goBack = () => {
+    navigate(-1);
+  }
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
   return (
     <div style={{ maxWidth: "600px", margin: "auto" }}>
       <div
@@ -71,7 +85,7 @@ const SignUp = () => {
           marginBottom: "24px",
         }}
       >
-        Sign up to get started with our services.
+        Add user to the system
       </div>
       <form onSubmit={handleSubmit}>
         <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
@@ -85,7 +99,7 @@ const SignUp = () => {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  placeholder="Enter your username"
+                  placeholder="Enter the username"
                   autoComplete="username"
                 />
                 <FormErrorMessage>{formErrors?.username}</FormErrorMessage>
@@ -99,21 +113,21 @@ const SignUp = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter your email"
+                  placeholder="Enter the email"
                   autoComplete="email"
                 />
                 <FormErrorMessage>{formErrors?.email}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!formErrors?.fullName}>
-                <FormLabel htmlFor="fullName">Full Name</FormLabel>
+                <FormLabel htmlFor="fullName">FullName</FormLabel>
                 <Input
                   type="text"
                   id="fullName"
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  placeholder="Enter your full name"
+                  placeholder="Enter the full name"
                   autoComplete="name"
                 />
                 <FormErrorMessage>{formErrors?.fullName}</FormErrorMessage>
@@ -127,7 +141,7 @@ const SignUp = () => {
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  placeholder="Enter your address"
+                  placeholder="Enter the address"
                   autoComplete="street-address"
                 />
                 <FormErrorMessage>{formErrors?.address}</FormErrorMessage>
@@ -141,7 +155,7 @@ const SignUp = () => {
                   name="bloodGroup"
                   value={formData.bloodGroup}
                   onChange={handleChange}
-                  placeholder="Enter your blood group"
+                  placeholder="Enter the blood group"
                   autoComplete="off"
                 />
                 <FormErrorMessage>{formErrors?.bloodGroup}</FormErrorMessage>
@@ -157,7 +171,7 @@ const SignUp = () => {
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
-                  placeholder="Select your gender"
+                  placeholder="Select the gender"
                   autoComplete="sex"
                 >
                   <option value="male">Male</option>
@@ -175,10 +189,23 @@ const SignUp = () => {
                   name="contactNo"
                   value={formData.contactNo}
                   onChange={handleChange}
-                  placeholder="Enter your contact number"
+                  placeholder="Enter the contact number"
                   autoComplete="tel"
                 />
                 <FormErrorMessage>{formErrors?.contactNo}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={!!formErrors?.hospital}>
+                <HospitalSelect
+                  value={formData.hospital}
+                  onChange={(selectedHospitalId) =>
+                    setFormData((prevState) => ({
+                      ...prevState,
+                      hospital: selectedHospitalId,
+                    }))
+                  }
+                  error={formErrors?.hospital}
+                />
               </FormControl>
 
               <FormControl isInvalid={!!formErrors?.password}>
@@ -191,7 +218,7 @@ const SignUp = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="Enter your password"
+                    placeholder="Enter the password"
                     autoComplete="new-password"
                   />
                   <InputRightElement width="4.5rem">
@@ -209,56 +236,30 @@ const SignUp = () => {
                 <FormErrorMessage>{formErrors?.password}</FormErrorMessage>
               </FormControl>
 
-              <FormControl isInvalid={!!formErrors?.confirmPassword}>
-                <FormLabel htmlFor="confirmPassword">
-                  Confirm Password
-                </FormLabel>
-                <InputGroup>
-                  <Input
-                    pr="4.5rem"
-                    type={showPassword ? "text" : "password"}
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="Confirm your password"
-                    autoComplete="new-password"
-                  />
-                  <InputRightElement width="4.5rem">
-                    <IconButton
-                      aria-label={
-                        showPassword ? "Show password" : "Hide password"
-                      }
-                      h="1.75rem"
-                      size="sm"
-                      onClick={handlePasswordVisibility}
-                      icon={showPassword ? <FaEye /> : <FaEyeSlash />}
-                    />
-                  </InputRightElement>
-                </InputGroup>
-                <FormErrorMessage>
-                  {formErrors?.confirmPassword}
-                </FormErrorMessage>
+              <FormControl>
+                <Checkbox
+                  id="isHospitalAdmin"
+                  name="isHospitalAdmin"
+                  isChecked={formData.is_hospital_admin}
+                  onChange={handleAdminChange}
+                >
+                  Hospital Admin
+                </Checkbox>
               </FormControl>
             </Stack>
           </GridItem>
         </Grid>
         <Flex justify="center" mt="4">
+          <Button onClick={goBack} colorScheme="blue" size="lg" mr={4}>
+            Back
+          </Button>
           <Button type="submit" colorScheme="blue" size="lg">
-            Sign Up
+            Create User
           </Button>
         </Flex>
       </form>
-      <Flex justify="center" mt="4">
-        <Text>
-          Already have an account?{" "}
-          <Link as={RouterLink} to="/login" color="blue.500">
-            Log in
-          </Link>
-        </Text>
-      </Flex>
     </div>
   );
 };
 
-export default SignUp;
+export default CreateUser;

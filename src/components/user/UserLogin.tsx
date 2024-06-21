@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import {
   Button,
   FormControl,
@@ -11,13 +11,15 @@ import {
   IconButton,
   InputGroup,
   InputRightElement,
+  Box,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import { useLogin } from "../hooks/useLogin";
+import { useLogin } from "../../hooks/useLogin";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  const { login, formErrors } = useLogin();
+function Login() {
+  const { login, formErrors, authError } = useLogin();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -25,7 +27,14 @@ const Login = () => {
   });
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
@@ -33,10 +42,10 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await login(formData);
+      await login(formData, navigate);
     } catch (error) {
       console.error("Login failed:", error);
     }
@@ -49,23 +58,43 @@ const Login = () => {
     }));
   };
 
+  const bgColor = useColorModeValue("white", "gray.800");
+  const boxShadow = useColorModeValue(
+    "0 4px 8px rgba(0, 0, 0, 0.1)",
+    "0 4px 8px rgba(0, 0, 0, 0.9)"
+  );
+
   return (
-    <div>
+    <div
+      style={{
+        position: "fixed",
+        top: "0",
+        left: "0",
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: useColorModeValue("gray.50", "gray.900"),
+        overflow: "hidden",
+      }}
+    >
       <div
         style={{
-          maxWidth: "400px",
-          margin: "0 auto",
-          padding: "20px",
-          borderRadius: "8px",
-          boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+          maxWidth: "450px",
+          width: "100%",
+          padding: "30px",
+          borderRadius: "12px",
+          boxShadow,
+          backgroundColor: bgColor,
         }}
       >
-        <Heading as="h1" size="lg" mb="4" textAlign="center">
+        <Heading as="h3" size="lg" mb="6" textAlign="center">
           Welcome Back!
         </Heading>
         <form onSubmit={handleSubmit}>
           <Stack spacing="6">
-            <FormControl isInvalid={!!formErrors?.username}>
+            <FormControl isInvalid={!!formErrors.username}>
               <FormLabel htmlFor="username">Username</FormLabel>
               <Input
                 type="text"
@@ -75,11 +104,12 @@ const Login = () => {
                 onChange={handleChange}
                 placeholder="Enter your username"
                 autoComplete="username"
+                bg={useColorModeValue("white", "gray.700")}
               />
-              <FormErrorMessage>{formErrors?.username}</FormErrorMessage>
+              <FormErrorMessage>{formErrors.username}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isInvalid={!!formErrors?.password}>
+            <FormControl isInvalid={!!formErrors.password}>
               <FormLabel htmlFor="password">Password</FormLabel>
               <InputGroup>
                 <Input
@@ -91,6 +121,7 @@ const Login = () => {
                   onChange={handleChange}
                   placeholder="Enter your password"
                   autoComplete="current-password"
+                  bg={useColorModeValue("white", "gray.700")}
                 />
                 <InputRightElement width="4.5rem">
                   <IconButton
@@ -104,26 +135,32 @@ const Login = () => {
                   />
                 </InputRightElement>
               </InputGroup>
-              <FormErrorMessage>{formErrors?.password}</FormErrorMessage>
+              <FormErrorMessage>{formErrors.password}</FormErrorMessage>
             </FormControl>
+
+            {authError && (
+              <Box textAlign="center" color="red" mt="2">
+                {authError}
+              </Box>
+            )}
 
             <Button type="submit" colorScheme="blue" width="100%">
               Login
             </Button>
 
-            <Stack direction="row" justify="space-between">
-              <Link color="blue.500" href="/forgot-password">
+            <Box display="flex" justifyContent="flex-end">
+              <Link
+                color="blue.500"
+                onClick={() => navigate("/forgot-password")}
+              >
                 Forgot Password?
               </Link>
-              <Link color="blue.500" onClick={() => navigate("/signup")}>
-                Don't have an account? Sign up
-              </Link>
-            </Stack>
+            </Box>
           </Stack>
         </form>
       </div>
     </div>
   );
-};
+}
 
 export default Login;
