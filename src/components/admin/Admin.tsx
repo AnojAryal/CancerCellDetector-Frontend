@@ -6,6 +6,7 @@ import {
   useColorModeValue,
   HStack,
   Text,
+  Divider,
 } from "@chakra-ui/react";
 import { MdClose, MdBusiness, MdGroup, MdManageAccounts } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -69,7 +70,9 @@ const Admin = () => {
               onClick={handleCreateHospital}
               aria-label="Create Hospital"
             />
+         
           </HStack>
+          <Divider/>
           <HStack justifyContent="space-between">
             <Text>Manage Hospital</Text>
             <IconButton
@@ -78,6 +81,7 @@ const Admin = () => {
               aria-label="Manage Hospital"
             />
           </HStack>
+          <Divider/>
           <HStack justifyContent="space-between">
             <Text>Create User</Text>
             <IconButton
@@ -86,6 +90,7 @@ const Admin = () => {
               aria-label="Create User"
             />
           </HStack>
+          <Divider/>
           <HStack justifyContent="space-between">
             <Text>Manage Users</Text>
             <IconButton
@@ -94,12 +99,14 @@ const Admin = () => {
               aria-label="Manage Users"
             />
           </HStack>
+          <Divider/>
           <HStack justifyContent="space-between">
             <Text>Total Hospitals</Text>
             <Text fontWeight="bold" color="blue.500">
               {totalHospitalCount}
             </Text>
           </HStack>
+          <Divider/>
           <HStack justifyContent="space-between">
             <Text>Total Admins</Text>
             <Text fontWeight="bold" color="blue.500">
