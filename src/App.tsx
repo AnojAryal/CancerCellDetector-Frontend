@@ -25,7 +25,7 @@ function App() {
     if (!token) {
       navigate("/login");
     }
-  }, []);
+  },[]);
 
   return (
     <Grid

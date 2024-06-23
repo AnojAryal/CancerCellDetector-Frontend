@@ -55,6 +55,7 @@ function UserForgotPassword() {
       if (resetResponse.status === 200) {
         setEmailSent(true);
         setTimerRunning(true);
+        setCountdown(60); // Start the countdown when the email is sent
       } else {
         throw new Error("Failed to send reset email");
       }
@@ -69,10 +70,27 @@ function UserForgotPassword() {
     return regex.test(email);
   };
 
-  const handleResendClick = () => {
-    setCountdown(60); // Reset countdown
-    setTimerRunning(true); // Start the timer
-    setEmailSent(false); // Reset email sent state
+  const handleResendClick = async () => {
+    if (timerRunning) return; // Prevent resending if timer is still running
+
+    try {
+      const resetResponse = await apiClient.post("/send-reset-email", {
+        email,
+        token: "",
+        used: true,
+        created_at: new Date().toISOString(),
+      });
+      if (resetResponse.status === 200) {
+        setEmailSent(true);
+        setTimerRunning(true);
+        setCountdown(60); // Start the countdown again
+      } else {
+        throw new Error("Failed to resend reset email");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setError("Failed to resend reset email. Please try again later.");
+    }
   };
 
   return (
