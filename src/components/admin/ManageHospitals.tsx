@@ -89,6 +89,9 @@ const ManageHospitals = () => {
       <Heading mb={5} textAlign="center">
         Manage Hospitals
       </Heading>
+      <Text mb={5} textAlign="center">
+        Total Hospitals: {hospitals.length}
+      </Text>
       <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={5}>
         {hospitals.map((hospital: Hospital) => (
           <GridItem key={hospital.id} position="relative">
@@ -207,7 +210,6 @@ const ManageHospitals = () => {
             </Button>
             <Button onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
           </ModalFooter>
-        
         </ModalContent>
       </Modal>
     </Box>

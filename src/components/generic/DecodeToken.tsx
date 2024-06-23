@@ -2,6 +2,7 @@ interface DecodedToken {
   exp: number;
   iat: number; // issued at
   is_admin: boolean;
+  is_hospital_admin : boolean;
 }
 
 export const decodeToken = (token: string | null): DecodedToken | null => {
