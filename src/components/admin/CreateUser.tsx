@@ -221,7 +221,7 @@ const CreateUser = () => {
                     placeholder="Enter the password"
                     autoComplete="new-password"
                   />
-                  <InputRightElement width="4.5rem">
+                  <InputRightElement>
                     <IconButton
                       aria-label={
                         showPassword ? "Show password" : "Hide password"
