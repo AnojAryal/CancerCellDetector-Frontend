@@ -15,7 +15,7 @@ import {
   InputRightElement,
   Checkbox,
 } from "@chakra-ui/react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useUserCreate } from "../../hooks/useCreateUser";
 import HospitalSelect from "./HospitalSelect";
@@ -70,7 +70,7 @@ const CreateUser = () => {
 
   const goBack = () => {
     navigate(-1);
-  }
+  };
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
