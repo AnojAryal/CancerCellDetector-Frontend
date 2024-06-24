@@ -11,6 +11,7 @@ import CreateHospital from "./components/admin/CreateHospital";
 import UserProfile from "./components/user/UserProfile";
 import ManageHospitals from "./components/admin/ManageHospitals";
 import Forbidden from "./components/generic/Forbidden";
+import ManageUser from "./components/admin/ManageUsers";
 
 const AppRoutes = () => {
   return (
@@ -36,6 +37,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute isAdminRoute>
             <UserCreate />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/manage-user"
+        element={
+          <ProtectedRoute isAdminRoute>
+            <ManageUser />
           </ProtectedRoute>
         }
       />
