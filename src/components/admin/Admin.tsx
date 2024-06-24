@@ -28,6 +28,7 @@ const Admin = () => {
 
   const handleManageUsers = () => {
     console.log("Manage users clicked");
+    navigate("/manage-user")
   };
 
   const handleCreateUser = () => {

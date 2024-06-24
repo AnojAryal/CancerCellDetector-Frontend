@@ -14,6 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogBody,
   AlertDialogFooter,
+  useColorMode,
 } from "@chakra-ui/react";
 import { FiUser, FiShield, FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +24,7 @@ import { decodeToken } from "./DecodeToken";
 
 const NavBar = () => {
   const navigate = useNavigate();
+  const { colorMode } = useColorMode();
   const token = localStorage.getItem("accessToken");
   const username = localStorage.getItem("username");
   const [displayWelcome, setDisplayWelcome] = useState(true);
@@ -87,7 +89,19 @@ const NavBar = () => {
   const isAdmin = decodedToken ? decodedToken.is_admin : false;
 
   return (
-    <HStack justifyContent="space-between" padding="10px">
+    <HStack
+      as="nav"
+      justifyContent="space-between"
+      padding="10px"
+      bg={colorMode === "light" ? "white" : "gray.800"}
+      color={colorMode === "light" ? "black" : "white"}
+      position="fixed"
+      top="0"
+      left="0"
+      right="0"
+      zIndex="1000"
+      width="100%"
+    >
       <Image src={logo} boxSize="50px" />
       {token && (
         <>
