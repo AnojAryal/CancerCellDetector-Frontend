@@ -20,13 +20,23 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Select,
+  useToast,
+  VStack,
+  HStack,
 } from "@chakra-ui/react";
 import useManageHospitals, { Hospital } from "../../hooks/useManageHospitals";
+import { filterItems, sortItems } from "../generic/SortSelector";
 
 const ManageHospitals = () => {
+  // Custom hook to manage hospital data
   const { hospitals, loading, error, deleteHospital, updateHospital } =
     useManageHospitals();
+
+  // Chakra UI modal disclosure hooks
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // State hooks for managing hospital data and forms
   const [selectedHospital, setSelectedHospital] =
     React.useState<Hospital | null>(null);
   const [updatedName, setUpdatedName] = React.useState<string>("");
@@ -35,6 +45,11 @@ const ManageHospitals = () => {
   const [updatedEmail, setUpdatedEmail] = React.useState<string>("");
   const [updatedId, setUpdatedId] = React.useState<number>();
   const [isDeleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [filterText, setFilterText] = React.useState<string>("");
+  const [sortOrder, setSortOrder] = React.useState<string>("asc");
+
+  // Toast hook for displaying messages
+  const toast = useToast();
 
   const handleUpdateClick = (hospital: Hospital) => {
     setSelectedHospital(hospital);
@@ -55,6 +70,13 @@ const ManageHospitals = () => {
         email: updatedEmail,
         id: updatedId,
       });
+      toast({
+        title: "Hospital updated.",
+        description: "The hospital details have been updated successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
       onClose();
     }
   };
@@ -70,10 +92,24 @@ const ManageHospitals = () => {
   const confirmDelete = () => {
     if (selectedHospital) {
       deleteHospital(selectedHospital.id);
-      onClose();
+      toast({
+        title: "Hospital deleted.",
+        description: "The hospital has been removed successfully.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
       setDeleteModalOpen(false);
     }
   };
+
+  // Filtering and sorting hospitals
+  const filteredHospitals = filterItems(hospitals, filterText, "name");
+  const sortedHospitals = sortItems(
+    filteredHospitals,
+    sortOrder as "asc" | "desc",
+    "name"
+  );
 
   if (loading) return <Spinner size="md" />;
   if (error)
@@ -85,57 +121,76 @@ const ManageHospitals = () => {
     );
 
   return (
-    <Box p={5}>
+    <Box p={5} maxW="1200px" mx="auto">
       <Heading mb={5} textAlign="center">
         Manage Hospitals
       </Heading>
       <Text mb={5} textAlign="center">
-        Total Hospitals: {hospitals.length}
+        Total Hospitals: {hospitals.length} | Displaying:{" "}
+        {sortedHospitals.length}
       </Text>
-      <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={5}>
-        {hospitals.map((hospital: Hospital) => (
-          <GridItem key={hospital.id} position="relative">
-            <Box
-              p={5}
-              shadow="md"
-              borderWidth="1px"
-              borderRadius="md"
-              _hover={{ boxShadow: "xl" }}
-              transition="box-shadow 0.3s ease"
-            >
-              <Heading fontSize="xl" mb={2}>
-                {hospital.name}
-              </Heading>
-              <Text fontSize="md" mb={2}>
-                {hospital.address}
-              </Text>
-              <Text fontSize="md" mb={2}>
-                {hospital.email}
-              </Text>
-              <Text fontSize="md" mb={2}>
-                {hospital.phone}
-              </Text>
-              <Box mt={4}>
-                <Button
-                  colorScheme="blue"
-                  size="sm"
-                  onClick={() => handleUpdateClick(hospital)}
-                >
-                  Update
-                </Button>
-                <Button
-                  colorScheme="red"
-                  size="sm"
-                  ml={2}
-                  onClick={() => handleDelete(hospital.id)}
-                >
-                  Delete
-                </Button>
+      <VStack spacing={5} align="stretch">
+        <HStack justify="center">
+          <Input
+            placeholder="Search Hospital..."
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            maxW="300px"
+          />
+          <Select
+            maxW="200px"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+          >
+            <option value="asc">Sort by Name (A-Z)</option>
+            <option value="desc">Sort by Name (Z-A)</option>
+          </Select>
+        </HStack>
+        <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={5}>
+          {sortedHospitals.map((hospital: Hospital) => (
+            <GridItem key={hospital.id} position="relative">
+              <Box
+                p={5}
+                shadow="md"
+                borderWidth="1px"
+                borderRadius="md"
+                _hover={{ boxShadow: "xl" }}
+                transition="box-shadow 0.3s ease"
+              >
+                <Heading fontSize="xl" mb={2}>
+                  {hospital.name}
+                </Heading>
+                <Text fontSize="md" mb={2}>
+                  {hospital.address}
+                </Text>
+                <Text fontSize="md" mb={2}>
+                  {hospital.email}
+                </Text>
+                <Text fontSize="md" mb={2}>
+                  {hospital.phone}
+                </Text>
+                <Box mt={4}>
+                  <Button
+                    colorScheme="blue"
+                    size="sm"
+                    onClick={() => handleUpdateClick(hospital)}
+                  >
+                    Update
+                  </Button>
+                  <Button
+                    colorScheme="red"
+                    size="sm"
+                    ml={2}
+                    onClick={() => handleDelete(hospital.id)}
+                  >
+                    Delete
+                  </Button>
+                </Box>
               </Box>
-            </Box>
-          </GridItem>
-        ))}
-      </Grid>
+            </GridItem>
+          ))}
+        </Grid>
+      </VStack>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -178,7 +233,7 @@ const ManageHospitals = () => {
             <FormControl mb={3}>
               <FormLabel>Hospital Id</FormLabel>
               <Input
-                type="text"
+                type="number"
                 value={updatedId}
                 onChange={(e) => setUpdatedId(e.target.valueAsNumber)}
               />
