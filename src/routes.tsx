@@ -10,7 +10,6 @@ import ChangePassword from "./components/user/UserChangePassword";
 import CreateHospital from "./components/admin/CreateHospital";
 import UserProfile from "./components/user/UserProfile";
 import ManageHospitals from "./components/admin/ManageHospitals";
-import Forbidden from "./components/generic/Forbidden";
 import ManageUser from "./components/admin/ManageUsers";
 
 const AppRoutes = () => {
@@ -75,7 +74,7 @@ const AppRoutes = () => {
         }
       />
 
-      <Route path="/403" element={<Forbidden />} />
+      <Route path="*" element={<Navigate to="/" />} />
 
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>

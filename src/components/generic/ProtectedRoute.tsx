@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { decodeToken } from "./DecodeToken";
+import ProtectedPage from "./ProtectedPage";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -15,8 +16,12 @@ const ProtectedRoute = ({
   const decodedToken = decodeToken(token || "");
   const isAdmin = decodedToken ? decodedToken.is_admin : false;
 
+  const location = useLocation();
+
+  localStorage.setItem("intendedPath", location.pathname);
+
   if (isAdminRoute && !isAdmin) {
-    return <Navigate to="/403" replace />;
+    return <ProtectedPage />;
   }
 
   return token ? <>{children}</> : <Navigate to="/login" />;
