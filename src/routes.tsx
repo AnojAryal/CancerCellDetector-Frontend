@@ -50,7 +50,7 @@ const AppRoutes = () => {
       <Route
         path="/create-hospital"
         element={
-          <ProtectedRoute isAdminRoute>
+          <ProtectedRoute isAdminRoute adminOnly>
             <CreateHospital />
           </ProtectedRoute>
         }
@@ -58,7 +58,7 @@ const AppRoutes = () => {
       <Route
         path="/manage-hospital"
         element={
-          <ProtectedRoute isAdminRoute>
+          <ProtectedRoute isAdminRoute adminOnly>
             <ManageHospitals />
           </ProtectedRoute>
         }

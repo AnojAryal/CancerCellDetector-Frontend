@@ -12,6 +12,7 @@ import { MdClose, MdBusiness, MdGroup, MdManageAccounts } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import BoxGrid from "../generic/BoxGrid";
 import { FaStethoscope } from "react-icons/fa";
+import { isAdmin, isHospitalAdmin } from "../generic/DecodeToken";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const Admin = () => {
 
   const handleManageUsers = () => {
     console.log("Manage users clicked");
-    navigate("/manage-user")
+    navigate("/manage-user");
   };
 
   const handleCreateUser = () => {
@@ -60,41 +61,54 @@ const Admin = () => {
         width="100%"
       />
       <VStack spacing={4} align="stretch">
-        <HStack justifyContent="space-between">
-          <Text>Create Hospital</Text>
-          <IconButton
-            icon={<MdBusiness />}
-            onClick={handleCreateHospital}
-            aria-label="Create Hospital"
-          />
-        </HStack>
+        {isAdmin && (
+          <>
+            <HStack justifyContent="space-between">
+              <Text>Create Hospital</Text>
+              <IconButton
+                icon={<MdBusiness />}
+                onClick={handleCreateHospital}
+                aria-label="Create Hospital"
+              />
+            </HStack>
+            <Divider />
+          </>
+        )}
+
+        {isAdmin && (
+          <>
+            <HStack justifyContent="space-between">
+              <Text>Manage Hospital</Text>
+              <IconButton
+                icon={<FaStethoscope />}
+                onClick={handleManageHospital}
+                aria-label="Manage Hospital"
+              />
+            </HStack>
+            <Divider />
+          </>
+        )}
+        {(isAdmin || isHospitalAdmin) && (
+          <HStack justifyContent="space-between">
+            <Text>Create User</Text>
+            <IconButton
+              icon={<MdGroup />}
+              onClick={handleCreateUser}
+              aria-label="Create User"
+            />
+          </HStack>
+        )}
         <Divider />
-        <HStack justifyContent="space-between">
-          <Text>Manage Hospital</Text>
-          <IconButton
-            icon={<FaStethoscope />}
-            onClick={handleManageHospital}
-            aria-label="Manage Hospital"
-          />
-        </HStack>
-        <Divider />
-        <HStack justifyContent="space-between">
-          <Text>Create User</Text>
-          <IconButton
-            icon={<MdGroup />}
-            onClick={handleCreateUser}
-            aria-label="Create User"
-          />
-        </HStack>
-        <Divider />
-        <HStack justifyContent="space-between">
-          <Text>Manage Users</Text>
-          <IconButton
-            icon={<MdManageAccounts />}
-            onClick={handleManageUsers}
-            aria-label="Manage Users"
-          />
-        </HStack>
+        {(isAdmin || isHospitalAdmin) && (
+          <HStack justifyContent="space-between">
+            <Text>Manage Users</Text>
+            <IconButton
+              icon={<MdManageAccounts />}
+              onClick={handleManageUsers}
+              aria-label="Manage Users"
+            />
+          </HStack>
+        )}
       </VStack>
     </BoxGrid>
   );

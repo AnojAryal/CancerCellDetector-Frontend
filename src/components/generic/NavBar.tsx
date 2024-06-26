@@ -20,7 +20,7 @@ import { FiUser, FiShield, FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.webp";
 import { FaCircleUser } from "react-icons/fa6";
-import { decodeToken } from "./DecodeToken";
+import { decodeToken, isAdmin, isHospitalAdmin } from "./DecodeToken";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -84,10 +84,6 @@ const NavBar = () => {
     navigate("/admin");
   };
 
-  // Decode token and check if user is an admin
-  const decodedToken = decodeToken(token || "");
-  const isAdmin = decodedToken ? decodedToken.is_admin : false;
-
   return (
     <HStack
       as="nav"
@@ -118,7 +114,7 @@ const NavBar = () => {
                 Settings
               </MenuItem>
               <MenuDivider />
-              {isAdmin && (
+              {(isAdmin || isHospitalAdmin) && (
                 <>
                   <MenuItem onClick={handleAdminClick} icon={<FiShield />}>
                     Admin
