@@ -12,7 +12,7 @@ function App() {
     if (!token) {
       navigate("/login");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <Grid

@@ -46,6 +46,7 @@ function Login() {
     e.preventDefault();
     try {
       await login(formData, navigate);
+      window.location.reload(); 
     } catch (error) {
       console.error("Login failed:", error);
     }

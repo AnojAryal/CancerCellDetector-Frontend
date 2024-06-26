@@ -11,6 +11,7 @@ import CreateHospital from "./components/admin/CreateHospital";
 import UserProfile from "./components/user/UserProfile";
 import ManageHospitals from "./components/admin/ManageHospitals";
 import ManageUser from "./components/admin/ManageUsers";
+import NotAvailPage from "./components/generic/NotAvailPage";
 
 const AppRoutes = () => {
   return (
@@ -74,9 +75,7 @@ const AppRoutes = () => {
         }
       />
 
-      <Route path="*" element={<Navigate to="/" />} />
-
-      <Route path="*" element={<Navigate to="/login" />} />
+      <Route path="*" element={<NotAvailPage />} />
     </Routes>
   );
 };
