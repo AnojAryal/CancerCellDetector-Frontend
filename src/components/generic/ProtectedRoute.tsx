@@ -1,26 +1,35 @@
 import { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { decodeToken } from "./DecodeToken";
 import ProtectedPage from "./ProtectedPage";
+import { isAdmin, isHospitalAdmin, token } from "./DecodeToken";
 
 interface ProtectedRouteProps {
   children: ReactNode;
   isAdminRoute?: boolean;
+  isHospitalAdminRoute?: boolean;
+  adminOnly?: boolean;
 }
 
 const ProtectedRoute = ({
   children,
   isAdminRoute = false,
+  isHospitalAdminRoute = false,
+  adminOnly = false,
 }: ProtectedRouteProps): JSX.Element => {
-  const token = localStorage.getItem("accessToken");
-  const decodedToken = decodeToken(token || "");
-  const isAdmin = decodedToken ? decodedToken.is_admin : false;
-
   const location = useLocation();
 
   localStorage.setItem("intendedPath", location.pathname);
+  const isAdminOrHospitalAdmin = isAdmin || isHospitalAdmin;
+  const isAdminUser = isAdmin;
 
-  if (isAdminRoute && !isAdmin) {
+  if (adminOnly && !isAdminUser) {
+    return <ProtectedPage />;
+  }
+
+  if (
+    (isAdminRoute && !isAdminOrHospitalAdmin) ||
+    (isHospitalAdminRoute && !isAdminOrHospitalAdmin)
+  ) {
     return <ProtectedPage />;
   }
 
