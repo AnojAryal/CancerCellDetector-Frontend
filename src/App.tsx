@@ -1,18 +1,23 @@
 import { Grid, GridItem } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import NavBar from "./components/generic/NavBar";
 import { useEffect } from "react";
 import AppRoutes from "./routes";
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (!token) {
+    const publicRoutes = ["/login", "/forgot-password"];
+
+    if (token && location.pathname === "/login") {
+      navigate("/home");
+    } else if (!token && !publicRoutes.includes(location.pathname)) {
       navigate("/login");
     }
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   return (
     <Grid

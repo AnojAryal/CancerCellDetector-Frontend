@@ -19,22 +19,22 @@ const Admin = () => {
 
   const handleCreateHospital = () => {
     console.log("create hospital clicked");
-    navigate("/create-hospital");
+    navigate("/admin/create-hospital");
   };
 
   const handleManageHospital = () => {
     console.log("Manage hospital clicked");
-    navigate("/manage-hospital");
+    navigate("/admin/manage-hospital");
   };
 
   const handleManageUsers = () => {
     console.log("Manage users clicked");
-    navigate("/manage-user");
+    navigate("/admin/manage-user");
   };
 
   const handleCreateUser = () => {
     console.log("create user clicked");
-    navigate("/create-user");
+    navigate("/admin/create-user");
   };
 
   const handleNavigateHome = () => {

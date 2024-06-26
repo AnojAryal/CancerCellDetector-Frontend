@@ -47,7 +47,7 @@ const UserSetting = () => {
           <Text>Change Password</Text>
           <IconButton
             icon={<AiOutlineRight />}
-            onClick={() => navigate('/change-password')}
+            onClick={() => navigate('/settings/change-password')}
             aria-label="Change Password"
           />
         </HStack>
