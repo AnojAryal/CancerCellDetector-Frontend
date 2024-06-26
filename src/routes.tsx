@@ -19,9 +19,10 @@ const AppRoutes = () => {
       <Route path="/" element={<Navigate to="/home" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/change-password" element={<ChangePassword />} />
-      <Route path="/settings" element={<UserSetting />} />
       <Route path="/user-profile" element={<UserProfile />} />
+
+      <Route path="/settings" element={<UserSetting />} />
+      <Route path="/settings/change-password" element={<ChangePassword />} />
 
       {/* Admin routes */}
       <Route
@@ -33,7 +34,7 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/create-user"
+        path="/admin/create-user"
         element={
           <ProtectedRoute isAdminRoute>
             <UserCreate />
@@ -41,7 +42,7 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/manage-user"
+        path="/admin/manage-user"
         element={
           <ProtectedRoute isAdminRoute>
             <ManageUser />
@@ -49,7 +50,7 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/create-hospital"
+        path="/admin/create-hospital"
         element={
           <ProtectedRoute isAdminRoute adminOnly>
             <CreateHospital />
@@ -57,7 +58,7 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/manage-hospital"
+        path="/admin/manage-hospital"
         element={
           <ProtectedRoute isAdminRoute adminOnly>
             <ManageHospitals />
