@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useUserCreate } from "../../hooks/useCreateUser";
 import HospitalSelect from "./HospitalSelect";
+import { isAdmin } from "../generic/DecodeToken";
 
 const CreateUser = () => {
   const navigate = useNavigate();
@@ -36,12 +37,9 @@ const CreateUser = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-
   const { userCreate, formErrors } = useUserCreate();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
@@ -59,6 +57,7 @@ const CreateUser = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("Form submitted with data:", formData);
     try {
       await userCreate(formData, () => {
         alert("Successfully created user");
@@ -71,6 +70,7 @@ const CreateUser = () => {
   const goBack = () => {
     navigate(-1);
   };
+
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -120,7 +120,7 @@ const CreateUser = () => {
               </FormControl>
 
               <FormControl isInvalid={!!formErrors?.fullName}>
-                <FormLabel htmlFor="fullName">FullName</FormLabel>
+                <FormLabel htmlFor="fullName">Full Name</FormLabel>
                 <Input
                   type="text"
                   id="fullName"
@@ -195,18 +195,20 @@ const CreateUser = () => {
                 <FormErrorMessage>{formErrors?.contactNo}</FormErrorMessage>
               </FormControl>
 
-              <FormControl isInvalid={!!formErrors?.hospital}>
-                <HospitalSelect
-                  value={formData.hospital}
-                  onChange={(selectedHospitalId) =>
-                    setFormData((prevState) => ({
-                      ...prevState,
-                      hospital: selectedHospitalId,
-                    }))
-                  }
-                  error={formErrors?.hospital}
-                />
-              </FormControl>
+              {isAdmin && (
+                <FormControl isInvalid={!!formErrors?.hospital}>
+                  <HospitalSelect
+                    value={formData.hospital}
+                    onChange={(selectedHospitalId) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        hospital: selectedHospitalId,
+                      }))
+                    }
+                    error={formErrors?.hospital}
+                  />
+                </FormControl>
+              )}
 
               <FormControl isInvalid={!!formErrors?.password}>
                 <FormLabel htmlFor="password">Password</FormLabel>
@@ -223,9 +225,7 @@ const CreateUser = () => {
                   />
                   <InputRightElement>
                     <IconButton
-                      aria-label={
-                        showPassword ? "Show password" : "Hide password"
-                      }
+                      aria-label={showPassword ? "Show password" : "Hide password"}
                       h="1.75rem"
                       size="sm"
                       onClick={handlePasswordVisibility}
