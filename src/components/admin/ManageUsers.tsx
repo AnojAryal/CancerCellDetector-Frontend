@@ -27,6 +27,7 @@ import {
 } from "@chakra-ui/react";
 import { filterItems, sortItems } from "../generic/SortSelector";
 import useManageUsers, { User } from "../../hooks/useManageUsers";
+import { isAdmin } from "../generic/DecodeToken";
 
 const ManageUsers = () => {
   // Custom hook to manage user data
@@ -50,7 +51,7 @@ const ManageUsers = () => {
 
   const handleUpdateClick = (user: User) => {
     setSelectedUser(user);
-    setUpdatedEmail(user.email)
+    setUpdatedEmail(user.email);
     setUpdatedIsAdmin(user.is_admin);
     setUpdatedIsHospitalAdmin(user.is_hospital_admin);
     onOpen();
@@ -163,10 +164,10 @@ const ManageUsers = () => {
                   Contact No: {user.contact_no}
                 </Text>
                 <Text fontSize="md" mb={2}>
-                 Gender: {user.gender}
+                  Gender: {user.gender}
                 </Text>
                 <Text fontSize="md" mb={2}>
-                 Blood Group: {user.blood_group}
+                  Blood Group: {user.blood_group}
                 </Text>
                 <Text fontSize="md" mb={2}>
                   Admin: {user.is_admin ? "Yes" : "No"}
@@ -206,7 +207,7 @@ const ManageUsers = () => {
           <ModalHeader>Update User</ModalHeader>
           <ModalCloseButton />
           <ModalBody overflowY="auto" maxHeight="80vh">
-          <FormControl mb={3}>
+            <FormControl mb={3}>
               <FormLabel>Email</FormLabel>
               <Input
                 type="text"
@@ -214,18 +215,20 @@ const ManageUsers = () => {
                 onChange={(e) => setUpdatedEmail(e.target.value)}
               />
             </FormControl>
-            <FormControl mb={3}>
-              <FormLabel>Is Admin?</FormLabel>
-              <Select
-                value={updatedIsAdmin ? "yes" : "no"}
-                onChange={(e) =>
-                  setUpdatedIsAdmin(e.target.value === "yes" ? true : false)
-                }
-              >
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </Select>
-            </FormControl>
+            {isAdmin && (
+              <FormControl mb={3}>
+                <FormLabel>Is Admin?</FormLabel>
+                <Select
+                  value={updatedIsAdmin ? "yes" : "no"}
+                  onChange={(e) =>
+                    setUpdatedIsAdmin(e.target.value === "yes" ? true : false)
+                  }
+                >
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </Select>
+              </FormControl>
+            )}
             <FormControl mb={3}>
               <FormLabel>Is Hospital Admin?</FormLabel>
               <Select
@@ -274,4 +277,3 @@ const ManageUsers = () => {
 };
 
 export default ManageUsers;
-

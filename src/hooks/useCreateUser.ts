@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import apiClient from "../services/api-client";
 import { AxiosError } from "axios";
+import { isAdmin } from "../components/generic/DecodeToken";
 
 interface CreateUserFormState {
   formErrors: { [key: string]: string };
@@ -34,7 +35,9 @@ export const useUserCreate = create<CreateUserFormState>((set) => ({
     if (!formData.fullName) errors.fullName = "Full name is required";
     if (!formData.gender) errors.gender = "Gender is required";
     if (!formData.contactNo) errors.contactNo = "Contact number is required";
-    if (!formData.hospital) errors.hospital = "Hospital is required";
+    if (isAdmin && !formData.hospital) {
+      errors.hospital = "Hospital is required";
+  }  
     if (!formData.bloodGroup) errors.bloodGroup = "Blood group is required";
     if (!formData.address) errors.address = "Address is required";
 

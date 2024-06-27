@@ -36,7 +36,7 @@ const AppRoutes = () => {
       <Route
         path="/admin/create-user"
         element={
-          <ProtectedRoute isAdminRoute>
+          <ProtectedRoute isHospitalAdminRoute>
             <UserCreate />
           </ProtectedRoute>
         }
