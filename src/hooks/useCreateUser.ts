@@ -37,7 +37,7 @@ export const useUserCreate = create<CreateUserFormState>((set) => ({
     if (!formData.contactNo) errors.contactNo = "Contact number is required";
     if (isAdmin && !formData.hospital) {
       errors.hospital = "Hospital is required";
-  }  
+    }
     if (!formData.bloodGroup) errors.bloodGroup = "Blood group is required";
     if (!formData.address) errors.address = "Address is required";
 

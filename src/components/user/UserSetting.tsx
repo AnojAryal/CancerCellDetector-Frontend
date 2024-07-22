@@ -53,6 +53,16 @@ const UserSetting = () => {
         </HStack>
       </VStack>
       <Divider my={4} />
+      <VStack spacing={4} align="stretch">
+        <HStack justifyContent="space-between">
+          <Text>Create Patient</Text>
+          <IconButton
+            icon={<AiOutlineRight />}
+            onClick={() => navigate('/settings/create-patient')}
+            aria-label="Create Patient"
+          />
+        </HStack>
+      </VStack>
     </BoxGrid>
   );
 };
