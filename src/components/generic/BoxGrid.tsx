@@ -21,20 +21,19 @@ const BoxGrid = ({ children }: BoxGridProps) => {
       display="flex"
       justifyContent="center"
       alignItems="center"
+      overflow="auto"
     >
       <Box
         bg={bgColor}
         color={textColor}
         borderRadius="md"
         boxShadow="lg"
-        width="100%"
-        maxWidth="400px"
-        height="75%"
-        maxHeight="600px"
-        overflowY="hidden"
+        width="90%"
+        maxWidth="500px"
+        maxHeight="95%"
+        overflowY="auto"
         p={6}
         position="relative"
-        overflow= "hidden"
       >
         {children}
       </Box>
