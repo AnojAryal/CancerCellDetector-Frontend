@@ -1,4 +1,6 @@
-import usePostData from "./usePostData";
+import { useState } from "react";
+import axios, { AxiosError } from "axios";
+import apiClient from "../services/api-client";
 
 interface Patient {
   first_name: string;
@@ -6,6 +8,7 @@ interface Patient {
   email: string;
   phone: string;
   birth_date: string;
+  hospital_id: string;
 }
 
 interface CreatePatientResult {
@@ -15,22 +18,54 @@ interface CreatePatientResult {
 }
 
 const useCreatePatient = (): CreatePatientResult => {
-  const {
-    isLoading: isPosting,
-    postData,
-    error,
-  } = usePostData<void>("/hospital/{hospital_id}/patient");
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
   const createPatient = async (patientData: Patient): Promise<void> => {
+    const { hospital_id } = patientData;
+
+    if (!hospital_id) {
+      setError("Hospital ID is required");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
     try {
-      await postData(patientData);
+      const url = `/hospital/${hospital_id}/patients`;
+      const authToken = localStorage.getItem("accessToken");
+      const headers: Record<string, string> = {};
+
+      if (authToken) {
+        headers.Authorization = `Bearer ${authToken}`;
+      }
+
+      await apiClient.post(url, patientData, { headers });
     } catch (error) {
-      console.error("Error creating patient:", error);
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        if (
+          axiosError.response?.data &&
+          typeof axiosError.response.data === "object"
+        ) {
+          const errorResponse = axiosError.response.data as {
+            message?: string;
+          };
+          setError(errorResponse.message || "An error occurred.");
+        } else {
+          setError(axiosError.message || "An error occurred.");
+        }
+      } else {
+        setError("An unexpected error occurred.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return {
-    isLoading: isPosting,
+    isLoading,
     error,
     createPatient,
   };

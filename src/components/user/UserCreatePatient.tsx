@@ -14,18 +14,35 @@ import { AiOutlineClose } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import BoxGrid from "../generic/BoxGrid";
 import useCreatePatient from "../../hooks/useCreatePatient";
+import HospitalSelect from "../admin/HospitalSelect";
+import { hospitalId, isAdmin } from "../generic/DecodeToken";
 
+interface Patient {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  birth_date: string;
+  hospital_id: string;
+}
 
 const UserCreatePatient = () => {
   const navigate = useNavigate();
   const { isLoading, error, createPatient } = useCreatePatient();
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
+  const [fullName, setFullName] = useState("");
+  const [formData, setFormData] = useState<
+    Omit<Patient, "first_name" | "last_name" | "hospital_id">
+  >({
     email: "",
     phone: "",
     birth_date: "",
   });
+  const [hospital, setHospital] = useState<string | undefined>(undefined);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFullName(e.target.value);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -35,19 +52,38 @@ const UserCreatePatient = () => {
     }));
   };
 
+  const handleHospitalChange = (selectedHospitalId: string | null) => {
+    setHospital(selectedHospitalId || undefined);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Split full name into first name and last name
+    const [first_name = "", last_name = ""] = fullName.split(" ");
+
+    const patientData: Patient = {
+      first_name,
+      last_name,
+      email: formData.email,
+      phone: formData.phone,
+      birth_date: formData.birth_date,
+      hospital_id: isAdmin ? hospital || "" : hospitalId?.toString() || "",
+    };
+
     try {
-      await createPatient(formData);
+      await createPatient(patientData);
+      setSuccessMessage("Patient created successfully!");
+      setFullName("");
       setFormData({
-        first_name: "",
-        last_name: "",
         email: "",
         phone: "",
         birth_date: "",
       });
+      setHospital(undefined);
     } catch (error) {
       console.error("Error creating patient:", error);
+      setSuccessMessage(null);
     }
   };
 
@@ -66,27 +102,13 @@ const UserCreatePatient = () => {
       <form onSubmit={handleSubmit}>
         <VStack spacing={3.5} align="stretch">
           <FormControl>
-            <FormLabel htmlFor="first_name">First Name</FormLabel>
+            <FormLabel htmlFor="full_name">Full Name</FormLabel>
             <Input
               type="text"
-              id="first_name"
-              name="first_name"
-              value={formData.first_name}
-              onChange={handleChange}
-              placeholder="Enter first name"
-              required
-            />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel htmlFor="last_name">Last Name</FormLabel>
-            <Input
-              type="text"
-              id="last_name"
-              name="last_name"
-              value={formData.last_name}
-              onChange={handleChange}
-              placeholder="Enter last name"
+              id="full_name"
+              value={fullName}
+              onChange={handleFullNameChange}
+              placeholder="Enter full name"
               required
             />
           </FormControl>
@@ -130,11 +152,25 @@ const UserCreatePatient = () => {
             />
           </FormControl>
 
+          {isAdmin && (
+            <FormControl>
+              <HospitalSelect
+                value={hospital || ""}
+                onChange={handleHospitalChange}
+              />
+            </FormControl>
+          )}
+
           <Button type="submit" colorScheme="blue" isLoading={isLoading}>
             Create Patient
           </Button>
+          {successMessage && (
+            <Text color="green" mt={2} aria-live="polite">
+              {successMessage}
+            </Text>
+          )}
           {error && (
-            <Text color="red" mt={2}>
+            <Text color="red" mt={2} aria-live="polite">
               Error: {error}
             </Text>
           )}
