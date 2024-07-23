@@ -26,7 +26,7 @@ interface Patient {
   hospital_id: string;
 }
 
-const UserCreatePatient = () => {
+const PatientCreate = () => {
   const navigate = useNavigate();
   const { isLoading, error, createPatient } = useCreatePatient();
   const [fullName, setFullName] = useState("");
@@ -180,4 +180,4 @@ const UserCreatePatient = () => {
   );
 };
 
-export default UserCreatePatient;
+export default PatientCreate;
