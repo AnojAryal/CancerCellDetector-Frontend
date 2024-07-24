@@ -1,21 +1,19 @@
-import { useState } from "react";
 import { Box, Button, useColorMode } from "@chakra-ui/react";
 
 interface AsideContentsProps {
   onPageChange: (page: string) => void;
+  activePage: string; // Add activePage prop
 }
 
-const AsideContents = ({ onPageChange }: AsideContentsProps) => {
+const AsideContents = ({ onPageChange, activePage }: AsideContentsProps) => {
   const { colorMode } = useColorMode();
-  const [activeButton, setActiveButton] = useState<string>("profile");
 
   const buttonColor = colorMode === "dark" ? "white" : "gray.700";
   const activeColor = colorMode === "dark" ? "blue.400" : "blue.600";
   const hoverBgColor = colorMode === "dark" ? "gray.600" : "gray.100";
 
   const handleButtonClick = (button: string) => {
-    setActiveButton(button);
-    onPageChange(button); 
+    onPageChange(button);
   };
 
   return (
@@ -32,8 +30,8 @@ const AsideContents = ({ onPageChange }: AsideContentsProps) => {
     >
       <Button
         variant="ghost"
-        color={activeButton === "profile" ? activeColor : buttonColor}
-        bg={activeButton === "profile" ? hoverBgColor : "transparent"}
+        color={activePage === "profile" ? activeColor : buttonColor}
+        bg={activePage === "profile" ? hoverBgColor : "transparent"}
         _hover={{
           bg: hoverBgColor,
           borderLeftWidth: 4,
@@ -58,8 +56,8 @@ const AsideContents = ({ onPageChange }: AsideContentsProps) => {
       </Button>
       <Button
         variant="ghost"
-        color={activeButton === "patient" ? activeColor : buttonColor}
-        bg={activeButton === "patient" ? hoverBgColor : "transparent"}
+        color={activePage === "patient" ? activeColor : buttonColor}
+        bg={activePage === "patient" ? hoverBgColor : "transparent"}
         _hover={{
           bg: hoverBgColor,
           borderLeftWidth: 4,
@@ -84,8 +82,8 @@ const AsideContents = ({ onPageChange }: AsideContentsProps) => {
       </Button>
       <Button
         variant="ghost"
-        color={activeButton === "test" ? activeColor : buttonColor}
-        bg={activeButton === "test" ? hoverBgColor : "transparent"}
+        color={activePage === "test" ? activeColor : buttonColor}
+        bg={activePage === "test" ? hoverBgColor : "transparent"}
         _hover={{
           bg: hoverBgColor,
           borderLeftWidth: 4,

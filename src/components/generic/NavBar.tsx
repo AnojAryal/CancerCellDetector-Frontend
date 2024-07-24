@@ -81,7 +81,7 @@ const NavBar = () => {
 
   const handleMainPageClick = () => {
     console.log("main-page clicked");
-    navigate("/dashboard");
+    navigate("/dashboard/profile");
   };
 
   const handleAdminClick = () => {
