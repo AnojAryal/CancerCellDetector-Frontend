@@ -8,14 +8,11 @@ import ProtectedRoute from "./components/generic/ProtectedRoute";
 import Admin from "./components/admin/Admin";
 import ChangePassword from "./components/user/UserChangePassword";
 import CreateHospital from "./components/admin/CreateHospital";
-// import UserProfile from "./components/user/UserProfile";
 import ManageHospitals from "./components/admin/ManageHospitals";
 import ManageUser from "./components/admin/ManageUsers";
 import NotAvailPage from "./components/generic/NotAvailPage";
 import PatientCreate from "./components/patient/PatientCreate";
 import MainPage from "./components/generic/MainPage";
-// import ManagePatient from "./components/patient/ManagePatient";
-// import CellTest from "./components/user/CellTest";
 
 const AppRoutes = () => {
   return (
@@ -23,18 +20,12 @@ const AppRoutes = () => {
       <Route path="/" element={<Navigate to="/home" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-    
 
       <Route path="/settings" element={<UserSetting />} />
       <Route path="/settings/change-password" element={<ChangePassword />} />
       <Route path="/settings/create-patient" element={<PatientCreate />} />
 
-{      
-      <Route path="/dashboard" element={<MainPage />} /> }
-      {/* <Route path="/user-profile" element={<UserProfile />} /> */}
-      {/* <Route path="/manage-patient" element={<ManagePatient />} />
-      <Route path="/cell-test" element={<CellTest />} /> */}
-
+      <Route path="/dashboard/:page" element={<MainPage />} />
 
       {/* Admin routes */}
       <Route
