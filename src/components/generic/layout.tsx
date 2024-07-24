@@ -1,11 +1,21 @@
-import { Box, Center, Grid, GridItem } from "@chakra-ui/react";
-import { ReactNode } from "react";
+import { Grid, GridItem } from "@chakra-ui/react";
+import { ReactNode, useEffect } from "react";
+import AsideContents from "./AsideContents";
 
 interface LayoutProps {
   children: ReactNode;
+  onPageChange: (page: string) => void; //accept onPageChange as a prop
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children, onPageChange }: LayoutProps) => {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   return (
     <Grid
       templateAreas={{
@@ -21,22 +31,12 @@ const Layout = ({ children }: LayoutProps) => {
         lg: "auto",
       }}
       h="100vh"
-      gap={4}
-      p={4}
+      mt={28}
     >
-      <GridItem
-        area={"aside"}
-        bg="orange.500"
-        p={4}
-        display={{ base: "none", lg: "block" }}
-      >
-        <Center h="100%">
-          <Box textAlign="center">
-            <h1>Aside</h1>
-          </Box>
-        </Center>
+      <GridItem area={"aside"} display={{ base: "none", lg: "block" }}>
+        <AsideContents onPageChange={onPageChange} />
       </GridItem>
-      <GridItem area={"main"} bg="green.500" p={4}>
+      <GridItem area={"main"} p={4}>
         {children}
       </GridItem>
     </Grid>

@@ -32,5 +32,7 @@ export const decodedToken = decodeToken(token || "");
 
 // Retrieve and use properties from the decoded token
 export const isAdmin = decodedToken ? decodedToken.is_admin : false;
-export const isHospitalAdmin = decodedToken ? decodedToken.is_hospital_admin : false;
+export const isHospitalAdmin = decodedToken
+  ? decodedToken.is_hospital_admin
+  : false;
 export const hospitalId = decodedToken ? decodedToken.hospital_id : null;
