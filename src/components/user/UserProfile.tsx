@@ -1,5 +1,5 @@
 import { Box, Center } from "@chakra-ui/react";
-import Layout from "../generic/layout";
+
 
 const UserProfile = () => {
   return (
@@ -12,12 +12,5 @@ const UserProfile = () => {
   );
 };
 
-const ProfilePage = () => {
-  return (
-    <Layout>
-      <UserProfile />
-    </Layout>
-  );
-};
 
-export default ProfilePage;
+export default UserProfile;

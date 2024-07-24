@@ -16,10 +16,15 @@ import {
   AlertDialogFooter,
   useColorMode,
 } from "@chakra-ui/react";
-import { FiUser, FiShield, FiLogOut, FiSettings } from "react-icons/fi";
+import {
+  FiUser,
+  FiShield,
+  FiLogOut,
+  FiSettings,
+  FiDatabase,
+} from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.webp";
-import { FaCircleUser } from "react-icons/fa6";
 import { decodeToken, isAdmin, isHospitalAdmin } from "./DecodeToken";
 
 const NavBar = () => {
@@ -74,9 +79,9 @@ const NavBar = () => {
     navigate("/settings");
   };
 
-  const handleProfileClick = () => {
-    console.log("Profile clicked");
-    navigate("/user-profile");
+  const handleMainPageClick = () => {
+    console.log("main-page clicked");
+    navigate("/dashboard");
   };
 
   const handleAdminClick = () => {
@@ -106,8 +111,8 @@ const NavBar = () => {
               {displayWelcome ? `Welcome, ${username}` : username}
             </MenuButton>
             <MenuList>
-              <MenuItem onClick={handleProfileClick} icon={<FaCircleUser />}>
-                Your Profile
+              <MenuItem onClick={handleMainPageClick} icon={<FiDatabase />}>
+                Dashboard
               </MenuItem>
               <MenuDivider />
               <MenuItem onClick={handleSettingsClick} icon={<FiSettings />}>
