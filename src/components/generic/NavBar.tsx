@@ -16,15 +16,13 @@ import {
   AlertDialogFooter,
   useColorMode,
 } from "@chakra-ui/react";
-import {
-  FiUser,
-  FiShield,
-  FiLogOut,
-  FiSettings,
-} from "react-icons/fi";
+import { FiUser, FiLogOut, FiSettings, FiUsers } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.webp";
 import { decodeToken, isAdmin, isHospitalAdmin } from "./DecodeToken";
+import { FaBuilding } from "react-icons/fa";
+import { BiStats } from "react-icons/bi";
+
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -83,9 +81,19 @@ const NavBar = () => {
     navigate("/profile");
   };
 
-  const handleAdminClick = () => {
-    console.log("Admin clicked");
-    navigate("/admin");
+  const handlePatientClick = () => {
+    console.log("patient clicked");
+    navigate("/patients");
+  };
+
+  const handleUserClick = () => {
+    console.log("manage users clicked");
+    navigate("/admin/manage-user");
+  };
+
+  const handleHospitalClick = () => {
+    console.log("manage users clicked");
+    navigate("/admin/manage-hospital");
   };
 
   return (
@@ -118,10 +126,22 @@ const NavBar = () => {
                 Settings
               </MenuItem>
               <MenuDivider />
+              <MenuItem onClick={handlePatientClick} icon={<BiStats />}>
+                Patient
+              </MenuItem>
+              <MenuDivider />
               {(isAdmin || isHospitalAdmin) && (
                 <>
-                  <MenuItem onClick={handleAdminClick} icon={<FiShield />}>
-                    Admin
+                  <MenuItem onClick={handleUserClick} icon={<FiUsers />}>
+                    Users
+                  </MenuItem>
+                  <MenuDivider />
+                </>
+              )}
+              {isAdmin && (
+                <>
+                  <MenuItem onClick={handleHospitalClick} icon={<FaBuilding />}>
+                    Hospitals
                   </MenuItem>
                   <MenuDivider />
                 </>

@@ -13,6 +13,7 @@
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@hookform/resolvers": "^3.9.0",
     "@tanstack/react-query": "^5.45.0",
     "@types/yup": "^0.32.0",
     "axios": "^1.6.8",
@@ -22,9 +23,11 @@
     "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.52.1",
     "react-icons": "^5.1.0",
     "react-router-dom": "^6.23.1",
     "yup": "^1.4.0",
+    "zod": "^3.23.8",
     "zustand": "^4.5.2"
   },
   "devDependencies": {

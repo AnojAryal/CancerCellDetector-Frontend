@@ -27,6 +27,8 @@ import {
 } from "@chakra-ui/react";
 import useManageHospitals, { Hospital } from "../../hooks/useManageHospitals";
 import { filterItems, sortItems } from "../generic/SortSelector";
+import CreateHospital from "./CreateHospital";
+
 
 const ManageHospitals = () => {
   // Custom hook to manage hospital data
@@ -35,6 +37,11 @@ const ManageHospitals = () => {
 
   // Chakra UI modal disclosure hooks
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isCreateOpen,
+    onOpen: onCreateOpen,
+    onClose: onCreateClose,
+  } = useDisclosure();
 
   // State hooks for managing hospital data and forms
   const [selectedHospital, setSelectedHospital] =
@@ -145,6 +152,9 @@ const ManageHospitals = () => {
             <option value="asc">Sort by Name (A-Z)</option>
             <option value="desc">Sort by Name (Z-A)</option>
           </Select>
+          <Button colorScheme="green" onClick={onCreateOpen}>
+            Create
+          </Button>
         </HStack>
         <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={5}>
           {sortedHospitals.map((hospital: Hospital) => (
@@ -171,7 +181,7 @@ const ManageHospitals = () => {
                 </Text>
                 <Box mt={4}>
                   <Button
-                    colorScheme="blue"
+                    colorScheme="green"
                     size="sm"
                     onClick={() => handleUpdateClick(hospital)}
                   >
@@ -267,6 +277,7 @@ const ManageHospitals = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      <CreateHospital isOpen={isCreateOpen} onClose={onCreateClose} />
     </Box>
   );
 };
