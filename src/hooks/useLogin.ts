@@ -56,7 +56,8 @@ export const useLogin = create<LoginFormState>((set) => ({
         console.error("Error during login:", error);
         set({
           formErrors: {},
-          authError: "An unexpected error occurred. Please try again with valid credentials.",
+          authError:
+            "An unexpected error occurred. Please try again with valid credentials.",
         });
       }
     }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import apiClient from "../services/api-client";
 
 export interface Hospital {
@@ -14,15 +14,12 @@ const useManageHospitals = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchHospitals();
+  const getAccessToken = useCallback(() => {
+    return localStorage.getItem("accessToken");
   }, []);
 
-  const getAccessToken = () => {
-    return localStorage.getItem("accessToken");
-  };
-
-  const fetchHospitals = async () => {
+  const fetchHospitals = useCallback(async () => {
+    setLoading(true);
     try {
       const token = getAccessToken();
       const response = await apiClient.get("/hospital", {
@@ -35,14 +32,14 @@ const useManageHospitals = () => {
       } else {
         throw new Error("Unexpected response format");
       }
-      setLoading(false);
     } catch (error) {
       setError("Failed to fetch hospitals");
+    } finally {
       setLoading(false);
     }
-  };
+  }, [getAccessToken]);
 
-  const deleteHospital = async (hospital_id: number) => {
+  const deleteHospital = useCallback(async (hospital_id: number) => {
     try {
       const token = getAccessToken();
       await apiClient.delete(`/hospital/${hospital_id}`, {
@@ -50,40 +47,44 @@ const useManageHospitals = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setHospitals(
-        hospitals.filter((hospital) => hospital.id !== hospital_id)
+      setHospitals((prevHospitals) =>
+        prevHospitals.filter((hospital) => hospital.id !== hospital_id)
       );
     } catch (error) {
       setError("Failed to delete hospital");
     }
-  };
+  }, [getAccessToken]);
 
-  const updateHospital = async (
-    hospital_id: number,
-    updatedHospital: Partial<Hospital>
-  ) => {
-    try {
-      const token = getAccessToken();
-      const response = await apiClient.put(
-        `/hospital/${hospital_id}`,
-        updatedHospital,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setHospitals(
-        hospitals.map((hospital) =>
-          hospital.id === hospital_id
-            ? { ...hospital, ...response.data }
-            : hospital
-        )
-      );
-    } catch (error) {
-      setError("Failed to update hospital");
-    }
-  };
+  const updateHospital = useCallback(
+    async (hospital_id: number, updatedHospital: Partial<Hospital>) => {
+      try {
+        const token = getAccessToken();
+        const response = await apiClient.put(
+          `/hospital/${hospital_id}`,
+          updatedHospital,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setHospitals((prevHospitals) =>
+          prevHospitals.map((hospital) =>
+            hospital.id === hospital_id
+              ? { ...hospital, ...response.data }
+              : hospital
+          )
+        );
+      } catch (error) {
+        setError("Failed to update hospital");
+      }
+    },
+    [getAccessToken]
+  );
+
+  useEffect(() => {
+    fetchHospitals();
+  }, [fetchHospitals]);
 
   return {
     hospitals,

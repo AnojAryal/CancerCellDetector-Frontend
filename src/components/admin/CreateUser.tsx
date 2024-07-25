@@ -253,7 +253,7 @@ const CreateUser = () => {
           <Button onClick={goBack} colorScheme="blue" size="lg" mr={4}>
             Back
           </Button>
-          <Button type="submit" colorScheme="blue" size="lg">
+          <Button type="submit" colorScheme="green" size="lg">
             Create User
           </Button>
         </Flex>

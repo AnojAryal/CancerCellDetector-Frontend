@@ -115,10 +115,10 @@ function UserForgotPassword() {
           <Flex justify="center" mt={4}>
             <Button
               onClick={handleResendClick}
-              colorScheme="blue"
+              colorScheme="green"
               borderRadius="xl"
               disabled={timerRunning}
-              _hover={{ bg: "blue.600" }}
+              _hover={{ bg: "green.600" }}
             >
               Resend Email
             </Button>
@@ -147,11 +147,11 @@ function UserForgotPassword() {
           )}
           <Flex justify="center" mt={4}>
             <Button
-              colorScheme="blue"
+              colorScheme="green"
               type="submit"
               isLoading={emailSent}
               borderRadius="xl"
-              _hover={{ bg: "blue.600" }}
+              _hover={{ bg: "green.600" }}
             >
               Send Reset Link
             </Button>
@@ -159,7 +159,7 @@ function UserForgotPassword() {
         </form>
       )}
       <Text mt={4} fontSize="sm" textAlign="center">
-        <Link as={RouterLink} to="/login" color="blue.500">
+        <Link as={RouterLink} to="/login" color="green.500">
           Back to Login
         </Link>
       </Text>

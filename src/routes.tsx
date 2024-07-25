@@ -5,14 +5,13 @@ import ForgotPassword from "./components/user/UserForgotPassword";
 import Home from "./components/user/UserHome";
 import UserSetting from "./components/user/UserSetting";
 import ProtectedRoute from "./components/generic/ProtectedRoute";
-import Admin from "./components/admin/Admin";
 import ChangePassword from "./components/user/UserChangePassword";
-import CreateHospital from "./components/admin/CreateHospital";
 import ManageHospitals from "./components/admin/ManageHospitals";
 import ManageUser from "./components/admin/ManageUsers";
 import NotAvailPage from "./components/generic/NotAvailPage";
 import PatientCreate from "./components/patient/PatientCreate";
-import MainPage from "./components/generic/MainPage";
+import UserProfile from "./components/user/UserProfile";
+import ManagePatients from "./components/patient/ManagePatients";
 
 const AppRoutes = () => {
   return (
@@ -20,22 +19,14 @@ const AppRoutes = () => {
       <Route path="/" element={<Navigate to="/home" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/profile" element={<UserProfile />} />
 
       <Route path="/settings" element={<UserSetting />} />
       <Route path="/settings/change-password" element={<ChangePassword />} />
-      <Route path="/settings/create-patient" element={<PatientCreate />} />
-
-      <Route path="/dashboard/:page" element={<MainPage />} />
+      <Route path="/create-patient" element={<PatientCreate />} />
+      <Route path="/patients" element={<ManagePatients />} />
 
       {/* Admin routes */}
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute isAdminRoute>
-            <Admin />
-          </ProtectedRoute>
-        }
-      />
       <Route
         path="/admin/create-user"
         element={
@@ -49,14 +40,6 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute isAdminRoute>
             <ManageUser />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/create-hospital"
-        element={
-          <ProtectedRoute isAdminRoute adminOnly>
-            <CreateHospital />
           </ProtectedRoute>
         }
       />

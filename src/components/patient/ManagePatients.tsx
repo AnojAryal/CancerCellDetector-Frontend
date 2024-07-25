@@ -15,21 +15,35 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { filterItems, sortItems } from "../generic/SortSelector";
-import useManageUsers, { User } from "../../hooks/useManageUsers";
-import { useNavigate } from "react-router-dom";
+import useManagePatients from "../../hooks/useManagePatients";
+import { isAdmin, isHospitalAdmin } from "../generic/DecodeToken";
+import PatientCreate from "./PatientCreate";
+import { useDisclosure } from "@chakra-ui/react";
 
+export interface Patient {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  birth_date: string;
+  hospital_id: string;
+}
 
-const ManageUsers = () => {
-  const navigate = useNavigate();
-  const { users, loading, error } = useManageUsers();
+const ManagePatients = () => {
+  const hospital_id = isAdmin ? undefined : isHospitalAdmin?.toString();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const { patients, loading, error } = useManagePatients(isAdmin, hospital_id);
+
   const [filterText, setFilterText] = React.useState<string>("");
   const [sortOrder, setSortOrder] = React.useState<string>("asc");
 
-  const filteredUsers = filterItems(users, filterText, "username");
-  const sortedUsers = sortItems(
-    filteredUsers,
+  const filteredPatients = filterItems(patients, filterText, "first_name");
+  const sortedPatients = sortItems(
+    filteredPatients,
     sortOrder as "asc" | "desc",
-    "username"
+    "first_name"
   );
 
   if (loading) return <Spinner size="md" />;
@@ -44,15 +58,15 @@ const ManageUsers = () => {
   return (
     <Box p={5} maxW="1300px" mx="auto" mt="60px">
       <Heading mb={5} textAlign="center">
-        Manage Users
+        Manage Patients
       </Heading>
       <Text mb={5} textAlign="center">
-        Total Users: {users.length} | Displaying: {sortedUsers.length}
+        Total Patients: {patients.length} | Displaying: {sortedPatients.length}
       </Text>
       <VStack spacing={5} align="stretch">
         <HStack justify="center" spacing={4}>
           <Input
-            placeholder="Search User..."
+            placeholder="Search Patient..."
             value={filterText}
             onChange={(e) => setFilterText(e.target.value)}
             maxW="300px"
@@ -62,22 +76,16 @@ const ManageUsers = () => {
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
           >
-            <option value="asc">Sort by Username (A-Z)</option>
-            <option value="desc">Sort by Username (Z-A)</option>
+            <option value="asc">Sort by First Name (A-Z)</option>
+            <option value="desc">Sort by First Name (Z-A)</option>
           </Select>
-          <Button
-            colorScheme="green"
-            onClick={() => {
-              navigate("/admin/create-user");
-              console.log("Create New User clicked");
-            }}
-          >
-            Create New User
+          <Button onClick={onOpen} colorScheme="green">
+            Create Patient
           </Button>
         </HStack>
         <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={7}>
-          {sortedUsers.map((user: User) => (
-            <GridItem key={user.id} position="relative">
+          {sortedPatients.map((patient: Patient) => (
+            <GridItem key={patient.id} position="relative">
               <Box
                 p={5}
                 shadow="md"
@@ -87,21 +95,22 @@ const ManageUsers = () => {
                 transition="box-shadow 0.3s ease"
               >
                 <Heading fontSize="xl" mb={2}>
-                  {user.username}
+                  {patient.first_name} {patient.last_name}
                 </Heading>
                 <Text fontSize="md" mb={2}>
-                  {user.full_name}
+                  {patient.email}
                 </Text>
                 <Text fontSize="md" mb={2}>
-                  {user.email}
+                  {patient.phone}
                 </Text>
               </Box>
             </GridItem>
           ))}
         </Grid>
       </VStack>
+      <PatientCreate isOpen={isOpen} onClose={onClose} />
     </Box>
   );
 };
 
-export default ManageUsers;
+export default ManagePatients;
