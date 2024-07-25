@@ -1,30 +1,44 @@
-import axios from "axios";
+import { useMemo } from "react";
+import axios, { AxiosInstance } from "axios";
 import { hospitalId } from "../components/generic/DecodeToken";
 
 interface UseApiClientUserParams {
   isAdmin: boolean;
-  hospital?: string;
+  hospital?: string | number;
 }
 
-const useApiClientUser = ({ isAdmin, hospital }: UseApiClientUserParams) => {
-  const hospital_id = isAdmin ? hospital || "" : hospitalId?.toString() || "";
+const useApiClientUser = ({ isAdmin, hospital }: UseApiClientUserParams): AxiosInstance => {
+  const hospital_id = useMemo(() => {
+    return isAdmin
+      ? (typeof hospital === "string" || typeof hospital === "number")
+        ? hospital.toString()
+        : ""
+      : hospitalId
+      ? hospitalId.toString()
+      : "";
+  }, [isAdmin, hospital]);
 
-  const apiClientUser = axios.create({
-    baseURL: `http://127.0.0.1:8000/hospital/${hospital_id}/`,
-  });
+ 
+  const apiClientUser = useMemo(() => {
+    const client = axios.create({
+      baseURL: `http://127.0.0.1:8000/hospital/${hospital_id}/`,
+    });
 
-  apiClientUser.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem("accessToken");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    client.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
       }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
-  );
+    );
+
+    return client;
+  }, [hospital_id]); 
 
   return apiClientUser;
 };

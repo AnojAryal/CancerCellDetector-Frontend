@@ -1,182 +1,199 @@
-import React, { useState } from "react";
 import {
-  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
   FormControl,
   FormLabel,
   Input,
-  Heading,
-  VStack,
-  HStack,
-  IconButton,
-  Text,
+  Button,
+  useToast,
+  Stack,
 } from "@chakra-ui/react";
-import { AiOutlineClose } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
-import BoxGrid from "../generic/BoxGrid";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import useCreatePatient from "../../hooks/useCreatePatient";
+import { patientSchema } from "../../schema/validationSchema";
 import HospitalSelect from "../admin/HospitalSelect";
 import { hospitalId, isAdmin } from "../generic/DecodeToken";
+import { useState } from "react";
 
-interface Patient {
-  first_name: string;
-  last_name: string;
+interface PatientCreateProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface FormValues {
+  fullName: string;
   email: string;
   phone: string;
   birth_date: string;
-  hospital_id: string;
 }
 
-const PatientCreate = () => {
-  const navigate = useNavigate();
-  const { isLoading, error, createPatient } = useCreatePatient();
-  const [fullName, setFullName] = useState("");
-  const [formData, setFormData] = useState<
-    Omit<Patient, "first_name" | "last_name" | "hospital_id">
-  >({
-    email: "",
-    phone: "",
-    birth_date: "",
+const PatientCreate = ({ isOpen, onClose }: PatientCreateProps) => {
+  const { createPatient } = useCreatePatient();
+  const toast = useToast();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormValues>({
+    resolver: zodResolver(patientSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      phone: "",
+      birth_date: "",
+    },
   });
+
   const [hospital, setHospital] = useState<string | undefined>(undefined);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFullName(e.target.value);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
 
   const handleHospitalChange = (selectedHospitalId: string | null) => {
-    setHospital(selectedHospitalId || undefined);
+    setHospital(selectedHospitalId ?? undefined);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = async (data: FormValues) => {
+    const [first_name = "", last_name = ""] = data.fullName.split(" ");
 
-    // Split full name into first name and last name
-    const [first_name = "", last_name = ""] = fullName.split(" ");
-
-    const patientData: Patient = {
+    const patientData = {
       first_name,
       last_name,
-      email: formData.email,
-      phone: formData.phone,
-      birth_date: formData.birth_date,
-      hospital_id: isAdmin ? hospital || "" : hospitalId?.toString() || "",
+      email: data.email,
+      phone: data.phone,
+      birth_date: data.birth_date,
+      hospital_id: isAdmin ? hospital ?? "" : hospitalId?.toString() ?? "",
     };
 
     try {
       await createPatient(patientData);
-      setSuccessMessage("Patient created successfully!");
-      setFullName("");
-      setFormData({
-        email: "",
-        phone: "",
-        birth_date: "",
+      toast({
+        title: "Patient created.",
+        description: "A new patient has been added successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
       });
+      reset();
       setHospital(undefined);
+      onClose();
     } catch (error) {
-      console.error("Error creating patient:", error);
-      setSuccessMessage(null);
+      if (error instanceof Error) {
+        toast({
+          title: "Error creating patient.",
+          description: error.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Unknown error.",
+          description: "An unknown error occurred.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     }
   };
 
+  // Reset the form when the modal is closed
+  const handleClose = () => {
+    reset();
+    setHospital(undefined);
+    onClose();
+  };
+
   return (
-    <BoxGrid>
-      <HStack justifyContent="space-between" mb={4}>
-        <Heading as="h5" size="md">
-          Create Patient
-        </Heading>
-        <IconButton
-          icon={<AiOutlineClose />}
-          onClick={() => navigate(-1)}
-          aria-label="Close"
-        />
-      </HStack>
-      <form onSubmit={handleSubmit}>
-        <VStack spacing={3.5} align="stretch">
-          <FormControl>
-            <FormLabel htmlFor="full_name">Full Name</FormLabel>
-            <Input
-              type="text"
-              id="full_name"
-              value={fullName}
-              onChange={handleFullNameChange}
-              placeholder="Enter full name"
-              required
-            />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel htmlFor="email">Email Address</FormLabel>
-            <Input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter email address"
-              required
-            />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel htmlFor="phone">Phone Number</FormLabel>
-            <Input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Enter phone number"
-              required
-            />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel htmlFor="birth_date">Birth Date</FormLabel>
-            <Input
-              type="date"
-              id="birth_date"
-              name="birth_date"
-              value={formData.birth_date}
-              onChange={handleChange}
-              placeholder="Enter birth date"
-              required
-            />
-          </FormControl>
-
-          {isAdmin && (
+    <Modal isOpen={isOpen} onClose={handleClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Create New Patient</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Stack spacing={1}>
             <FormControl>
-              <HospitalSelect
-                value={hospital || ""}
-                onChange={handleHospitalChange}
+              <FormLabel>Full Name</FormLabel>
+              <Controller
+                name="fullName"
+                control={control}
+                render={({ field }) => (
+                  <Input {...field} type="text" isInvalid={!!errors.fullName} />
+                )}
               />
+              {errors.fullName && (
+                <FormLabel color="red.500">{errors.fullName.message}</FormLabel>
+              )}
             </FormControl>
-          )}
-
-          <Button type="submit" colorScheme="blue" isLoading={isLoading}>
-            Create Patient
+            <FormControl>
+              <FormLabel>Email Address</FormLabel>
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <Input {...field} type="email" isInvalid={!!errors.email} />
+                )}
+              />
+              {errors.email && (
+                <FormLabel color="red.500">{errors.email.message}</FormLabel>
+              )}
+            </FormControl>
+            <FormControl>
+              <FormLabel>Phone Number</FormLabel>
+              <Controller
+                name="phone"
+                control={control}
+                render={({ field }) => (
+                  <Input {...field} type="text" isInvalid={!!errors.phone} />
+                )}
+              />
+              {errors.phone && (
+                <FormLabel color="red.500">{errors.phone.message}</FormLabel>
+              )}
+            </FormControl>
+            <FormControl>
+              <FormLabel>Birth Date</FormLabel>
+              <Controller
+                name="birth_date"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="date"
+                    isInvalid={!!errors.birth_date}
+                  />
+                )}
+              />
+              {errors.birth_date && (
+                <FormLabel color="red.500">
+                  {errors.birth_date.message}
+                </FormLabel>
+              )}
+            </FormControl>
+            {isAdmin && (
+              <FormControl>
+                <HospitalSelect
+                  value={hospital ?? ""}
+                  onChange={handleHospitalChange}
+                />
+              </FormControl>
+            )}
+          </Stack>
+        </ModalBody>
+        <ModalFooter>
+          <Button colorScheme="green" mr={2} onClick={handleSubmit(onSubmit)}>
+            Create
           </Button>
-          {successMessage && (
-            <Text color="green" mt={2} aria-live="polite">
-              {successMessage}
-            </Text>
-          )}
-          {error && (
-            <Text color="red" mt={2} aria-live="polite">
-              Error: {error}
-            </Text>
-          )}
-        </VStack>
-      </form>
-    </BoxGrid>
+          <Button onClick={handleClose}>Cancel</Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 

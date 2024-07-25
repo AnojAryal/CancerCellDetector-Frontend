@@ -144,13 +144,13 @@ function Login() {
               </Box>
             )}
 
-            <Button type="submit" colorScheme="blue" width="100%">
+            <Button type="submit" colorScheme="green" width="100%">
               Login
             </Button>
 
             <Box display="flex" justifyContent="flex-end">
               <Link
-                color="blue.500"
+                color="green.500"
                 onClick={() => navigate("/forgot-password")}
               >
                 Forgot Password?
