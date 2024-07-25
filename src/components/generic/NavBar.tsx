@@ -21,7 +21,6 @@ import {
   FiShield,
   FiLogOut,
   FiSettings,
-  FiDatabase,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.webp";
@@ -80,8 +79,8 @@ const NavBar = () => {
   };
 
   const handleMainPageClick = () => {
-    console.log("main-page clicked");
-    navigate("/dashboard/profile");
+    console.log("profile clicked");
+    navigate("/profile");
   };
 
   const handleAdminClick = () => {
@@ -111,8 +110,8 @@ const NavBar = () => {
               {displayWelcome ? `Welcome, ${username}` : username}
             </MenuButton>
             <MenuList>
-              <MenuItem onClick={handleMainPageClick} icon={<FiDatabase />}>
-                Dashboard
+              <MenuItem onClick={handleMainPageClick} icon={<FiUser />}>
+                Profile
               </MenuItem>
               <MenuDivider />
               <MenuItem onClick={handleSettingsClick} icon={<FiSettings />}>

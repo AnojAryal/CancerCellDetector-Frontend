@@ -12,7 +12,8 @@ import ManageHospitals from "./components/admin/ManageHospitals";
 import ManageUser from "./components/admin/ManageUsers";
 import NotAvailPage from "./components/generic/NotAvailPage";
 import PatientCreate from "./components/patient/PatientCreate";
-import MainPage from "./components/generic/MainPage";
+import UserProfile from "./components/user/UserProfile";
+
 
 const AppRoutes = () => {
   return (
@@ -20,12 +21,11 @@ const AppRoutes = () => {
       <Route path="/" element={<Navigate to="/home" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/profile" element={<UserProfile />} />
 
       <Route path="/settings" element={<UserSetting />} />
       <Route path="/settings/change-password" element={<ChangePassword />} />
       <Route path="/settings/create-patient" element={<PatientCreate />} />
-
-      <Route path="/dashboard/:page" element={<MainPage />} />
 
       {/* Admin routes */}
       <Route
