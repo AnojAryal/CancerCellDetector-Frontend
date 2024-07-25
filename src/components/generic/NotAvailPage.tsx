@@ -4,10 +4,12 @@ import {
   Text,
   Link as ChakraLink,
   useColorMode,
+  Icon,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import { FaExclamationCircle } from "react-icons/fa";
 
-const ForbiddenPage = () => {
+const NotAvailPage = () => {
   const { colorMode } = useColorMode();
 
   return (
@@ -19,8 +21,9 @@ const ForbiddenPage = () => {
       px={{ base: "2", md: "0" }}
       color={colorMode === "dark" ? "white" : "gray.800"}
     >
-      <Heading as="h1" size="2xl" mb="4">
-        403 Forbidden
+      <Icon as={FaExclamationCircle} boxSize="64px" color="red.500" mx="auto" />
+      <Heading size="lg" mb="4">
+        This Page Isn't Available
       </Heading>
       <Text
         fontSize="xl"
@@ -28,8 +31,8 @@ const ForbiddenPage = () => {
         mb="8"
         color={colorMode === "dark" ? "gray.400" : "gray.600"}
       >
-        You do not have permission to access this page. Please contact your
-        administrator for assistance.
+        The link may be broken, or the page may have been removed. Check to see
+        if the link you're trying to open is correct.
       </Text>
       <ChakraLink as={Link} to="/" color="blue.500" fontSize="lg">
         Go to Home
@@ -38,4 +41,4 @@ const ForbiddenPage = () => {
   );
 };
 
-export default ForbiddenPage;
+export default NotAvailPage;

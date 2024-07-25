@@ -123,7 +123,7 @@ function Login() {
                   autoComplete="current-password"
                   bg={useColorModeValue("white", "gray.700")}
                 />
-                <InputRightElement width="4.5rem">
+                <InputRightElement>
                   <IconButton
                     aria-label={
                       formData.showPassword ? "Hide password" : "Show password"

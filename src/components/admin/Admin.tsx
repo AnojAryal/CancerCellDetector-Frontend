@@ -12,31 +12,29 @@ import { MdClose, MdBusiness, MdGroup, MdManageAccounts } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import BoxGrid from "../generic/BoxGrid";
 import { FaStethoscope } from "react-icons/fa";
+import { isAdmin, isHospitalAdmin } from "../generic/DecodeToken";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const totalHospitalCount = 10;
-  const totalAdminCount = 5;
 
   const handleCreateHospital = () => {
     console.log("create hospital clicked");
-    navigate("/create-hospital")
+    navigate("/admin/create-hospital");
   };
 
   const handleManageHospital = () => {
     console.log("Manage hospital clicked");
-    navigate("/manage-hospital");
-    
-  }
+    navigate("/admin/manage-hospital");
+  };
 
   const handleManageUsers = () => {
     console.log("Manage users clicked");
-    
-  }
+    navigate("/admin/manage-user");
+  };
 
   const handleCreateUser = () => {
     console.log("create user clicked");
-    navigate("/create-user");
+    navigate("/admin/create-user");
   };
 
   const handleNavigateHome = () => {
@@ -44,44 +42,53 @@ const Admin = () => {
   };
 
   return (
-   <BoxGrid>
-        <HStack justifyContent="space-between" mb={4}>
-          <Heading as="h3" size="md" mb={2}>
-            Admin
-          </Heading>
-          <IconButton
-            icon={<MdClose />}
-            onClick={handleNavigateHome}
-            aria-label="Close"
-          />
-        </HStack>
-        <Box
-          borderBottom="1px solid"
-          borderColor={useColorModeValue("gray.200", "gray.600")}
-          mb={4}
-          pb={2}
-          width="100%"
+    <BoxGrid>
+      <HStack justifyContent="space-between" mb={4}>
+        <Heading as="h3" size="md" mb={2}>
+          Admin
+        </Heading>
+        <IconButton
+          icon={<MdClose />}
+          onClick={handleNavigateHome}
+          aria-label="Close"
         />
-        <VStack spacing={4} align="stretch">
-          <HStack justifyContent="space-between">
-            <Text>Create Hospital</Text>
-            <IconButton
-              icon={<MdBusiness />}
-              onClick={handleCreateHospital}
-              aria-label="Create Hospital"
-            />
-         
-          </HStack>
-          <Divider/>
-          <HStack justifyContent="space-between">
-            <Text>Manage Hospital</Text>
-            <IconButton
-              icon={<FaStethoscope/>}
-              onClick={handleManageHospital}
-              aria-label="Manage Hospital"
-            />
-          </HStack>
-          <Divider/>
+      </HStack>
+      <Box
+        borderBottom="1px solid"
+        borderColor={useColorModeValue("gray.200", "gray.600")}
+        mb={4}
+        pb={2}
+        width="100%"
+      />
+      <VStack spacing={4} align="stretch">
+        {isAdmin && (
+          <>
+            <HStack justifyContent="space-between">
+              <Text>Create Hospital</Text>
+              <IconButton
+                icon={<MdBusiness />}
+                onClick={handleCreateHospital}
+                aria-label="Create Hospital"
+              />
+            </HStack>
+            <Divider />
+          </>
+        )}
+
+        {isAdmin && (
+          <>
+            <HStack justifyContent="space-between">
+              <Text>Manage Hospital</Text>
+              <IconButton
+                icon={<FaStethoscope />}
+                onClick={handleManageHospital}
+                aria-label="Manage Hospital"
+              />
+            </HStack>
+            <Divider />
+          </>
+        )}
+        {(isAdmin || isHospitalAdmin) && (
           <HStack justifyContent="space-between">
             <Text>Create User</Text>
             <IconButton
@@ -90,7 +97,9 @@ const Admin = () => {
               aria-label="Create User"
             />
           </HStack>
-          <Divider/>
+        )}
+        <Divider />
+        {(isAdmin || isHospitalAdmin) && (
           <HStack justifyContent="space-between">
             <Text>Manage Users</Text>
             <IconButton
@@ -99,22 +108,9 @@ const Admin = () => {
               aria-label="Manage Users"
             />
           </HStack>
-          <Divider/>
-          <HStack justifyContent="space-between">
-            <Text>Total Hospitals</Text>
-            <Text fontWeight="bold" color="blue.500">
-              {totalHospitalCount}
-            </Text>
-          </HStack>
-          <Divider/>
-          <HStack justifyContent="space-between">
-            <Text>Total Admins</Text>
-            <Text fontWeight="bold" color="blue.500">
-              {totalAdminCount}
-            </Text>
-          </HStack>
-        </VStack>
-    </BoxGrid >
+        )}
+      </VStack>
+    </BoxGrid>
   );
 };
 
