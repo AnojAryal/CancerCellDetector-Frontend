@@ -1,29 +1,33 @@
 import { useState } from "react";
 import {
-  Box,
   Button,
   FormControl,
   FormLabel,
   Input,
   FormErrorMessage,
-  Heading,
   VStack,
-  HStack,
   IconButton,
   InputGroup,
   InputRightElement,
   Text,
   useColorModeValue,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
 } from "@chakra-ui/react";
 import { Formik, Field, Form, FieldProps } from "formik";
-import { AiOutlineClose, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import useChangePassword, {
   ChangePasswordValues,
 } from "../../hooks/useChangePassword";
 
-const UserChangePassword = () => {
-  const navigate = useNavigate();
+interface UserChangePasswordProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const UserChangePassword = ({ isOpen, onClose }: UserChangePasswordProps) => {
   const { error, successMessage, validationSchema, handleChangePassword } =
     useChangePassword();
 
@@ -46,196 +50,189 @@ const UserChangePassword = () => {
   const handleSubmit = (values: ChangePasswordValues) => {
     handleChangePassword(values, () => {
       console.log("Password changed successfully!");
+      onClose();
     });
   };
 
   return (
-    <Box
-      position="fixed"
-      top="0"
-      left="0"
-      width="100%"
-      height="100%"
-      backgroundColor="rgba(0, 0, 0, 0.5)"
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      zIndex="1000"
-    >
-      <Box
-        maxW="md"
-        width="100%"
-        mx={4}
-        p={6}
-        borderWidth={1}
-        borderRadius="lg"
-        boxShadow="lg"
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <ModalOverlay />
+      <ModalContent
         bg={useColorModeValue("white", "gray.700")}
+        borderRadius="md"
+        maxWidth="lg"
       >
-        <HStack justifyContent="space-between" mb={4}>
-          <Heading as="h3" size="lg">
-            Change Password
-          </Heading>
-          <IconButton
-            icon={<AiOutlineClose />}
-            onClick={() => navigate(-1)}
-            aria-label="Close"
-          />
-        </HStack>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ errors, touched }) => (
-            <Form>
-              <VStack spacing={4} align="stretch">
-                <Field name="currentPassword">
-                  {({ field }: FieldProps<string>) => (
-                    <FormControl
-                      isInvalid={Boolean(
-                        errors.currentPassword && touched.currentPassword
-                      )}
-                    >
-                      <FormLabel htmlFor="currentPassword">
-                        Current Password
-                      </FormLabel>
-                      <InputGroup>
-                        <Input
-                          {...field}
-                          id="currentPassword"
-                          type={showCurrentPassword ? "text" : "password"}
-                          placeholder="Enter current password"
-                        />
-                        <InputRightElement>
-                          <IconButton
-                            aria-label={
-                              showCurrentPassword
-                                ? "Hide current password"
-                                : "Show current password"
-                            }
-                            onClick={handleToggleCurrentPassword}
-                            icon={
-                              showCurrentPassword ? (
-                                <AiFillEyeInvisible />
-                              ) : (
-                                <AiFillEye />
-                              )
-                            }
-                            variant="ghost"
+        <ModalBody p={6}>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ errors, touched }) => (
+              <Form>
+                <VStack spacing={5} align="stretch">
+                  <Field name="currentPassword">
+                    {({ field }: FieldProps<string>) => (
+                      <FormControl
+                        isInvalid={Boolean(
+                          errors.currentPassword && touched.currentPassword
+                        )}
+                      >
+                        <FormLabel htmlFor="currentPassword" mb={1}>
+                          Current Password
+                        </FormLabel>
+                        <InputGroup>
+                          <Input
+                            {...field}
+                            id="currentPassword"
+                            type={showCurrentPassword ? "text" : "password"}
+                            placeholder="Enter current password"
+                            size="lg"
                           />
-                        </InputRightElement>
-                      </InputGroup>
-                      <FormErrorMessage>
-                        {errors.currentPassword}
-                      </FormErrorMessage>
-                    </FormControl>
-                  )}
-                </Field>
+                          <InputRightElement>
+                            <IconButton
+                              aria-label={
+                                showCurrentPassword
+                                  ? "Hide current password"
+                                  : "Show current password"
+                              }
+                              onClick={handleToggleCurrentPassword}
+                              icon={
+                                showCurrentPassword ? (
+                                  <AiFillEyeInvisible />
+                                ) : (
+                                  <AiFillEye />
+                                )
+                              }
+                              variant="ghost"
+                              size="sm"
+                            />
+                          </InputRightElement>
+                        </InputGroup>
+                        <FormErrorMessage mt={2}>
+                          {errors.currentPassword}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
 
-                <Field name="newPassword">
-                  {({ field }: FieldProps<string>) => (
-                    <FormControl
-                      isInvalid={Boolean(
-                        errors.newPassword && touched.newPassword
-                      )}
-                    >
-                      <FormLabel htmlFor="newPassword">New Password</FormLabel>
-                      <InputGroup>
-                        <Input
-                          {...field}
-                          id="newPassword"
-                          type={showNewPassword ? "text" : "password"}
-                          placeholder="Enter new password"
-                        />
-                        <InputRightElement>
-                          <IconButton
-                            aria-label={
-                              showNewPassword
-                                ? "Hide new password"
-                                : "Show new password"
-                            }
-                            onClick={handleToggleNewPassword}
-                            icon={
-                              showNewPassword ? (
-                                <AiFillEyeInvisible />
-                              ) : (
-                                <AiFillEye />
-                              )
-                            }
-                            variant="ghost"
+                  <Field name="newPassword">
+                    {({ field }: FieldProps<string>) => (
+                      <FormControl
+                        isInvalid={Boolean(
+                          errors.newPassword && touched.newPassword
+                        )}
+                      >
+                        <FormLabel htmlFor="newPassword" mb={1}>
+                          New Password
+                        </FormLabel>
+                        <InputGroup>
+                          <Input
+                            {...field}
+                            id="newPassword"
+                            type={showNewPassword ? "text" : "password"}
+                            placeholder="Enter new password"
+                            size="lg"
                           />
-                        </InputRightElement>
-                      </InputGroup>
-                      <FormErrorMessage>{errors.newPassword}</FormErrorMessage>
-                    </FormControl>
-                  )}
-                </Field>
+                          <InputRightElement>
+                            <IconButton
+                              aria-label={
+                                showNewPassword
+                                  ? "Hide new password"
+                                  : "Show new password"
+                              }
+                              onClick={handleToggleNewPassword}
+                              icon={
+                                showNewPassword ? (
+                                  <AiFillEyeInvisible />
+                                ) : (
+                                  <AiFillEye />
+                                )
+                              }
+                              variant="ghost"
+                              size="sm"
+                            />
+                          </InputRightElement>
+                        </InputGroup>
+                        <FormErrorMessage mt={2}>
+                          {errors.newPassword}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
 
-                <Field name="confirmPassword">
-                  {({ field }: FieldProps<string>) => (
-                    <FormControl
-                      isInvalid={Boolean(
-                        errors.confirmPassword && touched.confirmPassword
-                      )}
-                    >
-                      <FormLabel htmlFor="confirmPassword">
-                        Confirm New Password
-                      </FormLabel>
-                      <InputGroup>
-                        <Input
-                          {...field}
-                          id="confirmPassword"
-                          type={showConfirmPassword ? "text" : "password"}
-                          placeholder="Confirm new password"
-                        />
-                        <InputRightElement>
-                          <IconButton
-                            aria-label={
-                              showConfirmPassword
-                                ? "Hide confirm password"
-                                : "Show confirm password"
-                            }
-                            onClick={handleToggleConfirmPassword}
-                            icon={
-                              showConfirmPassword ? (
-                                <AiFillEyeInvisible />
-                              ) : (
-                                <AiFillEye />
-                              )
-                            }
-                            variant="ghost"
+                  <Field name="confirmPassword">
+                    {({ field }: FieldProps<string>) => (
+                      <FormControl
+                        isInvalid={Boolean(
+                          errors.confirmPassword && touched.confirmPassword
+                        )}
+                      >
+                        <FormLabel htmlFor="confirmPassword" mb={1}>
+                          Confirm New Password
+                        </FormLabel>
+                        <InputGroup>
+                          <Input
+                            {...field}
+                            id="confirmPassword"
+                            type={showConfirmPassword ? "text" : "password"}
+                            placeholder="Confirm new password"
+                            size="lg"
                           />
-                        </InputRightElement>
-                      </InputGroup>
-                      <FormErrorMessage>
-                        {errors.confirmPassword}
-                      </FormErrorMessage>
-                    </FormControl>
+                          <InputRightElement>
+                            <IconButton
+                              aria-label={
+                                showConfirmPassword
+                                  ? "Hide confirm password"
+                                  : "Show confirm password"
+                              }
+                              onClick={handleToggleConfirmPassword}
+                              icon={
+                                showConfirmPassword ? (
+                                  <AiFillEyeInvisible />
+                                ) : (
+                                  <AiFillEye />
+                                )
+                              }
+                              variant="ghost"
+                              size="sm"
+                            />
+                          </InputRightElement>
+                        </InputGroup>
+                        <FormErrorMessage mt={2}>
+                          {errors.confirmPassword}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+
+                  <Button
+                    type="submit"
+                    colorScheme="green"
+                    size="lg"
+                    width="full"
+                  >
+                    Change Password
+                  </Button>
+
+                  {error && (
+                    <Text mt={3} color="red.500" fontSize="sm">
+                      {error}
+                    </Text>
                   )}
-                </Field>
 
-                <Button type="submit" colorScheme="teal" width="full">
-                  Change
-                </Button>
-
-                {error && (
-                  <Text mt={2} color="red.500" fontSize="sm">
-                    {error}
-                  </Text>
-                )}
-
-                {successMessage && (
-                  <Text mt={2} color="green.500" fontSize="sm">
-                    {successMessage}
-                  </Text>
-                )}
-              </VStack>
-            </Form>
-          )}
-        </Formik>
-      </Box>
-    </Box>
+                  {successMessage && (
+                    <Text mt={3} color="green.500" fontSize="sm">
+                      {successMessage}
+                    </Text>
+                  )}
+                </VStack>
+              </Form>
+            )}
+          </Formik>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   );
 };
 

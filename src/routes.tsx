@@ -3,13 +3,10 @@ import Login from "./components/user/UserLogin";
 import UserCreate from "./components/admin/CreateUser";
 import ForgotPassword from "./components/user/UserForgotPassword";
 import Home from "./components/user/UserHome";
-import UserSetting from "./components/user/UserSetting";
 import ProtectedRoute from "./components/generic/ProtectedRoute";
-import ChangePassword from "./components/user/UserChangePassword";
 import ManageHospitals from "./components/admin/ManageHospitals";
 import ManageUser from "./components/admin/ManageUsers";
 import NotAvailPage from "./components/generic/NotAvailPage";
-import PatientCreate from "./components/patient/PatientCreate";
 import UserProfile from "./components/user/UserProfile";
 import ManagePatients from "./components/patient/ManagePatients";
 
@@ -21,9 +18,6 @@ const AppRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/profile" element={<UserProfile />} />
 
-      <Route path="/settings" element={<UserSetting />} />
-      <Route path="/settings/change-password" element={<ChangePassword />} />
-      <Route path="/create-patient" element={<PatientCreate />} />
       <Route path="/patients" element={<ManagePatients />} />
 
       {/* Admin routes */}

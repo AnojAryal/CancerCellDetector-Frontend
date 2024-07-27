@@ -15,13 +15,16 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
   useColorMode,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { FiUser, FiLogOut, FiSettings, FiUsers } from "react-icons/fi";
+import { FiLogOut, FiSettings, FiUsers } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.webp";
 import { decodeToken, isAdmin, isHospitalAdmin } from "./DecodeToken";
 import { FaBuilding } from "react-icons/fa";
-import { BiStats } from "react-icons/bi";
+import UserSetting from "../user/UserSetting";
+import { BsPerson, BsPersonCircle } from "react-icons/bs";
+import { MdAccountCircle } from "react-icons/md";
 
 
 const NavBar = () => {
@@ -32,6 +35,7 @@ const NavBar = () => {
   const [displayWelcome, setDisplayWelcome] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const cancelRef = useRef<HTMLButtonElement>(null);
+  const { isOpen: isSettingsOpen, onOpen: openSettings, onClose: closeSettings } = useDisclosure();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -71,11 +75,6 @@ const NavBar = () => {
     navigate("/login");
   };
 
-  const handleSettingsClick = () => {
-    console.log("Settings clicked");
-    navigate("/settings");
-  };
-
   const handleMainPageClick = () => {
     console.log("profile clicked");
     navigate("/profile");
@@ -92,95 +91,98 @@ const NavBar = () => {
   };
 
   const handleHospitalClick = () => {
-    console.log("manage users clicked");
+    console.log("manage hospitals clicked");
     navigate("/admin/manage-hospital");
   };
 
   return (
-    <HStack
-      as="nav"
-      justifyContent="space-between"
-      padding="10px"
-      bg={colorMode === "light" ? "white" : "gray.800"}
-      color={colorMode === "light" ? "black" : "white"}
-      position="fixed"
-      top="0"
-      left="0"
-      right="0"
-      zIndex="1000"
-      width="100%"
-    >
-      <Image src={logo} boxSize="50px" />
-      {token && (
-        <>
-          <Menu>
-            <MenuButton as={Button} variant="ghost" rightIcon={<FiUser />}>
-              {displayWelcome ? `Welcome, ${username}` : username}
-            </MenuButton>
-            <MenuList>
-              <MenuItem onClick={handleMainPageClick} icon={<FiUser />}>
-                Profile
-              </MenuItem>
-              <MenuDivider />
-              <MenuItem onClick={handleSettingsClick} icon={<FiSettings />}>
-                Settings
-              </MenuItem>
-              <MenuDivider />
-              <MenuItem onClick={handlePatientClick} icon={<BiStats />}>
-                Patient
-              </MenuItem>
-              <MenuDivider />
-              {(isAdmin || isHospitalAdmin) && (
-                <>
-                  <MenuItem onClick={handleUserClick} icon={<FiUsers />}>
-                    Users
-                  </MenuItem>
-                  <MenuDivider />
-                </>
-              )}
-              {isAdmin && (
-                <>
-                  <MenuItem onClick={handleHospitalClick} icon={<FaBuilding />}>
-                    Hospitals
-                  </MenuItem>
-                  <MenuDivider />
-                </>
-              )}
-              <MenuItem onClick={handleLogout} icon={<FiLogOut />}>
-                Logout
-              </MenuItem>
-            </MenuList>
-          </Menu>
-          <AlertDialog
-            isOpen={isOpen}
-            leastDestructiveRef={cancelRef}
-            onClose={onClose}
-          >
-            <AlertDialogOverlay />
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                Logout
-              </AlertDialogHeader>
-              <AlertDialogBody>
-                Are you sure you want to logout?
-              </AlertDialogBody>
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
-                  No
-                </Button>
-                <Button
-                  colorScheme="green"
-                  onClick={handleLogoutConfirmed}
-                  ml={3}
-                >
-                  Yes
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </>
-      )}
-    </HStack>
+    <>
+      <HStack
+        as="nav"
+        justifyContent="space-between"
+        padding="10px"
+        bg={colorMode === "light" ? "white" : "gray.800"}
+        color={colorMode === "light" ? "black" : "white"}
+        position="fixed"
+        top="0"
+        left="0"
+        right="0"
+        zIndex="1000"
+        width="100%"
+      >
+        <Image src={logo} boxSize="50px" />
+        {token && (
+          <>
+            <Menu>
+              <MenuButton as={Button} variant="ghost" rightIcon={<MdAccountCircle />}>
+                {displayWelcome ? `Welcome, ${username}` : username}
+              </MenuButton>
+              <MenuList>
+                <MenuItem onClick={handleMainPageClick} icon={<BsPersonCircle />}>
+                  Profile
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={openSettings} icon={<FiSettings />}>
+                  Settings
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={handlePatientClick} icon={<BsPerson />}>
+                  Patient
+                </MenuItem>
+                <MenuDivider />
+                {(isAdmin || isHospitalAdmin) && (
+                  <>
+                    <MenuItem onClick={handleUserClick} icon={<FiUsers />}>
+                      Users
+                    </MenuItem>
+                    <MenuDivider />
+                  </>
+                )}
+                {isAdmin && (
+                  <>
+                    <MenuItem onClick={handleHospitalClick} icon={<FaBuilding />}>
+                      Hospitals
+                    </MenuItem>
+                    <MenuDivider />
+                  </>
+                )}
+                <MenuItem onClick={handleLogout} icon={<FiLogOut />}>
+                  Logout
+                </MenuItem>
+              </MenuList>
+            </Menu>
+            <AlertDialog
+              isOpen={isOpen}
+              leastDestructiveRef={cancelRef}
+              onClose={onClose}
+            >
+              <AlertDialogOverlay />
+              <AlertDialogContent>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Logout
+                </AlertDialogHeader>
+                <AlertDialogBody>
+                  Are you sure you want to logout?
+                </AlertDialogBody>
+                <AlertDialogFooter>
+                  <Button ref={cancelRef} onClick={onClose}>
+                    No
+                  </Button>
+                  <Button
+                    colorScheme="green"
+                    onClick={handleLogoutConfirmed}
+                    ml={3}
+                  >
+                    Yes
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <UserSetting isOpen={isSettingsOpen} onClose={closeSettings} />
+          </>
+        )}
+      </HStack>
+    </>
   );
 };
 
