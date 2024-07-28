@@ -4,6 +4,7 @@ export interface DecodedToken {
   hospital_id: number;
   is_admin: boolean;
   is_hospital_admin: boolean;
+  is_user: boolean;
 }
 
 export const decodeToken = (token: string | null): DecodedToken | null => {
@@ -36,3 +37,5 @@ export const isHospitalAdmin = decodedToken
   ? decodedToken.is_hospital_admin
   : false;
 export const hospitalId = decodedToken ? decodedToken.hospital_id : null;
+// Determine if the user is a regular user
+export const isUser = !isAdmin && !isHospitalAdmin;
