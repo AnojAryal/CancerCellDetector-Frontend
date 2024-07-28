@@ -9,6 +9,7 @@ import ManageUser from "./components/admin/ManageUsers";
 import NotAvailPage from "./components/generic/NotAvailPage";
 import UserProfile from "./components/user/UserProfile";
 import ManagePatients from "./components/patient/ManagePatients";
+import UserHandler from "./components/admin/UserHandler";
 
 const AppRoutes = () => {
   return (
@@ -26,6 +27,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute isHospitalAdminRoute>
             <UserCreate />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/user-handler/:id"
+        element={
+          <ProtectedRoute isHospitalAdminRoute>
+            <UserHandler />
           </ProtectedRoute>
         }
       />
