@@ -20,12 +20,11 @@ import {
 import { FiLogOut, FiSettings, FiUsers } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.webp";
-import { decodeToken, isAdmin, isHospitalAdmin } from "./DecodeToken";
+import { decodeToken, isAdmin, isHospitalAdmin, isUser } from "./DecodeToken";
 import { FaBuilding } from "react-icons/fa";
 import UserSetting from "../user/UserSetting";
 import { BsPerson, BsPersonCircle } from "react-icons/bs";
 import { MdAccountCircle } from "react-icons/md";
-
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -126,10 +125,14 @@ const NavBar = () => {
                   Settings
                 </MenuItem>
                 <MenuDivider />
-                <MenuItem onClick={handlePatientClick} icon={<BsPerson />}>
-                  Patient
-                </MenuItem>
-                <MenuDivider />
+                {(isUser || isHospitalAdmin) && (
+                  <>
+                    <MenuItem onClick={handlePatientClick} icon={<BsPerson />}>
+                      Patient
+                    </MenuItem>
+                    <MenuDivider />
+                  </>
+                )}
                 {(isAdmin || isHospitalAdmin) && (
                   <>
                     <MenuItem onClick={handleUserClick} icon={<FiUsers />}>

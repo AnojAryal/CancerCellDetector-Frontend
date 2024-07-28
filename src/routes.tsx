@@ -19,7 +19,15 @@ const AppRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/profile" element={<UserProfile />} />
 
-      <Route path="/patients" element={<ManagePatients />} />
+      {/* Only users and hospital admins can access ManagePatients */}
+      <Route
+        path="/patients"
+        element={
+          <ProtectedRoute isUserOrHospitalAdminRoute>
+            <ManagePatients />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Admin routes */}
       <Route
