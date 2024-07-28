@@ -250,7 +250,7 @@ const CreateUser = () => {
           </GridItem>
         </Grid>
         <Flex justify="center" mt="4">
-          <Button onClick={goBack} colorScheme="blue" size="lg" mr={4}>
+          <Button onClick={goBack} variant="ghost" size="lg" mr={4}>
             Back
           </Button>
           <Button type="submit" colorScheme="green" size="lg">

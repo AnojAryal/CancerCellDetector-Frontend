@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import useApiClientUser from "../services/api-client-user";
-import { Patient } from "../components/patient/PatientCreate";
+import { Patient } from "../components/patient/ManagePatients";
+
 
 const useManagePatients = (isAdmin: boolean, hospital?: string | number) => {
   const apiClient = useApiClientUser({ isAdmin, hospital });
