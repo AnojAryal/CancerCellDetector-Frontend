@@ -5,7 +5,7 @@ export const hospitalSchema = z.object({
   address: z.string().min(1, "Address is required"),
   phone: z
     .string()
-    .min(10, "Phone number should be at least 10 characters")
+    .min(8, "Phone number should be at least 8 characters")
     .max(15, "Phone number should not exceed 15 characters"),
   email: z.string().email("Invalid email address"),
 });
@@ -15,7 +15,9 @@ export const patientSchema = z.object({
   email: z.string().email("Invalid email address"),
   phone: z
     .string()
-    .min(10, "Phone number should be at least 10 characters")
-    .max(15, "Phone number should not exceed 15 characters"),
+    .min(8, "Should be at least 8 characters")
+    .max(15, "Should not exceed 15 characters"),
   birth_date: z.string().min(1, "Birth date is required"),
+  street: z.string().min(1, "Street is required"),
+  city: z.string().min(1, "City is required"),
 });
