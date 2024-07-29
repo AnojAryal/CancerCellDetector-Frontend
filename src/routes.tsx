@@ -10,6 +10,7 @@ import NotAvailPage from "./components/generic/NotAvailPage";
 import UserProfile from "./components/user/UserProfile";
 import ManagePatients from "./components/patient/ManagePatients";
 import UserHandler from "./components/admin/UserHandler";
+import HandlePatients from "./components/patient/HandlePatients";
 
 const AppRoutes = () => {
   return (
@@ -25,6 +26,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute isUserOrHospitalAdminRoute>
             <ManagePatients />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/patients/:id"
+        element={
+          <ProtectedRoute isUserOrHospitalAdminRoute>
+            <HandlePatients />
           </ProtectedRoute>
         }
       />

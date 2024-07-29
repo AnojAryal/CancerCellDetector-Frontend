@@ -16,9 +16,10 @@ import {
 } from "@chakra-ui/react";
 import { filterItems, sortItems } from "../generic/SortSelector";
 import useManagePatients from "../../hooks/useManagePatients";
-import { isAdmin, isHospitalAdmin } from "../generic/DecodeToken";
+import { isHospitalAdmin } from "../generic/DecodeToken";
 import PatientCreate from "./PatientCreate";
 import { useDisclosure } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 export interface Patient {
   id: number;
@@ -31,10 +32,11 @@ export interface Patient {
 }
 
 const ManagePatients = () => {
-  const hospital_id = isAdmin ? undefined : isHospitalAdmin?.toString();
+  const navigate = useNavigate();
+  const hospital_id = isHospitalAdmin?.toString();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { patients, loading, error } = useManagePatients(isAdmin, hospital_id);
+  const { patients, loading, error } = useManagePatients(hospital_id);
 
   const [filterText, setFilterText] = React.useState<string>("");
   const [sortOrder, setSortOrder] = React.useState<string>("asc");
@@ -54,6 +56,10 @@ const ManagePatients = () => {
         {error}
       </Alert>
     );
+
+  const handlePatientClick = (patient: Patient) => {
+    navigate(`/patients/${patient.id}`, { state: { patient } });
+  };
 
   return (
     <Box p={5} maxW="1300px" mx="auto" mt="60px">
@@ -85,7 +91,12 @@ const ManagePatients = () => {
         </HStack>
         <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={7}>
           {sortedPatients.map((patient: Patient) => (
-            <GridItem key={patient.id} position="relative">
+            <GridItem
+              key={patient.id}
+              position="relative"
+              onClick={() => handlePatientClick(patient)}
+              cursor="pointer"
+            >
               <Box
                 p={5}
                 shadow="md"

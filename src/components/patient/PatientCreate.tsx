@@ -5,13 +5,14 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
   FormControl,
   FormLabel,
   Input,
   Button,
   useToast,
-  Stack,
+  Grid,
+  Box,
+  VStack,
 } from "@chakra-ui/react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,10 +32,12 @@ interface FormValues {
   email: string;
   phone: string;
   birth_date: string;
+  street: string;
+  city: string;
 }
 
 const PatientCreate = ({ isOpen, onClose }: PatientCreateProps) => {
-  const { createPatient } = useCreatePatient();
+  const { createPatient, createAddress } = useCreatePatient();
   const toast = useToast();
 
   const {
@@ -49,13 +52,15 @@ const PatientCreate = ({ isOpen, onClose }: PatientCreateProps) => {
       email: "",
       phone: "",
       birth_date: "",
+      street: "",
+      city: "",
     },
   });
 
-  const [hospital, setHospital] = useState<string | undefined>(undefined);
+  const [hospital, setHospital] = useState<string>("");
 
   const handleHospitalChange = (selectedHospitalId: string | null) => {
-    setHospital(selectedHospitalId ?? undefined);
+    setHospital(selectedHospitalId ?? "");
   };
 
   const onSubmit = async (data: FormValues) => {
@@ -67,11 +72,23 @@ const PatientCreate = ({ isOpen, onClose }: PatientCreateProps) => {
       email: data.email,
       phone: data.phone,
       birth_date: data.birth_date,
-      hospital_id: isAdmin ? hospital ?? "" : hospitalId?.toString() ?? "",
+      hospital_id: isAdmin ? hospital : hospitalId?.toString() ?? "",
+    };
+
+    const addressData = {
+      street: data.street,
+      city: data.city,
+      hospital_id: isAdmin ? hospital : hospitalId?.toString() ?? "",
     };
 
     try {
-      await createPatient(patientData);
+      const patientId = await createPatient(patientData);
+      if (data.street && data.city && patientId) {
+        await createAddress({
+          ...addressData,
+          patient_id: patientId,
+        });
+      }
       toast({
         title: "Patient created.",
         description: "A new patient has been added successfully.",
@@ -80,7 +97,7 @@ const PatientCreate = ({ isOpen, onClose }: PatientCreateProps) => {
         isClosable: true,
       });
       reset();
-      setHospital(undefined);
+      setHospital("");
       onClose();
     } catch (error) {
       if (error instanceof Error) {
@@ -103,88 +120,120 @@ const PatientCreate = ({ isOpen, onClose }: PatientCreateProps) => {
     }
   };
 
-  // Reset the form when the modal is closed
   const handleClose = () => {
     reset();
-    setHospital(undefined);
+    setHospital("");
     onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose}>
+    <Modal isOpen={isOpen} onClose={handleClose} size="xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Create New Patient</ModalHeader>
-        <ModalCloseButton />
         <ModalBody>
-          <Stack spacing={1}>
-            <FormControl>
-              <FormLabel>Full Name</FormLabel>
-              <Controller
-                name="fullName"
-                control={control}
-                render={({ field }) => (
-                  <Input {...field} type="text" isInvalid={!!errors.fullName} />
-                )}
-              />
-              {errors.fullName && (
-                <FormLabel color="red.500">{errors.fullName.message}</FormLabel>
-              )}
-            </FormControl>
-            <FormControl>
-              <FormLabel>Email Address</FormLabel>
-              <Controller
-                name="email"
-                control={control}
-                render={({ field }) => (
-                  <Input {...field} type="email" isInvalid={!!errors.email} />
-                )}
-              />
-              {errors.email && (
-                <FormLabel color="red.500">{errors.email.message}</FormLabel>
-              )}
-            </FormControl>
-            <FormControl>
-              <FormLabel>Phone Number</FormLabel>
-              <Controller
-                name="phone"
-                control={control}
-                render={({ field }) => (
-                  <Input {...field} type="text" isInvalid={!!errors.phone} />
-                )}
-              />
-              {errors.phone && (
-                <FormLabel color="red.500">{errors.phone.message}</FormLabel>
-              )}
-            </FormControl>
-            <FormControl>
-              <FormLabel>Birth Date</FormLabel>
-              <Controller
-                name="birth_date"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    type="date"
-                    isInvalid={!!errors.birth_date}
+          <VStack spacing={4} align="stretch">
+            <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+              <Box>
+                <FormControl isInvalid={!!errors.fullName}>
+                  <FormLabel>Full Name</FormLabel>
+                  <Controller
+                    name="fullName"
+                    control={control}
+                    render={({ field }) => <Input {...field} type="text" />}
                   />
-                )}
-              />
-              {errors.birth_date && (
-                <FormLabel color="red.500">
-                  {errors.birth_date.message}
-                </FormLabel>
+                  {errors.fullName && (
+                    <FormLabel color="red.500">
+                      {errors.fullName.message}
+                    </FormLabel>
+                  )}
+                </FormControl>
+              </Box>
+              <Box>
+                <FormControl isInvalid={!!errors.email}>
+                  <FormLabel>Email Address</FormLabel>
+                  <Controller
+                    name="email"
+                    control={control}
+                    render={({ field }) => <Input {...field} type="email" />}
+                  />
+                  {errors.email && (
+                    <FormLabel color="red.500">
+                      {errors.email.message}
+                    </FormLabel>
+                  )}
+                </FormControl>
+              </Box>
+              <Box>
+                <FormControl isInvalid={!!errors.phone}>
+                  <FormLabel>Phone Number</FormLabel>
+                  <Controller
+                    name="phone"
+                    control={control}
+                    render={({ field }) => <Input {...field} type="text" />}
+                  />
+                  {errors.phone && (
+                    <FormLabel color="red.500">
+                      {errors.phone.message}
+                    </FormLabel>
+                  )}
+                </FormControl>
+              </Box>
+              <Box>
+                <FormControl isInvalid={!!errors.birth_date}>
+                  <FormLabel>Birth Date</FormLabel>
+                  <Controller
+                    name="birth_date"
+                    control={control}
+                    render={({ field }) => <Input {...field} type="date" />}
+                  />
+                  {errors.birth_date && (
+                    <FormLabel color="red.500">
+                      {errors.birth_date.message}
+                    </FormLabel>
+                  )}
+                </FormControl>
+              </Box>
+              <Box>
+                <FormControl isInvalid={!!errors.street}>
+                  <FormLabel>Street</FormLabel>
+                  <Controller
+                    name="street"
+                    control={control}
+                    render={({ field }) => <Input {...field} type="text" />}
+                  />
+                  {errors.street && (
+                    <FormLabel color="red.500">
+                      {errors.street.message}
+                    </FormLabel>
+                  )}
+                </FormControl>
+              </Box>
+              <Box>
+                <FormControl isInvalid={!!errors.city}>
+                  <FormLabel>City</FormLabel>
+                  <Controller
+                    name="city"
+                    control={control}
+                    render={({ field }) => <Input {...field} type="text" />}
+                  />
+                  {errors.city && (
+                    <FormLabel color="red.500">{errors.city.message}</FormLabel>
+                  )}
+                </FormControl>
+              </Box>
+              {isAdmin && (
+                <Box gridColumn="span 2">
+                  <FormControl>
+                    <HospitalSelect
+                      value={hospital}
+                      onChange={handleHospitalChange}
+                    />
+                  </FormControl>
+                </Box>
               )}
-            </FormControl>
-            {isAdmin && (
-              <FormControl>
-                <HospitalSelect
-                  value={hospital ?? ""}
-                  onChange={handleHospitalChange}
-                />
-              </FormControl>
-            )}
-          </Stack>
+            </Grid>
+          </VStack>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="green" mr={2} onClick={handleSubmit(onSubmit)}>

@@ -3,22 +3,25 @@ import axios, { AxiosInstance } from "axios";
 import { hospitalId } from "../components/generic/DecodeToken";
 
 interface UseApiClientUserParams {
-  isAdmin: boolean;
   hospital?: string | number;
 }
 
-const useApiClientUser = ({ isAdmin, hospital }: UseApiClientUserParams): AxiosInstance => {
+const useApiClientUser = ({
+  hospital,
+}: UseApiClientUserParams): AxiosInstance => {
   const hospital_id = useMemo(() => {
-    return isAdmin
-      ? (typeof hospital === "string" || typeof hospital === "number")
-        ? hospital.toString()
-        : ""
-      : hospitalId
-      ? hospitalId.toString()
-      : "";
-  }, [isAdmin, hospital]);
+    const hospitalIdAsNumber =
+      typeof hospital === "string" || typeof hospital === "number"
+        ? Number(hospital)
+        : NaN;
 
- 
+    return !isNaN(hospitalIdAsNumber)
+      ? hospitalIdAsNumber.toString()
+      : hospitalId
+      ? Number(hospitalId).toString()
+      : "";
+  }, [hospital]);
+
   const apiClientUser = useMemo(() => {
     const client = axios.create({
       baseURL: `http://127.0.0.1:8000/hospital/${hospital_id}/`,
@@ -38,7 +41,7 @@ const useApiClientUser = ({ isAdmin, hospital }: UseApiClientUserParams): AxiosI
     );
 
     return client;
-  }, [hospital_id]); 
+  }, [hospital_id]);
 
   return apiClientUser;
 };
