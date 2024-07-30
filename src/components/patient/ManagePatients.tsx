@@ -86,7 +86,7 @@ const ManagePatients = () => {
             maxW="300px"
           />
           <Select
-            maxW="220px"
+            maxW="230px"
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
           >

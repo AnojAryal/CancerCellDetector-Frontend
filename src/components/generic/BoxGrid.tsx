@@ -1,44 +1,81 @@
-import { ReactNode } from "react";
-import { Box, useColorModeValue } from "@chakra-ui/react";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Heading,
+  Stack,
+  Text,
+  useColorModeValue,
+  Button,
+  Flex,
+  Spacer,
+  Divider,
+} from "@chakra-ui/react";
 
 interface BoxGridProps {
-  children: ReactNode;
+  cellTests: { title: string; description: string }[];
+  onAddCellTest: () => void;
 }
 
-const BoxGrid = ({ children }: BoxGridProps) => {
-  const bgColor = useColorModeValue("white", "gray.800");
+function BoxGrid({ cellTests, onAddCellTest }: BoxGridProps) {
+  const bgColor = useColorModeValue("gray.50", "gray.700");
+  const borderColor = useColorModeValue("gray.400", "gray.600");
   const textColor = useColorModeValue("black", "white");
+  const padding = 5;
 
   return (
-    <Box
-      position="fixed"
-      top="0"
-      left="0"
-      width="100%"
-      height="100%"
-      bg="rgba(0, 0, 0, 0.8)"
-      zIndex="1000"
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      overflow="auto"
+    <Card
+      p={padding}
+      mt={5}
+      borderWidth="2px"
+      borderRadius="md"
+      bg={bgColor}
+      minH="400px"
+      borderColor={borderColor}
     >
-      <Box
-        bg={bgColor}
-        color={textColor}
-        borderRadius="md"
-        boxShadow="lg"
-        width="90%"
-        maxWidth="500px"
-        maxHeight="95%"
-        overflowY="auto"
-        p={6}
-        position="relative"
-      >
-        {children}
-      </Box>
-    </Box>
+      <CardHeader>
+        <Stack spacing={4}>
+          <Flex align="center">
+            <Heading size="md" color={textColor}>
+              Cell Tests
+            </Heading>
+            <Spacer />
+            <Button colorScheme="green" onClick={onAddCellTest}>
+              Add
+            </Button>
+          </Flex>
+          <Divider />
+        </Stack>
+      </CardHeader>
+      <CardBody p={padding}>
+        <Stack spacing={4} align="stretch" overflowY="auto">
+          {cellTests.length > 0 ? (
+            cellTests.map((test, index) => (
+              <Card
+                key={index}
+                p={padding}
+                borderWidth="1px"
+                borderRadius="md"
+                bg={bgColor}
+                borderColor={borderColor}
+              >
+                <CardHeader>
+                  <Text fontSize="lg" fontWeight="bold" color={textColor}>
+                    {test.title}
+                  </Text>
+                </CardHeader>
+                <CardBody>
+                  <Text color={textColor}>{test.description}</Text>
+                </CardBody>
+              </Card>
+            ))
+          ) : (
+            <Text color="gray.500">No cell tests added yet.</Text>
+          )}
+        </Stack>
+      </CardBody>
+    </Card>
   );
-};
+}
 
 export default BoxGrid;
