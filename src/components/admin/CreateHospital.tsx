@@ -15,8 +15,9 @@ import {
 } from "@chakra-ui/react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import useCreateHospital from "../../hooks/useCreateHospital";
+
 import { hospitalSchema } from "../../schema/validationSchema";
+import useCreateHospital from "../../hooks/admin/useCreateHospital";
 
 interface CreateHospitalProps {
   isOpen: boolean;
@@ -81,8 +82,8 @@ function CreateHospital({ isOpen, onClose }: CreateHospitalProps) {
     }
   };
 
-   // Reset the form when the modal is closed
-   const handleClose = () => {
+  // Reset the form when the modal is closed
+  const handleClose = () => {
     reset();
     onClose();
   };
@@ -101,11 +102,7 @@ function CreateHospital({ isOpen, onClose }: CreateHospitalProps) {
                 name="name"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    {...field}
-                    type="text"
-                    isInvalid={!!errors.name}
-                  />
+                  <Input {...field} type="text" isInvalid={!!errors.name} />
                 )}
               />
               {errors.name && (
@@ -118,11 +115,7 @@ function CreateHospital({ isOpen, onClose }: CreateHospitalProps) {
                 name="address"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    {...field}
-                    type="text"
-                    isInvalid={!!errors.address}
-                  />
+                  <Input {...field} type="text" isInvalid={!!errors.address} />
                 )}
               />
               {errors.address && (
@@ -135,11 +128,7 @@ function CreateHospital({ isOpen, onClose }: CreateHospitalProps) {
                 name="phone"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    {...field}
-                    type="text"
-                    isInvalid={!!errors.phone}
-                  />
+                  <Input {...field} type="text" isInvalid={!!errors.phone} />
                 )}
               />
               {errors.phone && (
@@ -152,11 +141,7 @@ function CreateHospital({ isOpen, onClose }: CreateHospitalProps) {
                 name="email"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    {...field}
-                    type="email"
-                    isInvalid={!!errors.email}
-                  />
+                  <Input {...field} type="email" isInvalid={!!errors.email} />
                 )}
               />
               {errors.email && (

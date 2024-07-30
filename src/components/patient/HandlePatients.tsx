@@ -25,19 +25,11 @@ import {
   Grid,
 } from "@chakra-ui/react";
 import { MdEmail, MdPhone, MdCake, MdEdit } from "react-icons/md";
-import useManagePatients from "../../hooks/useManagePatients";
-import { isHospitalAdmin } from "../generic/DecodeToken";
-import CellTests from "./CellTests";
 
-interface Patient {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  birth_date: string;
-  hospital_id: string;
-}
+import { isHospitalAdmin } from "../generic/DecodeToken";
+import PatientCellTests from "./PatientCellTests";
+import { Patient, Address } from "./ManagePatients";
+import useManagePatients from "../../hooks/user/useManagePatients";
 
 const HandlePatients = () => {
   const location = useLocation();
@@ -53,10 +45,12 @@ const HandlePatients = () => {
   const [editPatient, setEditPatient] = useState<Patient>(
     patient || ({} as Patient)
   );
+  const [editAddress, setEditAddress] = useState<Address | null>(null);
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  const { updatePatient } = useManagePatients(hospital_id);
+  const { updatePatient, fetchPatientAddress, updatePatientAddress } =
+    useManagePatients(hospital_id);
 
   const headingFontSize = useBreakpointValue({ base: "xl", md: "2xl" });
   const bgColor = useColorModeValue("white", "gray.800");
@@ -67,8 +61,14 @@ const HandlePatients = () => {
   useEffect(() => {
     if (patient) {
       setEditPatient(patient);
+      // Fetch address if it exists
+      if (patient.address?.id) {
+        fetchPatientAddress(patient.id, patient.address.id)
+          .then((address) => setEditAddress(address))
+          .catch(() => setError("Failed to fetch address."));
+      }
     }
-  }, [patient]);
+  }, [patient, fetchPatientAddress]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -85,6 +85,34 @@ const HandlePatients = () => {
       onEditClose();
     } catch {
       setError("Failed to update patient details.");
+    }
+  };
+
+  const handleAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditAddress((prevAddress) => {
+      if (prevAddress) {
+        return { ...prevAddress, [name]: value };
+      }
+      return null;
+    });
+  };
+
+  const handleSaveAddressChanges = async () => {
+    if (editAddress) {
+      try {
+        await updatePatientAddress(editPatient.id, editAddress.id, editAddress);
+        setFeedbackMessage("Address updated successfully.");
+        setTimeout(() => setFeedbackMessage(""), 5000);
+        // Refresh address
+        const updatedAddress = await fetchPatientAddress(
+          editPatient.id,
+          editAddress.id
+        );
+        setEditAddress(updatedAddress);
+      } catch {
+        setError("Failed to update address.");
+      }
     }
   };
 
@@ -148,11 +176,22 @@ const HandlePatients = () => {
                   </Box>
                 </VStack>
               </Box>
+              {editAddress && (
+                <Box>
+                  <VStack spacing={3} align="start">
+                    <Box display="flex" alignItems="center">
+                      <Text fontSize="md" color={textColor}>
+                        {editAddress.street}, {editAddress.city}
+                      </Text>
+                    </Box>
+                  </VStack>
+                </Box>
+              )}
             </Grid>
           </Box>
 
           <Box mt={5}>
-            <CellTests initialCellTests={[]} />
+            <PatientCellTests initialCellTests={["Test 1", "Test 2"]} />
           </Box>
         </Box>
       </Box>
@@ -203,6 +242,26 @@ const HandlePatients = () => {
                 onChange={handleInputChange}
               />
             </FormControl>
+            {editAddress && (
+              <>
+                <FormControl mb={4}>
+                  <FormLabel>Street</FormLabel>
+                  <Input
+                    name="street"
+                    value={editAddress.street || ""}
+                    onChange={handleAddressChange}
+                  />
+                </FormControl>
+                <FormControl mb={4}>
+                  <FormLabel>City</FormLabel>
+                  <Input
+                    name="city"
+                    value={editAddress.city || ""}
+                    onChange={handleAddressChange}
+                  />
+                </FormControl>
+              </>
+            )}
           </ModalBody>
 
           <ModalFooter>
@@ -212,6 +271,15 @@ const HandlePatients = () => {
             <Button colorScheme="blue" onClick={handleSavePatientChanges}>
               Save
             </Button>
+            {editAddress && (
+              <Button
+                colorScheme="blue"
+                ml={3}
+                onClick={handleSaveAddressChanges}
+              >
+                Save Address
+              </Button>
+            )}
           </ModalFooter>
         </ModalContent>
       </Modal>

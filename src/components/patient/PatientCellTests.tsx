@@ -11,14 +11,14 @@ import {
 import { MdAddCircle } from "react-icons/md";
 
 interface CellTestProps {
-  initialCellTests: string[];
+  initialCellTests?: string[]; // Make this optional
 }
 
-function CellTests({ initialCellTests }: CellTestProps) {
+function PatientCellTests({ initialCellTests = [] }: CellTestProps) {
   const [cellTests, setCellTests] = useState<string[]>(initialCellTests);
 
   const addCellTest = () => {
-    setCellTests([...cellTests, `Cell Test ${cellTests.length + 1}`]);
+    setCellTests((prevTests) => [...prevTests, `Cell Test ${prevTests.length + 1}`]);
   };
 
   const bgColor = useColorModeValue("gray.50", "gray.700");
@@ -65,7 +65,7 @@ function CellTests({ initialCellTests }: CellTestProps) {
         {cellTests.length > 0 ? (
           cellTests.map((test, index) => (
             <Box
-              key={index}
+              key={index} // Consider using unique identifiers if available
               p={4}
               borderWidth="1px"
               borderRadius="md"
@@ -86,4 +86,4 @@ function CellTests({ initialCellTests }: CellTestProps) {
   );
 }
 
-export default CellTests;
+export default PatientCellTests;

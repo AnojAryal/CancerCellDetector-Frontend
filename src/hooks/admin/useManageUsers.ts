@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import apiClient from "../services/api-client";
+import apiClient from "../../services/api-client";
 
 export interface User {
   id: number;
@@ -13,7 +13,7 @@ export interface User {
   password: string;
   is_admin: boolean;
   is_hospital_admin: boolean;
-  hospital_id : number;
+  hospital_id: number;
 }
 
 const useManageUsers = () => {
@@ -63,21 +63,14 @@ const useManageUsers = () => {
     }
   };
 
-  const updateUser = async (
-    user_id: number,
-    updatedUser: Partial<User>
-  ) => {
+  const updateUser = async (user_id: number, updatedUser: Partial<User>) => {
     try {
       const token = getAccessToken();
-      const response = await apiClient.patch(
-        `/users/${user_id}`,
-        updatedUser,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await apiClient.patch(`/users/${user_id}`, updatedUser, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setUsers(
         users.map((user) =>
           user.id === user_id ? { ...user, ...response.data } : user

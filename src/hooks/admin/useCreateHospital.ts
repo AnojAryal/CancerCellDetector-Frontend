@@ -1,4 +1,4 @@
-import usePostData from "./usePostData";
+import usePostData from "../generic/usePostData";
 
 interface Hospital {
   name: string;

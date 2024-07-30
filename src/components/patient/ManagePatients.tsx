@@ -15,11 +15,19 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { filterItems, sortItems } from "../generic/SortSelector";
-import useManagePatients from "../../hooks/useManagePatients";
+
 import { isHospitalAdmin } from "../generic/DecodeToken";
 import PatientCreate from "./PatientCreate";
 import { useDisclosure } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import useManagePatients from "../../hooks/user/useManagePatients";
+
+export interface Address {
+  id: number;
+  street: string;
+  city: string;
+  patient: number;
+}
 
 export interface Patient {
   id: number;
@@ -28,7 +36,7 @@ export interface Patient {
   email: string;
   phone: string;
   birth_date: string;
-  hospital_id: string;
+  address?: Address;
 }
 
 const ManagePatients = () => {

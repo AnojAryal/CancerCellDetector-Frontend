@@ -1,6 +1,6 @@
 import { useState } from "react";
 import * as Yup from "yup";
-import apiClient from "../services/api-client";
+import apiClient from "../../services/api-client";
 
 export interface ChangePasswordValues {
   currentPassword: string;

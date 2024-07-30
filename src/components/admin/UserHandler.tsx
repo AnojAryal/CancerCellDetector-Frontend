@@ -27,8 +27,9 @@ import {
   useColorModeValue,
   Select,
 } from "@chakra-ui/react";
-import useManageUsers, { User } from "../../hooks/useManageUsers";
+
 import { isAdmin } from "../generic/DecodeToken";
+import useManageUsers, { User } from "../../hooks/admin/useManageUsers";
 
 const UserHandler = () => {
   const { id } = useParams<{ id: string }>();
@@ -195,7 +196,7 @@ const UserHandler = () => {
           </Button>
         </HStack>
       </VStack>
-      
+
       {/* Update Modal */}
       <Modal
         isOpen={isUpdateModalOpen}

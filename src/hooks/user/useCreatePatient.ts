@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
-import apiClient from "../services/api-client";
+import apiClient from "../../services/api-client";
 
 interface Patient {
   first_name: string;
