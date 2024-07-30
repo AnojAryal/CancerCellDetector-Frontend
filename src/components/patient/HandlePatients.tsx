@@ -154,7 +154,7 @@ const HandlePatients = () => {
 
           <Box
             p={4}
-            borderWidth="1px"
+            borderWidth="2px"
             borderRadius="md"
             bg={cardBgColor}
             minH="120px"
@@ -205,7 +205,7 @@ const HandlePatients = () => {
           </Box>
 
           <Box mt={5}>
-            <PatientCellTests initialCellTests={["Test 1", "Test 2"]} />
+            <PatientCellTests />
           </Box>
         </Box>
       </Box>

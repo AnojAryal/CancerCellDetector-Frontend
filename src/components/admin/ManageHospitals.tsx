@@ -252,7 +252,7 @@ const ManageHospitals = () => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleUpdateSave}>
+            <Button colorScheme="green" mr={3} onClick={handleUpdateSave}>
               Save
             </Button>
             <Button onClick={onClose}>Cancel</Button>

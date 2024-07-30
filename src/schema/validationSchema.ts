@@ -21,3 +21,8 @@ export const patientSchema = z.object({
   street: z.string().min(1, "Street is required"),
   city: z.string().min(1, "City is required"),
 });
+
+export const cellTestSchema = z.object({
+  Title: z.string().min(3, "Title is required"),
+  Description: z.string().min(8, "Description is required"),
+});
