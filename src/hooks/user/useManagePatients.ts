@@ -20,6 +20,19 @@ const useManagePatients = (hospital?: string | number) => {
     }
   }, [apiClient]);
 
+  const fetchPatientById = useCallback(async (patient_id: number): Promise<Patient> => {
+    setLoading(true);
+    try {
+      const response = await apiClient.get<Patient>(`/patients/${patient_id}`);
+      return response.data;
+    } catch (err) {
+      setError("Failed to fetch patient.");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [apiClient]);
+
   const updatePatient = async (
     patient_id: number,
     updatedData: Partial<Patient>
@@ -29,21 +42,6 @@ const useManagePatients = (hospital?: string | number) => {
       await fetchPatients();
     } catch (err) {
       setError("Failed to update patient.");
-    }
-  };
-
-  const fetchPatientAddress = async (
-    patient_id: number,
-    address_id: number
-  ): Promise<Address> => {
-    try {
-      const response = await apiClient.get<Address>(
-        `/patients/${patient_id}/address/${address_id}`
-      );
-      return response.data;
-    } catch (err) {
-      setError("Failed to fetch address.");
-      throw err;
     }
   };
 
@@ -72,7 +70,7 @@ const useManagePatients = (hospital?: string | number) => {
     loading,
     error,
     updatePatient,
-    fetchPatientAddress,
+    fetchPatientById,
     updatePatientAddress,
   };
 };

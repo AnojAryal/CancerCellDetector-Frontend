@@ -18,22 +18,22 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
   Icon,
   useColorModeValue,
   useBreakpointValue,
   Grid,
 } from "@chakra-ui/react";
-import { MdEmail, MdPhone, MdCake, MdEdit } from "react-icons/md";
-
+import { MdEmail, MdPhone, MdCake } from "react-icons/md";
 import { isHospitalAdmin } from "../generic/DecodeToken";
 import PatientCellTests from "./PatientCellTests";
 import { Patient, Address } from "./ManagePatients";
 import useManagePatients from "../../hooks/user/useManagePatients";
+import { FaAddressCard } from "react-icons/fa";
+import { BiEdit, BiHome } from "react-icons/bi";
 
 const HandlePatients = () => {
   const location = useLocation();
-  const patient = location.state?.patient as Patient | undefined;
+  const patientId = location.state?.patient?.id as number | undefined;
   const hospital_id = isHospitalAdmin?.toString() || "";
 
   const {
@@ -42,14 +42,19 @@ const HandlePatients = () => {
     onClose: onEditClose,
   } = useDisclosure();
 
-  const [editPatient, setEditPatient] = useState<Patient>(
-    patient || ({} as Patient)
-  );
+  const {
+    isOpen: isAddressEditOpen,
+    onOpen: onAddressEditOpen,
+    onClose: onAddressEditClose,
+  } = useDisclosure();
+
+  const [patient, setPatient] = useState<Patient | null>(null);
+  const [editPatient, setEditPatient] = useState<Patient | null>(null);
   const [editAddress, setEditAddress] = useState<Address | null>(null);
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  const { updatePatient, fetchPatientAddress, updatePatientAddress } =
+  const { updatePatient, updatePatientAddress, fetchPatientById } =
     useManagePatients(hospital_id);
 
   const headingFontSize = useBreakpointValue({ base: "xl", md: "2xl" });
@@ -59,71 +64,62 @@ const HandlePatients = () => {
   const borderColor = useColorModeValue("gray.200", "gray.600");
 
   useEffect(() => {
-    if (patient) {
-      setEditPatient(patient);
-      // Fetch address if it exists
-      if (patient.address?.id) {
-        fetchPatientAddress(patient.id, patient.address.id)
-          .then((address) => setEditAddress(address))
-          .catch(() => setError("Failed to fetch address."));
-      }
+    if (patientId) {
+      fetchPatientById(patientId)
+        .then((fetchedPatient) => {
+          setPatient(fetchedPatient);
+          setEditPatient(fetchedPatient);
+          if (fetchedPatient.address?.id) {
+            setEditAddress(fetchedPatient.address);
+          }
+        })
+        .catch(() => setError("Failed to fetch patient details."));
     }
-  }, [patient, fetchPatientAddress]);
+  }, [patientId, fetchPatientById]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setEditPatient((prevPatient) => ({ ...prevPatient, [name]: value }));
-  };
-
-  const handleSavePatientChanges = async () => {
-    try {
-      await updatePatient(editPatient.id, editPatient);
-      setFeedbackMessage(
-        `Patient details updated successfully. Updated details: ${editPatient.first_name} ${editPatient.last_name}, ${editPatient.email}, ${editPatient.phone}, ${editPatient.birth_date}.`
-      );
-      setTimeout(() => setFeedbackMessage(""), 5000);
-      onEditClose();
-    } catch {
-      setError("Failed to update patient details.");
-    }
+    setEditPatient((prevPatient) =>
+      prevPatient ? { ...prevPatient, [name]: value } : null
+    );
   };
 
   const handleAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setEditAddress((prevAddress) => {
-      if (prevAddress) {
-        return { ...prevAddress, [name]: value };
+    setEditAddress((prevAddress) =>
+      prevAddress ? { ...prevAddress, [name]: value } : null
+    );
+  };
+
+  const handleSavePatientChanges = async () => {
+    if (editPatient) {
+      try {
+        await updatePatient(editPatient.id, editPatient);
+        setFeedbackMessage(
+          `Patient details updated successfully. Updated details: ${editPatient.first_name} ${editPatient.last_name}, ${editPatient.email}, ${editPatient.phone}, ${editPatient.birth_date}.`
+        );
+        setTimeout(() => setFeedbackMessage(""), 5000);
+        onEditClose();
+      } catch {
+        setError("Failed to update patient details.");
       }
-      return null;
-    });
+    }
   };
 
   const handleSaveAddressChanges = async () => {
-    if (editAddress) {
+    if (editAddress && editPatient) {
       try {
         await updatePatientAddress(editPatient.id, editAddress.id, editAddress);
         setFeedbackMessage("Address updated successfully.");
         setTimeout(() => setFeedbackMessage(""), 5000);
-        // Refresh address
-        const updatedAddress = await fetchPatientAddress(
-          editPatient.id,
-          editAddress.id
-        );
-        setEditAddress(updatedAddress);
+        const updatedPatient = await fetchPatientById(editPatient.id);
+        setEditAddress(updatedPatient.address || null);
+        onAddressEditClose();
       } catch {
         setError("Failed to update address.");
       }
     }
   };
-
-  if (!patient) {
-    return (
-      <Alert status="error" mb={5}>
-        <AlertIcon />
-        No patient details found
-      </Alert>
-    );
-  }
 
   return (
     <Box p={5} maxW="1200px" mx="auto" mt="60px" minH="100vh" bg={bgColor}>
@@ -131,15 +127,27 @@ const HandlePatients = () => {
         <Box display="flex" flexDirection="column" mb={5}>
           <Box display="flex" alignItems="center" mb={3}>
             <Heading flex="1" fontSize={headingFontSize} color={textColor}>
-              {patient.first_name} {patient.last_name}
+              {patient
+                ? `${patient.first_name} ${patient.last_name}`
+                : "Loading..."}
             </Heading>
             <Box display="flex" alignItems="center">
               <Button
                 variant="outline"
                 onClick={onEditOpen}
                 aria-label="Edit Patient Details"
+                isDisabled={!patient}
               >
-                <Icon as={MdEdit} boxSize={6} />
+                <Icon as={BiEdit} boxSize={6} />
+              </Button>
+              <Button
+                variant="outline"
+                ml={3}
+                onClick={onAddressEditOpen}
+                aria-label="Edit Address"
+                isDisabled={!patient}
+              >
+                <Icon as={BiHome} boxSize={6} />
               </Button>
             </Box>
           </Box>
@@ -159,19 +167,19 @@ const HandlePatients = () => {
                   <Box display="flex" alignItems="center">
                     <Icon as={MdEmail} boxSize={5} mr={2} color={textColor} />
                     <Text fontSize="md" color={textColor}>
-                      {patient.email}
+                      {patient?.email}
                     </Text>
                   </Box>
                   <Box display="flex" alignItems="center">
                     <Icon as={MdPhone} boxSize={5} mr={2} color={textColor} />
                     <Text fontSize="md" color={textColor}>
-                      {patient.phone}
+                      {patient?.phone}
                     </Text>
                   </Box>
                   <Box display="flex" alignItems="center">
                     <Icon as={MdCake} boxSize={5} mr={2} color={textColor} />
                     <Text fontSize="md" color={textColor}>
-                      {patient.birth_date}
+                      {patient?.birth_date}
                     </Text>
                   </Box>
                 </VStack>
@@ -180,6 +188,12 @@ const HandlePatients = () => {
                 <Box>
                   <VStack spacing={3} align="start">
                     <Box display="flex" alignItems="center">
+                      <Icon
+                        as={FaAddressCard}
+                        boxSize={5}
+                        mr={2}
+                        color={textColor}
+                      />
                       <Text fontSize="md" color={textColor}>
                         {editAddress.street}, {editAddress.city}
                       </Text>
@@ -196,17 +210,17 @@ const HandlePatients = () => {
         </Box>
       </Box>
 
+      {/* Patient Details Modal */}
       <Modal isOpen={isEditOpen} onClose={onEditClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Edit Patient Details</ModalHeader>
-          <ModalCloseButton />
+          <ModalHeader>Edit Patient</ModalHeader>
           <ModalBody>
             <FormControl mb={4}>
               <FormLabel>First Name</FormLabel>
               <Input
                 name="first_name"
-                value={editPatient.first_name || ""}
+                value={editPatient?.first_name || ""}
                 onChange={handleInputChange}
               />
             </FormControl>
@@ -214,7 +228,7 @@ const HandlePatients = () => {
               <FormLabel>Last Name</FormLabel>
               <Input
                 name="last_name"
-                value={editPatient.last_name || ""}
+                value={editPatient?.last_name || ""}
                 onChange={handleInputChange}
               />
             </FormControl>
@@ -222,7 +236,7 @@ const HandlePatients = () => {
               <FormLabel>Email</FormLabel>
               <Input
                 name="email"
-                value={editPatient.email || ""}
+                value={editPatient?.email || ""}
                 onChange={handleInputChange}
               />
             </FormControl>
@@ -230,7 +244,7 @@ const HandlePatients = () => {
               <FormLabel>Phone</FormLabel>
               <Input
                 name="phone"
-                value={editPatient.phone || ""}
+                value={editPatient?.phone || ""}
                 onChange={handleInputChange}
               />
             </FormControl>
@@ -238,48 +252,62 @@ const HandlePatients = () => {
               <FormLabel>Birth Date</FormLabel>
               <Input
                 name="birth_date"
-                value={editPatient.birth_date || ""}
+                value={editPatient?.birth_date || ""}
                 onChange={handleInputChange}
               />
             </FormControl>
-            {editAddress && (
-              <>
-                <FormControl mb={4}>
-                  <FormLabel>Street</FormLabel>
-                  <Input
-                    name="street"
-                    value={editAddress.street || ""}
-                    onChange={handleAddressChange}
-                  />
-                </FormControl>
-                <FormControl mb={4}>
-                  <FormLabel>City</FormLabel>
-                  <Input
-                    name="city"
-                    value={editAddress.city || ""}
-                    onChange={handleAddressChange}
-                  />
-                </FormControl>
-              </>
-            )}
           </ModalBody>
-
           <ModalFooter>
-            <Button variant="outline" onClick={onEditClose} mr={3}>
-              Cancel
-            </Button>
-            <Button colorScheme="blue" onClick={handleSavePatientChanges}>
+            <Button
+              colorScheme="green"
+              mr={3}
+              onClick={handleSavePatientChanges}
+              isDisabled={!editPatient}
+            >
               Save
             </Button>
-            {editAddress && (
-              <Button
-                colorScheme="blue"
-                ml={3}
-                onClick={handleSaveAddressChanges}
-              >
-                Save Address
-              </Button>
-            )}
+            <Button variant="ghost" onClick={onEditClose}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Address Editing Modal */}
+      <Modal isOpen={isAddressEditOpen} onClose={onAddressEditClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Edit Address</ModalHeader>
+          <ModalBody>
+            <FormControl mb={4}>
+              <FormLabel>Street</FormLabel>
+              <Input
+                name="street"
+                value={editAddress?.street || ""}
+                onChange={handleAddressChange}
+              />
+            </FormControl>
+            <FormControl mb={4}>
+              <FormLabel>City</FormLabel>
+              <Input
+                name="city"
+                value={editAddress?.city || ""}
+                onChange={handleAddressChange}
+              />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="green"
+              mr={3}
+              onClick={handleSaveAddressChanges}
+              isDisabled={!editAddress || !editPatient}
+            >
+              Save
+            </Button>
+            <Button variant="ghost" onClick={onAddressEditClose}>
+              Cancel
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -290,7 +318,6 @@ const HandlePatients = () => {
           {feedbackMessage}
         </Alert>
       )}
-
       {error && (
         <Alert status="error" mt={5}>
           <AlertIcon />
