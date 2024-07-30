@@ -18,7 +18,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cellTestSchema } from "../../schema/validationSchema";
-import BoxGrid from "../generic/BoxGrid";
+import CardGrid from "../generic/CardGrid";
 
 interface CellTestProps {
   initialCellTests?: { title: string; description: string }[];
@@ -58,7 +58,7 @@ function PatientCellTests({ initialCellTests = [] }: CellTestProps) {
 
   return (
     <>
-      <BoxGrid cellTests={cellTests} onAddCellTest={onOpen} />
+      <CardGrid cellTests={cellTests} onAddCellTest={onOpen} />
 
       <Modal isOpen={isOpen} onClose={handleModalClose}>
         <ModalOverlay />

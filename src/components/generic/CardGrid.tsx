@@ -17,7 +17,7 @@ interface BoxGridProps {
   onAddCellTest: () => void;
 }
 
-function BoxGrid({ cellTests, onAddCellTest }: BoxGridProps) {
+function CardGrid({ cellTests, onAddCellTest }: BoxGridProps) {
   const bgColor = useColorModeValue("gray.50", "gray.700");
   const borderColor = useColorModeValue("gray.400", "gray.600");
   const textColor = useColorModeValue("black", "white");
@@ -78,4 +78,4 @@ function BoxGrid({ cellTests, onAddCellTest }: BoxGridProps) {
   );
 }
 
-export default BoxGrid;
+export default CardGrid;
