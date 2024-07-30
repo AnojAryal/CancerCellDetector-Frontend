@@ -15,9 +15,8 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { filterItems, sortItems } from "../generic/SortSelector";
-import useManageUsers, { User } from "../../hooks/useManageUsers";
 import { useNavigate } from "react-router-dom";
-
+import useManageUsers, { User } from "../../hooks/admin/useManageUsers";
 
 const ManageUsers = () => {
   const navigate = useNavigate();
@@ -77,7 +76,12 @@ const ManageUsers = () => {
         </HStack>
         <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={7}>
           {sortedUsers.map((user: User) => (
-            <GridItem key={user.id} position="relative">
+            <GridItem
+              key={user.id}
+              position="relative"
+              onClick={() => navigate(`/admin/user-handler/${user.id}`)}
+              cursor="pointer"
+            >
               <Box
                 p={5}
                 shadow="md"

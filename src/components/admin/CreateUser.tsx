@@ -17,9 +17,9 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useUserCreate } from "../../hooks/useCreateUser";
 import HospitalSelect from "./HospitalSelect";
 import { isAdmin } from "../generic/DecodeToken";
+import { useUserCreate } from "../../hooks/admin/useCreateUser";
 
 const CreateUser = () => {
   const navigate = useNavigate();
@@ -250,7 +250,7 @@ const CreateUser = () => {
           </GridItem>
         </Grid>
         <Flex justify="center" mt="4">
-          <Button onClick={goBack} colorScheme="blue" size="lg" mr={4}>
+          <Button onClick={goBack} variant="ghost" size="lg" mr={4}>
             Back
           </Button>
           <Button type="submit" colorScheme="green" size="lg">

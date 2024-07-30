@@ -20,7 +20,7 @@ import { Formik, Field, Form, FieldProps } from "formik";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import useChangePassword, {
   ChangePasswordValues,
-} from "../../hooks/useChangePassword";
+} from "../../hooks/user/useChangePassword";
 
 interface UserChangePasswordProps {
   isOpen: boolean;

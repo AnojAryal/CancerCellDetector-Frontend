@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import apiClient from "../services/api-client";
+import apiClient from "../../services/api-client";
 
 export interface Hospital {
   id: number;
@@ -39,21 +39,24 @@ const useManageHospitals = () => {
     }
   }, [getAccessToken]);
 
-  const deleteHospital = useCallback(async (hospital_id: number) => {
-    try {
-      const token = getAccessToken();
-      await apiClient.delete(`/hospital/${hospital_id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setHospitals((prevHospitals) =>
-        prevHospitals.filter((hospital) => hospital.id !== hospital_id)
-      );
-    } catch (error) {
-      setError("Failed to delete hospital");
-    }
-  }, [getAccessToken]);
+  const deleteHospital = useCallback(
+    async (hospital_id: number) => {
+      try {
+        const token = getAccessToken();
+        await apiClient.delete(`/hospital/${hospital_id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setHospitals((prevHospitals) =>
+          prevHospitals.filter((hospital) => hospital.id !== hospital_id)
+        );
+      } catch (error) {
+        setError("Failed to delete hospital");
+      }
+    },
+    [getAccessToken]
+  );
 
   const updateHospital = useCallback(
     async (hospital_id: number, updatedHospital: Partial<Hospital>) => {
