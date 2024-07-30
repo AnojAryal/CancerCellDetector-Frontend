@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import useApiClientUser from "../services/api-client-user";
-import { Patient } from "../components/patient/ManagePatients";
+import useApiClientUser from "../../services/api-client-user";
+import { Patient, Address } from "../../components/patient/ManagePatients";
 
 const useManagePatients = (hospital?: string | number) => {
   const apiClient = useApiClientUser({ hospital });
@@ -11,7 +11,7 @@ const useManagePatients = (hospital?: string | number) => {
 
   const fetchPatients = useCallback(async () => {
     try {
-      const response = await apiClient.get(`/patients`);
+      const response = await apiClient.get<Patient[]>(`/patients`);
       setPatients(response.data);
     } catch (err) {
       setError("Failed to fetch patients.");
@@ -32,14 +32,48 @@ const useManagePatients = (hospital?: string | number) => {
     }
   };
 
+  const fetchPatientAddress = async (
+    patient_id: number,
+    address_id: number
+  ): Promise<Address> => {
+    try {
+      const response = await apiClient.get<Address>(
+        `/patients/${patient_id}/address/${address_id}`
+      );
+      return response.data;
+    } catch (err) {
+      setError("Failed to fetch address.");
+      throw err;
+    }
+  };
+
+  const updatePatientAddress = async (
+    patient_id: number,
+    address_id: number,
+    address: Partial<Address>
+  ) => {
+    try {
+      await apiClient.put(
+        `/patients/${patient_id}/address/${address_id}`,
+        address
+      );
+      await fetchPatients();
+    } catch (err) {
+      setError("Failed to update address.");
+    }
+  };
+
   useEffect(() => {
     fetchPatients();
   }, [fetchPatients]);
+
   return {
     patients,
     loading,
     error,
     updatePatient,
+    fetchPatientAddress,
+    updatePatientAddress,
   };
 };
 

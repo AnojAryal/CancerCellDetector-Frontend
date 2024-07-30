@@ -15,8 +15,8 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { filterItems, sortItems } from "../generic/SortSelector";
-import useManageUsers, { User } from "../../hooks/useManageUsers";
 import { useNavigate } from "react-router-dom";
+import useManageUsers, { User } from "../../hooks/admin/useManageUsers";
 
 const ManageUsers = () => {
   const navigate = useNavigate();

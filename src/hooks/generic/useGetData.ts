@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import apiClient from "../services/api-client";
+import apiClient from "../../services/api-client";
 
 export interface FetchResponse<T> {
   count: number;
@@ -43,7 +43,7 @@ const useGetData = <T>(endpoint: string, query: string = "") => {
     fetchData();
   }, [endpoint, query]);
 
-  return { data, error, isLoading};
+  return { data, error, isLoading };
 };
 
 export default useGetData;

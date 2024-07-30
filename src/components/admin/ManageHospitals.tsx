@@ -25,10 +25,12 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
-import useManageHospitals, { Hospital } from "../../hooks/useManageHospitals";
+
 import { filterItems, sortItems } from "../generic/SortSelector";
 import CreateHospital from "./CreateHospital";
-
+import useManageHospitals, {
+  Hospital,
+} from "../../hooks/admin/useManageHospitals";
 
 const ManageHospitals = () => {
   // Custom hook to manage hospital data

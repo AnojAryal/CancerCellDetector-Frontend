@@ -17,9 +17,9 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useUserCreate } from "../../hooks/useCreateUser";
 import HospitalSelect from "./HospitalSelect";
 import { isAdmin } from "../generic/DecodeToken";
+import { useUserCreate } from "../../hooks/admin/useCreateUser";
 
 const CreateUser = () => {
   const navigate = useNavigate();

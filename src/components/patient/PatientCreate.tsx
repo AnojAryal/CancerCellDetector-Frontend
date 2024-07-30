@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import useCreatePatient from "../../hooks/useCreatePatient";
+import useCreatePatient from "../../hooks/user/useCreatePatient";
 import { patientSchema } from "../../schema/validationSchema";
 import HospitalSelect from "../admin/HospitalSelect";
 import { hospitalId, isAdmin } from "../generic/DecodeToken";

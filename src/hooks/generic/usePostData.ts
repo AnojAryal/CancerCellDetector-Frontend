@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
-import apiClient from "../services/api-client";
+import apiClient from "../../services/api-client";
 
 interface UsePostDataResult<T> {
   data: T | null;
@@ -9,9 +9,7 @@ interface UsePostDataResult<T> {
   postData: (postData: unknown) => Promise<void>;
 }
 
-const usePostData = <T>(
-  endpoint: string,
-): UsePostDataResult<T> => {
+const usePostData = <T>(endpoint: string): UsePostDataResult<T> => {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string>("");
   const [isLoading, setLoading] = useState<boolean>(false);
