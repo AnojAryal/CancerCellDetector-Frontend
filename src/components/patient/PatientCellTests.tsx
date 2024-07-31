@@ -21,7 +21,7 @@ import CardGrid from "../generic/CardGrid";
   import usePostCellTest from "../../hooks/user/useCellTests";
 
 interface CellTestProps {
-  patient_id: number;
+  patient_id: string;
 }
 
 function PatientCellTests({ patient_id }: CellTestProps) {

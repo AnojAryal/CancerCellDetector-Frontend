@@ -6,31 +6,11 @@ const useCellTests = (hospital?: string | number) => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [cellTests, setCellTests] = useState<
-    { title: string; description: string }[]
-  >([]);
-
-  const fetchCellTests = useCallback(
-    async (patient_id: number) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await apiClient.get(
-          `/patients/${patient_id}/cell_tests`
-        );
-        setCellTests(response.data);
-      } catch (err) {
-        setError("Failed to fetch cell test data.");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [apiClient]
-  );
+  const [cellTests] = useState<{ title: string; description: string }[]>([]);
 
   const postCellTest = useCallback(
     async (
-      patient_id: number,
+      patient_id: string,
       cellTestData: {
         title: string;
         description: string;
@@ -46,18 +26,16 @@ const useCellTests = (hospital?: string | number) => {
           `/patients/${patient_id}/cell_tests`,
           cellTestData
         );
-        await fetchCellTests(patient_id);
       } catch (err) {
         setError("Failed to post cell test data.");
       } finally {
         setLoading(false);
       }
     },
-    [apiClient, fetchCellTests]
+    [apiClient]
   );
 
   return {
-    fetchCellTests,
     postCellTest,
     cellTests,
     loading,
