@@ -13,11 +13,10 @@ import {
 } from "@chakra-ui/react";
 
 interface BoxGridProps {
-  cellTests: { title: string; description: string }[];
   onAddCellTest: () => void;
 }
 
-function CardGrid({ cellTests, onAddCellTest }: BoxGridProps) {
+function CardGrid({ onAddCellTest }: BoxGridProps) {
   const bgColor = useColorModeValue("gray.50", "gray.700");
   const borderColor = useColorModeValue("gray.400", "gray.600");
   const textColor = useColorModeValue("black", "white");
@@ -49,29 +48,7 @@ function CardGrid({ cellTests, onAddCellTest }: BoxGridProps) {
       </CardHeader>
       <CardBody p={padding}>
         <Stack spacing={4} align="stretch" overflowY="auto">
-          {cellTests.length > 0 ? (
-            cellTests.map((test, index) => (
-              <Card
-                key={index}
-                p={padding}
-                borderWidth="1px"
-                borderRadius="md"
-                bg={bgColor}
-                borderColor={borderColor}
-              >
-                <CardHeader>
-                  <Text fontSize="lg" fontWeight="bold" color={textColor}>
-                    {test.title}
-                  </Text>
-                </CardHeader>
-                <CardBody>
-                  <Text color={textColor}>{test.description}</Text>
-                </CardBody>
-              </Card>
-            ))
-          ) : (
-            <Text color="gray.500">No cell tests added yet.</Text>
-          )}
+          (<Text color="gray.500">No cell tests added yet.</Text>)
         </Stack>
       </CardBody>
     </Card>

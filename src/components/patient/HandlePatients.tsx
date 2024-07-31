@@ -33,7 +33,7 @@ import { BiEdit, BiHome } from "react-icons/bi";
 
 const HandlePatients = () => {
   const location = useLocation();
-  const patientId = location.state?.patient?.id as number | undefined;
+  const patient_id = location.state?.patient?.id as number;
   const hospital_id = isHospitalAdmin?.toString() || "";
 
   const {
@@ -64,8 +64,8 @@ const HandlePatients = () => {
   const borderColor = useColorModeValue("gray.200", "gray.600");
 
   useEffect(() => {
-    if (patientId) {
-      fetchPatientById(patientId)
+    if (patient_id) {
+      fetchPatientById(patient_id)
         .then((fetchedPatient) => {
           setPatient(fetchedPatient);
           setEditPatient(fetchedPatient);
@@ -75,7 +75,7 @@ const HandlePatients = () => {
         })
         .catch(() => setError("Failed to fetch patient details."));
     }
-  }, [patientId, fetchPatientById]);
+  }, [patient_id, fetchPatientById]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -205,7 +205,7 @@ const HandlePatients = () => {
           </Box>
 
           <Box mt={5}>
-            <PatientCellTests />
+            <PatientCellTests patient_id={patient_id} />
           </Box>
         </Box>
       </Box>

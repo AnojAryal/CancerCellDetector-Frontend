@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Button,
   Modal,
@@ -19,15 +18,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cellTestSchema } from "../../schema/validationSchema";
 import CardGrid from "../generic/CardGrid";
+  import usePostCellTest from "../../hooks/user/useCellTests";
 
 interface CellTestProps {
-  initialCellTests?: { title: string; description: string }[];
+  patient_id: number;
 }
 
-function PatientCellTests({ initialCellTests = [] }: CellTestProps) {
-  const [cellTests, setCellTests] =
-    useState<{ title: string; description: string }[]>(initialCellTests);
+function PatientCellTests({ patient_id }: CellTestProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { postCellTest, loading, error } = usePostCellTest();
 
   const {
     register,
@@ -42,13 +41,23 @@ function PatientCellTests({ initialCellTests = [] }: CellTestProps) {
     },
   });
 
-  const onSubmit = (data: { Title: string; Description: string }) => {
-    setCellTests((prevTests) => [
-      ...prevTests,
-      { title: data.Title, description: data.Description },
-    ]);
-    reset();
-    onClose();
+  const onSubmit = async (data: { Title: string; Description: string }) => {
+    const timestamp = new Date().toISOString();
+    const cellTestData = {
+      title: data.Title,
+      description: data.Description,
+      updated_at: timestamp,
+      created_at: timestamp,
+      detection_status: "pending",
+    };
+
+    try {
+      await postCellTest(patient_id, cellTestData);
+      reset();
+      onClose();
+    } catch (err) {
+      console.log("Error");
+    }
   };
 
   const handleModalClose = () => {
@@ -58,8 +67,7 @@ function PatientCellTests({ initialCellTests = [] }: CellTestProps) {
 
   return (
     <>
-      <CardGrid cellTests={cellTests} onAddCellTest={onOpen} />
-
+      <CardGrid onAddCellTest={onOpen} />
       <Modal isOpen={isOpen} onClose={handleModalClose}>
         <ModalOverlay />
         <ModalContent>
@@ -82,7 +90,12 @@ function PatientCellTests({ initialCellTests = [] }: CellTestProps) {
                 </FormErrorMessage>
               </FormControl>
               <ModalFooter>
-                <Button colorScheme="green" mr={3} type="submit">
+                <Button
+                  colorScheme="green"
+                  mr={3}
+                  type="submit"
+                  isLoading={loading}
+                >
                   Add
                 </Button>
                 <Button variant="ghost" onClick={handleModalClose}>
@@ -93,6 +106,7 @@ function PatientCellTests({ initialCellTests = [] }: CellTestProps) {
           </ModalBody>
         </ModalContent>
       </Modal>
+      {error && <p>{error}</p>}
     </>
   );
 }
