@@ -10,13 +10,19 @@ import {
   Spacer,
   Divider,
 } from "@chakra-ui/react";
-
+import { useLocation } from "react-router-dom";
+import CellTestCard from "../patient/CellTestCard";
 
 interface CardGridProps {
   onAddCellTest: () => void;
 }
 
 function CardGrid({ onAddCellTest }: CardGridProps) {
+  const location = useLocation();
+
+  const patient_id =
+    (location.state as { patient?: { id: string } })?.patient?.id || "";
+
   const bgColor = useColorModeValue("gray.50", "gray.700");
   const borderColor = useColorModeValue("gray.400", "gray.600");
   const textColor = useColorModeValue("black", "white");
@@ -47,7 +53,7 @@ function CardGrid({ onAddCellTest }: CardGridProps) {
         </Stack>
       </CardHeader>
       <CardBody p={padding}>
-        {/* <CellTestCard patient_id={patient_id} /> */}
+        <CellTestCard patient_id={patient_id} />
       </CardBody>
     </Card>
   );

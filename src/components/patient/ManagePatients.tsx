@@ -30,7 +30,7 @@ export interface Address {
 }
 
 export interface CellTest {
-  id:string;
+  id: string;
   title: string;
   description: string;
   created_at: EpochTimeStamp;
