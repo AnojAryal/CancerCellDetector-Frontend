@@ -4,7 +4,6 @@ import {
   CardHeader,
   Heading,
   Stack,
-  Text,
   useColorModeValue,
   Button,
   Flex,
@@ -12,11 +11,12 @@ import {
   Divider,
 } from "@chakra-ui/react";
 
-interface BoxGridProps {
+
+interface CardGridProps {
   onAddCellTest: () => void;
 }
 
-function CardGrid({ onAddCellTest }: BoxGridProps) {
+function CardGrid({ onAddCellTest }: CardGridProps) {
   const bgColor = useColorModeValue("gray.50", "gray.700");
   const borderColor = useColorModeValue("gray.400", "gray.600");
   const textColor = useColorModeValue("black", "white");
@@ -47,9 +47,7 @@ function CardGrid({ onAddCellTest }: BoxGridProps) {
         </Stack>
       </CardHeader>
       <CardBody p={padding}>
-        <Stack spacing={4} align="stretch" overflowY="auto">
-          (<Text color="gray.500">No cell tests added yet.</Text>)
-        </Stack>
+        {/* <CellTestCard patient_id={patient_id} /> */}
       </CardBody>
     </Card>
   );
