@@ -11,7 +11,7 @@ export interface UserProfile {
   contact_no: string;
 }
 
-const useUserProfile = () => {
+const useGetProfile = () => {
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string>("");
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -49,4 +49,4 @@ const useUserProfile = () => {
   };
 };
 
-export default useUserProfile;
+export default useGetProfile;

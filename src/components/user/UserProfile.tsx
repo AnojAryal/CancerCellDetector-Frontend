@@ -15,26 +15,48 @@ import {
   AlertIcon,
 } from "@chakra-ui/react";
 import { FiEdit } from "react-icons/fi";
-import useUserProfile, {
+import useGetProfile, {
   UserProfile as UserProfileType,
-} from "../../hooks/user/useUserProfile";
+} from "../../hooks/user/useGetProfile";
+import useUpdateUserProfile from "../../hooks/user/useUpdateProfile";
 
 const UserProfile = () => {
-  const { profileData, error, isLoading } = useUserProfile();
+  const { profileData, error, isLoading } = useGetProfile();
+  const {
+    isLoading: isUpdating,
+    error: updateError,
+    success,
+    updateProfile,
+  } = useUpdateUserProfile();
   const [isEditingDetails, setIsEditingDetails] = useState<boolean>(false);
   const [profilePicture, setProfilePicture] = useState<
     string | ArrayBuffer | null
   >(null);
   const [formData, setFormData] = useState<UserProfileType | null>(null);
+  const [successMessageVisible, setSuccessMessageVisible] =
+    useState<boolean>(false);
 
   useEffect(() => {
-    console.log("Profile Data from Hook:", profileData);
     if (profileData) {
       setFormData(profileData);
     }
   }, [profileData]);
 
-  const handleEditDetailsClick = () => setIsEditingDetails(!isEditingDetails);
+  useEffect(() => {
+    if (success) {
+      setSuccessMessageVisible(true);
+      const timer = setTimeout(() => setSuccessMessageVisible(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
+  const handleEditDetailsClick = async () => {
+    if (isEditingDetails && formData) {
+      // Save changes
+      await updateProfile(formData);
+    }
+    setIsEditingDetails(!isEditingDetails);
+  };
 
   const handleEditPictureClick = () => {
     document.getElementById("profile-picture-input")?.click();
@@ -142,9 +164,26 @@ const UserProfile = () => {
                 );
               })}
             </VStack>
-            <Button mt="6" colorScheme="green" onClick={handleEditDetailsClick}>
+            <Button
+              mt="6"
+              colorScheme="green"
+              onClick={handleEditDetailsClick}
+              isLoading={isUpdating}
+            >
               {isEditingDetails ? "Save Changes" : "Edit Profile"}
             </Button>
+            {updateError && (
+              <Alert status="error" mt="4">
+                <AlertIcon />
+                {updateError}
+              </Alert>
+            )}
+            {successMessageVisible && success && (
+              <Alert status="success" mt="4">
+                <AlertIcon />
+                {success}
+              </Alert>
+            )}
           </Flex>
         </CardBody>
       </Card>
