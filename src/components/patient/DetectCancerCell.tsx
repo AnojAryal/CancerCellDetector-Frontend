@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Heading,
-  Image,
   Input,
   SimpleGrid,
   Text,
@@ -15,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { BiEditAlt } from "react-icons/bi";
 import { useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 const DetectCancerCell = () => {
   const borderColor = useColorModeValue("gray.300", "gray.600");
@@ -23,6 +23,9 @@ const DetectCancerCell = () => {
   const shadowColor = useColorModeValue("md", "dark-lg");
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const location = useLocation();
+  const { title = "Default Title", description = "Default Description" } =
+    location.state || {};
 
   const handleClick = () => {
     if (fileInputRef.current) {
@@ -32,14 +35,13 @@ const DetectCancerCell = () => {
 
   return (
     <Box p={8} pt={20} bg={boxBgColor} color={textColor} minH="100vh">
-      <HStack  alignItems="center" mb={6}>
-        <Heading as="h1" size="xl">
-          Skin Cancer
+      <HStack alignItems="center" mb={6}>
+        <Heading as="h1" size="lg">
+          {title}
         </Heading>
-        <Icon as={BiEditAlt} boxSize={6} cursor="pointer" />
       </HStack>
-      <Text mb={6} fontSize="lg">
-        Seen symptoms of Skin cancer
+      <Text mb={8} fontSize="md">
+        {description}
       </Text>
       <SimpleGrid columns={{ sm: 1, md: 2 }} spacing={8}>
         <Box>
@@ -56,15 +58,7 @@ const DetectCancerCell = () => {
             p={4}
             boxShadow={shadowColor}
             height="200px"
-          >
-            <Image
-              src="test-dataset-image-url"
-              alt="Test Dataset"
-              borderRadius="md"
-              objectFit="cover"
-              height="100%"
-            />
-          </Box>
+          ></Box>
         </Box>
         <Box>
           <HStack justifyContent="space-between" alignItems="center" mb={4}>
@@ -94,6 +88,7 @@ const DetectCancerCell = () => {
               display="none"
               onChange={(e) => {
                 console.log(e.target.files);
+                // Implement file handling logic here
               }}
             />
           </Box>
@@ -124,12 +119,6 @@ const DetectCancerCell = () => {
               <Text mb={2} fontSize="md" fontWeight="bold">
                 ID: 2c7ff942-9f47-4dcb-a858-4ce574e08c09
               </Text>
-              <Image
-                src="result-image-url"
-                alt="Result Image"
-                borderRadius="md"
-                height="100%"
-              />
             </Box>
           </GridItem>
           <GridItem>
@@ -144,12 +133,6 @@ const DetectCancerCell = () => {
               <Text mb={2} fontSize="md" fontWeight="bold">
                 ID: 903adf83-0500-4494-8055-2ce873d4c550
               </Text>
-              <Image
-                src="result-image-url"
-                alt="Result Image"
-                borderRadius="md"
-                height="100%"
-              />
             </Box>
           </GridItem>
           <GridItem>
@@ -164,12 +147,6 @@ const DetectCancerCell = () => {
               <Text mb={2} fontSize="md" fontWeight="bold">
                 ID: 48959aba-ef59-42cf-87a7-5fe1b0089ea1
               </Text>
-              <Image
-                src="result-image-url"
-                alt="Result Image"
-                borderRadius="md"
-                height="100%"
-              />
             </Box>
           </GridItem>
         </Grid>
