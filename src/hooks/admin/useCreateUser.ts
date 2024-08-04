@@ -1,9 +1,7 @@
 import { create } from "zustand";
-
 import { AxiosError } from "axios";
-import { isAdmin } from "../../components/generic/DecodeToken";
 import apiClient from "../../services/api-client";
-
+import { isAdmin } from "../../components/generic/DecodeToken";
 
 interface CreateUserFormState {
   formErrors: { [key: string]: string };
@@ -81,14 +79,12 @@ export const useUserCreate = create<CreateUserFormState>((set) => ({
         );
 
         if (response.status === 201) {
-          console.log("User Creation successful", response.data);
           set({
             formErrors: {},
             successMessage: "Account has been added to the system.",
           });
           onSuccess();
         } else {
-          console.error("Unexpected response during User creation:", response);
           set({
             formErrors: {
               server:
@@ -98,14 +94,26 @@ export const useUserCreate = create<CreateUserFormState>((set) => ({
         }
       } catch (error) {
         if (error instanceof AxiosError && error.response) {
-          set({
-            formErrors: error.response.data.errors || {
-              server:
-                "An error occurred during User creation. Please try again later.",
-            },
-          });
+          const statusCode = error.response.status;
+          const errorMessage =
+            error.response.data.detail ||
+            "An error occurred during User creation. Please try again later.";
+          if (statusCode === 400) {
+            const apiErrors = error.response.data.detail || {};
+            if (apiErrors.includes("Username already registered")) {
+              set({ formErrors: { username: "Username already registered" } });
+            }
+            if (apiErrors.includes("Email already registered")) {
+              set({ formErrors: { email: "Email already taken" } });
+            }
+          } else {
+            set({
+              formErrors: {
+                server: errorMessage,
+              },
+            });
+          }
         } else {
-          console.error("Error during User creation:", error);
           set({
             formErrors: {
               server:
