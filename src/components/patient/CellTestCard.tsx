@@ -51,8 +51,10 @@ const CellTestsCard = ({ patient_id }: CellTestsCardProps) => {
     fetchData();
   }, [patient_id, fetchPatientById]);
 
-  const handleCardClick = (cell_test_id: string) => {
-    navigate(`/patients/${patient_id}/${cell_test_id}`);
+  const handleCardClick = (cell_test_id: string, title: string, description: string) => {
+    navigate(`/patients/${patient_id}/${cell_test_id}`, {
+      state: { title, description }
+    });
   };
 
   if (loading) {
@@ -84,7 +86,7 @@ const CellTestsCard = ({ patient_id }: CellTestsCardProps) => {
             transition="all 0.2s"
             position="relative"
             _hover={{ bg: hoverBgColor, cursor: "pointer", boxShadow: "lg" }}
-            onClick={() => handleCardClick(test.id)}
+            onClick={() => handleCardClick(test.id, test.title, test.description)}
           >
             <VStack align="start" spacing={2} mb={5}> 
               <Text fontWeight="bold" color={textColor}>
