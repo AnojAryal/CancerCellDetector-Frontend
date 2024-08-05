@@ -13,7 +13,7 @@ import {
   GridItem,
 } from "@chakra-ui/react";
 import { BiEditAlt } from "react-icons/bi";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const DetectCancerCell = () => {
@@ -27,10 +27,27 @@ const DetectCancerCell = () => {
   const { title = "Default Title", description = "Default Description" } =
     location.state || {};
 
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
   const handleClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
+  };
+
+  const handleFiles = (files: FileList | null) => {
+    if (files) {
+      setSelectedFiles(Array.from(files));
+    }
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    handleFiles(event.dataTransfer.files);
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
   };
 
   return (
@@ -76,6 +93,8 @@ const DetectCancerCell = () => {
             width="100%"
             height="100px"
             onClick={handleClick}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
             cursor="pointer"
           >
             <Text mb={2} fontSize="lg">
@@ -86,13 +105,17 @@ const DetectCancerCell = () => {
               multiple
               ref={fileInputRef}
               display="none"
-              onChange={(e) => {
-                console.log(e.target.files);
-                // Implement file handling logic here
-              }}
+              onChange={(e) => handleFiles(e.target.files)}
             />
           </Box>
           <VStack spacing={4} align="stretch" mt={4}>
+            {selectedFiles.length > 0 && (
+              <Box>
+                {selectedFiles.map((file, index) => (
+                  <Text key={index}>{file.name}</Text>
+                ))}
+              </Box>
+            )}
             <Button colorScheme="green" size="md" alignSelf="center">
               Process Data
             </Button>
