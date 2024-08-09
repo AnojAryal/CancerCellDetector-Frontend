@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Heading,
-  Input,
   Text,
   useColorModeValue,
   HStack,
@@ -10,9 +9,12 @@ import {
   Flex,
   Grid,
   GridItem,
+  Spinner,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useDropzone, Accept } from "react-dropzone";
+import useFileUpload from "../../hooks/user/useFileUpload";
 
 const DetectCancerCell = () => {
   const borderColor = useColorModeValue("gray.300", "gray.600");
@@ -20,37 +22,52 @@ const DetectCancerCell = () => {
   const textColor = useColorModeValue("gray.800", "white");
   const shadowColor = useColorModeValue("md", "dark-lg");
 
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const location = useLocation();
-  const { title = "Default Title", description = "Default Description" } =
-    location.state || {};
+  const {
+    title = "Default Title",
+    description = "Default Description",
+    patient_id,
+    cell_test_id,
+  } = location.state || {};
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
-  const handleClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFiles = (files: FileList | null) => {
-    if (files) {
-      setSelectedFiles(Array.from(files));
-    }
-  };
-
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    handleFiles(event.dataTransfer.files);
-  };
-
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-  };
+  const [error, setError] = useState<string | null>(null);
+  const { uploadFiles, uploadStatus } = useFileUpload();
 
   const handleClear = () => {
     setSelectedFiles([]);
+    setError(null);
   };
+
+  const handleUpload = () => {
+    if (!patient_id || !cell_test_id) {
+      setError("Missing patient or cell test ID");
+      return;
+    }
+
+    if (selectedFiles.length === 0) {
+      setError("No files selected");
+      return;
+    }
+
+    uploadFiles(patient_id, cell_test_id, selectedFiles)
+      .then(() => {
+        setError(null);
+      })
+      .catch((err) => {
+        setError("Upload failed");
+        console.error("Upload error:", err);
+      });
+  };
+
+   const acceptTypes: Accept = {
+    'image/*': []
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: (files) => setSelectedFiles(files),
+    accept: acceptTypes,
+  });
 
   return (
     <Box p={8} pt={20} bg={boxBgColor} color={textColor} minH="100vh">
@@ -105,50 +122,49 @@ const DetectCancerCell = () => {
               flexDirection="column"
               alignItems="center"
               justifyContent="center"
-              onClick={handleClick}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
               cursor="pointer"
+              {...getRootProps()}
             >
+              <input {...getInputProps()} />
               <Text mb={2} fontSize="lg">
                 Drag & drop images here, or click to select files
               </Text>
-              <Input
-                type="file"
-                multiple
-                ref={fileInputRef}
-                display="none"
-                onChange={(e) => handleFiles(e.target.files)}
-              />
               {selectedFiles.length > 0 && (
-                <>
-                  <HStack spacing={2} mt={2} wrap="wrap" mb={4}>
-                    {selectedFiles.map((file, index) => (
-                      <Box
-                        key={index}
-                        border="1px solid"
-                        borderColor={borderColor}
-                        borderRadius="md"
-                        p={2}
-                        boxShadow={shadowColor}
-                      >
-                        <Image
-                          src={URL.createObjectURL(file)}
-                          alt={`Selected ${file.name}`}
-                          boxSize="100px"
-                          objectFit="cover"
-                        />
-                      </Box>
-                    ))}
-                  </HStack>
-                </>
+                <HStack spacing={2} mt={2} wrap="wrap" mb={4}>
+                  {selectedFiles.map((file, index) => (
+                    <Box
+                      key={index}
+                      border="1px solid"
+                      borderColor={borderColor}
+                      borderRadius="md"
+                      p={2}
+                      boxShadow={shadowColor}
+                    >
+                      <Image
+                        src={URL.createObjectURL(file)}
+                        alt={`Selected ${file.name}`}
+                        boxSize="100px"
+                        objectFit="cover"
+                      />
+                    </Box>
+                  ))}
+                </HStack>
               )}
             </Box>
             {selectedFiles.length > 0 && (
               <Flex justifyContent="center" mt={4}>
                 <HStack spacing={4}>
-                  <Button colorScheme="green" size="sm">
-                    Upload
+                  <Button
+                    colorScheme="green"
+                    size="sm"
+                    onClick={handleUpload}
+                    isDisabled={uploadStatus === "uploading"}
+                  >
+                    {uploadStatus === "uploading" ? (
+                      <Spinner size="sm" />
+                    ) : (
+                      "Upload"
+                    )}
                   </Button>
                   <Button colorScheme="red" size="sm" onClick={handleClear}>
                     Clear
@@ -156,8 +172,12 @@ const DetectCancerCell = () => {
                 </HStack>
               </Flex>
             )}
+            {error && (
+              <Box mt={4} p={4} bg="red.100" color="red.800" borderRadius="md">
+                <Text fontSize="sm">{error}</Text>
+              </Box>
+            )}
           </Box>
-          
         </Flex>
         <Flex mt={4}>
           <HStack spacing={4}>
