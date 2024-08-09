@@ -10,13 +10,17 @@ const useFileUpload = (hospital?: string | number) => {
     cell_test_id: string,
     files: File[]
   ) => {
+    setUploadStatus(null);
+
     try {
       const formData = new FormData();
       files.forEach((file) => {
-        formData.append("data_images", file);
+        formData.append("file", file);
       });
 
-      const url = `/patient/${patient_id}/cell_test/${cell_test_id}/data_images`;
+      const url = `/patients/${patient_id}/cell_tests/${cell_test_id}/data_images`;
+      console.log("Sending FormData:", formData);
+
       const response = await apiClient.post(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
