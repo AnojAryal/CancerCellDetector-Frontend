@@ -11,6 +11,7 @@ import UserProfile from "./components/user/UserProfile";
 import ManagePatients from "./components/patient/ManagePatients";
 import UserHandler from "./components/admin/UserHandler";
 import HandlePatients from "./components/patient/HandlePatients";
+import DetectCancerCell from "./components/patient/DetectCancerCell";
 
 const AppRoutes = () => {
   return (
@@ -20,7 +21,7 @@ const AppRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/profile" element={<UserProfile />} />
 
-      {/* Only users and hospital admins can access ManagePatients */}
+      {/* Only users and hospital admins can access*/}
       <Route
         path="/patients"
         element={
@@ -34,6 +35,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute isUserOrHospitalAdminRoute>
             <HandlePatients />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/patients/:patient_id/:cell_test_id"
+        element={
+          <ProtectedRoute isUserOrHospitalAdminRoute>
+            <DetectCancerCell />
           </ProtectedRoute>
         }
       />

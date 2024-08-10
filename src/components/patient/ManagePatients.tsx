@@ -29,14 +29,24 @@ export interface Address {
   patient: number;
 }
 
+export interface CellTest {
+  id: string;
+  title: string;
+  description: string;
+  created_at: EpochTimeStamp;
+  updated_at: EpochTimeStamp;
+  detection_status: string;
+}
+
 export interface Patient {
-  id: number;
+  id: string;
   first_name: string;
   last_name: string;
   email: string;
   phone: string;
   birth_date: string;
   address?: Address;
+  cell_tests?: CellTest;
 }
 
 const ManagePatients = () => {
@@ -86,7 +96,7 @@ const ManagePatients = () => {
             maxW="300px"
           />
           <Select
-            maxW="220px"
+            maxW="230px"
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
           >

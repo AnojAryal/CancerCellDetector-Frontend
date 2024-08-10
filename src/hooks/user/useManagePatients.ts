@@ -20,7 +20,7 @@ const useManagePatients = (hospital?: string | number) => {
     }
   }, [apiClient]);
 
-  const fetchPatientById = useCallback(async (patient_id: number): Promise<Patient> => {
+  const fetchPatientById = useCallback(async (patient_id: string): Promise<Patient> => {
     setLoading(true);
     try {
       const response = await apiClient.get<Patient>(`/patients/${patient_id}`);
@@ -34,7 +34,7 @@ const useManagePatients = (hospital?: string | number) => {
   }, [apiClient]);
 
   const updatePatient = async (
-    patient_id: number,
+    patient_id: string,
     updatedData: Partial<Patient>
   ) => {
     try {
@@ -46,20 +46,27 @@ const useManagePatients = (hospital?: string | number) => {
   };
 
   const updatePatientAddress = async (
-    patient_id: number,
+    patient_id: string,
     address_id: number,
     address: Partial<Address>
   ) => {
     try {
+      const requestBody = {
+        ...address,
+        patient_id
+      };
+  
       await apiClient.put(
         `/patients/${patient_id}/address/${address_id}`,
-        address
+        requestBody
       );
+  
       await fetchPatients();
     } catch (err) {
       setError("Failed to update address.");
     }
   };
+  
 
   useEffect(() => {
     fetchPatients();

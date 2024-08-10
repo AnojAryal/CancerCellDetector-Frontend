@@ -5,7 +5,6 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
   FormControl,
   FormLabel,
   Input,
@@ -93,7 +92,6 @@ function CreateHospital({ isOpen, onClose }: CreateHospitalProps) {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Create New Hospital</ModalHeader>
-        <ModalCloseButton />
         <ModalBody>
           <Stack spacing={2}>
             <FormControl>
@@ -151,7 +149,7 @@ function CreateHospital({ isOpen, onClose }: CreateHospitalProps) {
           </Stack>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={handleSubmit(onSubmit)}>
+          <Button colorScheme="green" mr={3} onClick={handleSubmit(onSubmit)}>
             Create
           </Button>
           <Button onClick={onClose}>Cancel</Button>

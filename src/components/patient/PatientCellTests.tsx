@@ -1,88 +1,113 @@
-import { useState } from "react";
 import {
-  Box,
   Button,
-  Heading,
-  Text,
-  VStack,
-  useColorModeValue,
-  Icon,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  FormControl,
+  FormLabel,
+  Input,
+  Textarea,
+  useDisclosure,
+  FormErrorMessage,
 } from "@chakra-ui/react";
-import { MdAddCircle } from "react-icons/md";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { cellTestSchema } from "../../schema/validationSchema";
+import CardGrid from "../generic/CardGrid";
+  import usePostCellTest from "../../hooks/user/useCellTests";
 
 interface CellTestProps {
-  initialCellTests?: string[]; // Make this optional
+  patient_id: string;
 }
 
-function PatientCellTests({ initialCellTests = [] }: CellTestProps) {
-  const [cellTests, setCellTests] = useState<string[]>(initialCellTests);
+function PatientCellTests({ patient_id }: CellTestProps) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { postCellTest, loading, error } = usePostCellTest();
 
-  const addCellTest = () => {
-    setCellTests((prevTests) => [...prevTests, `Cell Test ${prevTests.length + 1}`]);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(cellTestSchema),
+    defaultValues: {
+      Title: "",
+      Description: "",
+    },
+  });
+
+  const onSubmit = async (data: { Title: string; Description: string }) => {
+    const timestamp = new Date().toISOString();
+    const cellTestData = {
+      title: data.Title,
+      description: data.Description,
+      updated_at: timestamp,
+      created_at: timestamp,
+      detection_status: "pending",
+    };
+
+    try {
+      await postCellTest(patient_id, cellTestData);
+      reset();
+      onClose();
+    } catch (err) {
+      console.log("Error");
+    }
   };
 
-  const bgColor = useColorModeValue("gray.50", "gray.700");
-  const borderColor = useColorModeValue("gray.200", "gray.600");
-  const textColor = useColorModeValue("black", "white");
+  const handleModalClose = () => {
+    reset();
+    onClose();
+  };
 
   return (
-    <Box
-      p={5}
-      mt={5}
-      borderWidth="1px"
-      borderRadius="md"
-      bg={bgColor}
-      minH="400px"
-      display="flex"
-      flexDirection="column"
-      borderColor={borderColor}
-    >
-      <Box
-        position="sticky"
-        top="0"
-        bg={bgColor}
-        p={4}
-        borderBottomWidth="1px"
-        borderBottomColor={borderColor}
-        zIndex="docked"
-        mb={4}
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Heading size="md" color={textColor}>
-          Cell Tests
-        </Heading>
-        <Button
-          colorScheme="green"
-          leftIcon={<Icon as={MdAddCircle} />}
-          onClick={addCellTest}
-        >
-          New
-        </Button>
-      </Box>
-      <VStack spacing={4} align="stretch" p={4} overflowY="auto">
-        {cellTests.length > 0 ? (
-          cellTests.map((test, index) => (
-            <Box
-              key={index} // Consider using unique identifiers if available
-              p={4}
-              borderWidth="1px"
-              borderRadius="md"
-              bg={bgColor}
-              minH="150px"
-              borderColor={borderColor}
-            >
-              <Text fontSize="lg" fontWeight="bold" color={textColor}>
-                {test}
-              </Text>
-            </Box>
-          ))
-        ) : (
-          <Text color="gray.500">No cell tests added yet.</Text>
-        )}
-      </VStack>
-    </Box>
+    <>
+      <CardGrid onAddCellTest={onOpen} />
+      <Modal isOpen={isOpen} onClose={handleModalClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add New Cell Test</ModalHeader>
+          <ModalBody>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <FormControl isInvalid={!!errors.Title}>
+                <FormLabel>Title</FormLabel>
+                <Input {...register("Title")} placeholder="Enter the title" />
+                <FormErrorMessage>{errors.Title?.message}</FormErrorMessage>
+              </FormControl>
+              <FormControl mt={4} isInvalid={!!errors.Description}>
+                <FormLabel>Description</FormLabel>
+                <Textarea
+                  {...register("Description")}
+                  placeholder="Enter the description"
+                />
+                <FormErrorMessage>
+                  {errors.Description?.message}
+                </FormErrorMessage>
+              </FormControl>
+              <ModalFooter>
+                <Button
+                  colorScheme="green"
+                  mr={3}
+                  type="submit"
+                  isLoading={loading}
+                >
+                  Add
+                </Button>
+                <Button variant="ghost" onClick={handleModalClose}>
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </form>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      {error && <p>{error}</p>}
+    </>
   );
 }
 

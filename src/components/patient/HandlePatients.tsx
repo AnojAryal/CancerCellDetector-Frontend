@@ -33,7 +33,7 @@ import { BiEdit, BiHome } from "react-icons/bi";
 
 const HandlePatients = () => {
   const location = useLocation();
-  const patientId = location.state?.patient?.id as number | undefined;
+  const patient_id = location.state?.patient?.id as string;
   const hospital_id = isHospitalAdmin?.toString() || "";
 
   const {
@@ -49,6 +49,7 @@ const HandlePatients = () => {
   } = useDisclosure();
 
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [address, setAddress] = useState<Address | null>(null);
   const [editPatient, setEditPatient] = useState<Patient | null>(null);
   const [editAddress, setEditAddress] = useState<Address | null>(null);
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
@@ -64,18 +65,21 @@ const HandlePatients = () => {
   const borderColor = useColorModeValue("gray.200", "gray.600");
 
   useEffect(() => {
-    if (patientId) {
-      fetchPatientById(patientId)
+    if (patient_id) {
+      fetchPatientById(patient_id)
         .then((fetchedPatient) => {
+          console.log("Fetched patient details:", fetchedPatient);
           setPatient(fetchedPatient);
           setEditPatient(fetchedPatient);
-          if (fetchedPatient.address?.id) {
+          if (fetchedPatient.address) {
+            console.log("Fetched address:", fetchedPatient.address);
+            setAddress(fetchedPatient.address);
             setEditAddress(fetchedPatient.address);
           }
         })
         .catch(() => setError("Failed to fetch patient details."));
     }
-  }, [patientId, fetchPatientById]);
+  }, [patient_id, fetchPatientById]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -107,17 +111,20 @@ const HandlePatients = () => {
   };
 
   const handleSaveAddressChanges = async () => {
-    if (editAddress && editPatient) {
+    if (editAddress && patient_id) {
       try {
-        await updatePatientAddress(editPatient.id, editAddress.id, editAddress);
+        const addressIdAsNumber = parseInt(editAddress.id.toString(), 10);
+        await updatePatientAddress(patient_id, addressIdAsNumber, editAddress);
         setFeedbackMessage("Address updated successfully.");
         setTimeout(() => setFeedbackMessage(""), 5000);
-        const updatedPatient = await fetchPatientById(editPatient.id);
+        const updatedPatient = await fetchPatientById(patient_id);
         setEditAddress(updatedPatient.address || null);
         onAddressEditClose();
       } catch {
         setError("Failed to update address.");
       }
+    } else {
+      setError("Address ID or patient ID is undefined.");
     }
   };
 
@@ -154,7 +161,7 @@ const HandlePatients = () => {
 
           <Box
             p={4}
-            borderWidth="1px"
+            borderWidth="2px"
             borderRadius="md"
             bg={cardBgColor}
             minH="120px"
@@ -166,164 +173,167 @@ const HandlePatients = () => {
                 <VStack spacing={3} align="start">
                   <Box display="flex" alignItems="center">
                     <Icon as={MdEmail} boxSize={5} mr={2} color={textColor} />
-                    <Text fontSize="md" color={textColor}>
-                      {patient?.email}
+                    <Text color={textColor}>
+                      {patient ? patient.email : "Loading..."}
                     </Text>
                   </Box>
                   <Box display="flex" alignItems="center">
                     <Icon as={MdPhone} boxSize={5} mr={2} color={textColor} />
-                    <Text fontSize="md" color={textColor}>
-                      {patient?.phone}
+                    <Text color={textColor}>
+                      {patient ? patient.phone : "Loading..."}
                     </Text>
                   </Box>
                   <Box display="flex" alignItems="center">
                     <Icon as={MdCake} boxSize={5} mr={2} color={textColor} />
-                    <Text fontSize="md" color={textColor}>
-                      {patient?.birth_date}
+                    <Text color={textColor}>
+                      {patient
+                        ? new Date(patient.birth_date).toLocaleDateString()
+                        : "Loading..."}
                     </Text>
                   </Box>
                 </VStack>
               </Box>
-              {editAddress && (
-                <Box>
-                  <VStack spacing={3} align="start">
-                    <Box display="flex" alignItems="center">
-                      <Icon
-                        as={FaAddressCard}
-                        boxSize={5}
-                        mr={2}
-                        color={textColor}
-                      />
-                      <Text fontSize="md" color={textColor}>
-                        {editAddress.street}, {editAddress.city}
-                      </Text>
-                    </Box>
-                  </VStack>
-                </Box>
-              )}
+              <Box>
+                <VStack spacing={3} align="start">
+                  <Box display="flex" alignItems="center">
+                    <Icon as={BiHome} boxSize={5} mr={2} color={textColor} />
+                    <Text color={textColor}>
+                      {address ? address.street : "Loading..."}
+                    </Text>
+                  </Box>
+                  <Box display="flex" alignItems="center">
+                    <Icon
+                      as={FaAddressCard}
+                      boxSize={5}
+                      mr={2}
+                      color={textColor}
+                    />
+                    <Text color={textColor}>
+                      {address ? address.city : "Loading..."}
+                    </Text>
+                  </Box>
+                </VStack>
+              </Box>
             </Grid>
           </Box>
-
-          <Box mt={5}>
-            <PatientCellTests initialCellTests={["Test 1", "Test 2"]} />
-          </Box>
         </Box>
+
+        <PatientCellTests patient_id={patient_id} />
+
+        {feedbackMessage && (
+          <Alert status="success" mt={4}>
+            <AlertIcon />
+            {feedbackMessage}
+          </Alert>
+        )}
+        {error && (
+          <Alert status="error" mt={4}>
+            <AlertIcon />
+            {error}
+          </Alert>
+        )}
+
+        <Modal isOpen={isEditOpen} onClose={onEditClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Edit Patient Details</ModalHeader>
+            <ModalBody>
+              <FormControl>
+                <FormLabel>First Name</FormLabel>
+                <Input
+                  name="first_name"
+                  value={editPatient?.first_name || ""}
+                  onChange={handleInputChange}
+                />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>Last Name</FormLabel>
+                <Input
+                  name="last_name"
+                  value={editPatient?.last_name || ""}
+                  onChange={handleInputChange}
+                />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>Email</FormLabel>
+                <Input
+                  name="email"
+                  value={editPatient?.email || ""}
+                  onChange={handleInputChange}
+                />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>Phone</FormLabel>
+                <Input
+                  name="phone"
+                  value={editPatient?.phone || ""}
+                  onChange={handleInputChange}
+                />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>Birth Date</FormLabel>
+                <Input
+                  name="birth_date"
+                  type="date"
+                  value={
+                    editPatient?.birth_date
+                      ? new Date(editPatient.birth_date)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  onChange={handleInputChange}
+                />
+              </FormControl>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                colorScheme="blue"
+                mr={3}
+                onClick={handleSavePatientChanges}
+              >
+                Save
+              </Button>
+              <Button onClick={onEditClose}>Cancel</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        <Modal isOpen={isAddressEditOpen} onClose={onAddressEditClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Edit Address</ModalHeader>
+            <ModalBody>
+              <FormControl>
+                <FormLabel>Street</FormLabel>
+                <Input
+                  name="street"
+                  value={editAddress?.street || ""}
+                  onChange={handleAddressChange}
+                />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>City</FormLabel>
+                <Input
+                  name="city"
+                  value={editAddress?.city || ""}
+                  onChange={handleAddressChange}
+                />
+              </FormControl>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                colorScheme="blue"
+                mr={3}
+                onClick={handleSaveAddressChanges}
+              >
+                Save
+              </Button>
+              <Button onClick={onAddressEditClose}>Cancel</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </Box>
-
-      {/* Patient Details Modal */}
-      <Modal isOpen={isEditOpen} onClose={onEditClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Edit Patient</ModalHeader>
-          <ModalBody>
-            <FormControl mb={4}>
-              <FormLabel>First Name</FormLabel>
-              <Input
-                name="first_name"
-                value={editPatient?.first_name || ""}
-                onChange={handleInputChange}
-              />
-            </FormControl>
-            <FormControl mb={4}>
-              <FormLabel>Last Name</FormLabel>
-              <Input
-                name="last_name"
-                value={editPatient?.last_name || ""}
-                onChange={handleInputChange}
-              />
-            </FormControl>
-            <FormControl mb={4}>
-              <FormLabel>Email</FormLabel>
-              <Input
-                name="email"
-                value={editPatient?.email || ""}
-                onChange={handleInputChange}
-              />
-            </FormControl>
-            <FormControl mb={4}>
-              <FormLabel>Phone</FormLabel>
-              <Input
-                name="phone"
-                value={editPatient?.phone || ""}
-                onChange={handleInputChange}
-              />
-            </FormControl>
-            <FormControl mb={4}>
-              <FormLabel>Birth Date</FormLabel>
-              <Input
-                name="birth_date"
-                value={editPatient?.birth_date || ""}
-                onChange={handleInputChange}
-              />
-            </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              colorScheme="green"
-              mr={3}
-              onClick={handleSavePatientChanges}
-              isDisabled={!editPatient}
-            >
-              Save
-            </Button>
-            <Button variant="ghost" onClick={onEditClose}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      {/* Address Editing Modal */}
-      <Modal isOpen={isAddressEditOpen} onClose={onAddressEditClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Edit Address</ModalHeader>
-          <ModalBody>
-            <FormControl mb={4}>
-              <FormLabel>Street</FormLabel>
-              <Input
-                name="street"
-                value={editAddress?.street || ""}
-                onChange={handleAddressChange}
-              />
-            </FormControl>
-            <FormControl mb={4}>
-              <FormLabel>City</FormLabel>
-              <Input
-                name="city"
-                value={editAddress?.city || ""}
-                onChange={handleAddressChange}
-              />
-            </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              colorScheme="green"
-              mr={3}
-              onClick={handleSaveAddressChanges}
-              isDisabled={!editAddress || !editPatient}
-            >
-              Save
-            </Button>
-            <Button variant="ghost" onClick={onAddressEditClose}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      {feedbackMessage && (
-        <Alert status="success" mt={5}>
-          <AlertIcon />
-          {feedbackMessage}
-        </Alert>
-      )}
-      {error && (
-        <Alert status="error" mt={5}>
-          <AlertIcon />
-          {error}
-        </Alert>
-      )}
     </Box>
   );
 };
