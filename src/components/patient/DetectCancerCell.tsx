@@ -3,18 +3,26 @@ import {
   Button,
   Heading,
   Text,
-  useColorModeValue,
   HStack,
   Image,
   Flex,
+  Spinner,
+  useColorModeValue,
   Grid,
   GridItem,
-  Spinner,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useDropzone, Accept } from "react-dropzone";
-import useFileUpload from "../../hooks/user/useFileUpload";
+import useHandleFiles from "../../hooks/user/useHandleFile";
+import TestResult from "./TestResult";
+
+interface LocationState {
+  title?: string;
+  description?: string;
+  patient_id?: string;
+  cell_test_id?: string;
+}
 
 const DetectCancerCell = () => {
   const borderColor = useColorModeValue("gray.300", "gray.600");
@@ -28,40 +36,44 @@ const DetectCancerCell = () => {
     description = "Default Description",
     patient_id,
     cell_test_id,
-  } = location.state || {};
+  } = location.state as LocationState;
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const { uploadFiles, uploadStatus } = useFileUpload();
+
+  const { handleFiles, uploadStatus, fetchFiles, filesData } = useHandleFiles(
+    patient_id ?? "",
+    cell_test_id ?? ""
+  );
+
+  useEffect(() => {
+    if (patient_id && cell_test_id) {
+      fetchFiles();
+    }
+  }, [fetchFiles, patient_id, cell_test_id]);
 
   const handleClear = () => {
     setSelectedFiles([]);
     setError(null);
   };
 
-  const handleUpload = () => {
-    if (!patient_id || !cell_test_id) {
-      setError("Missing patient or cell test ID");
-      return;
-    }
-
+  const handleUpload = async () => {
     if (selectedFiles.length === 0) {
       setError("No files selected");
       return;
     }
 
-    uploadFiles(patient_id, cell_test_id, selectedFiles)
-      .then(() => {
-        setError(null);
-      })
-      .catch((err) => {
-        setError("Upload failed");
-        console.error("Upload error:", err);
-      });
+    try {
+      await handleFiles(selectedFiles);
+      setError(null);
+    } catch (err) {
+      setError("Upload failed");
+      console.error("Upload error:", err);
+    }
   };
 
-   const acceptTypes: Accept = {
-    'image/*': []
+  const acceptTypes: Accept = {
+    "image/*": [],
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -101,7 +113,34 @@ const DetectCancerCell = () => {
               alignItems="center"
               justifyContent="center"
             >
-              <Text fontSize="lg">Dataset Overview</Text>
+              {filesData.length > 0 ? (
+                <Grid
+                  templateColumns={{ sm: "1fr", md: "repeat(3, 1fr)" }}
+                  gap={6}
+                >
+                  {filesData.map((file, index) => (
+                    <GridItem key={index}>
+                      <Box
+                        border="1px solid"
+                        borderColor={borderColor}
+                        borderRadius="md"
+                        p={4}
+                        boxShadow={shadowColor}
+                        height="200px"
+                      >
+                        <Image
+                          src={file.image}
+                          alt={`Cell Image ${index + 1}`}
+                          boxSize="100%"
+                          objectFit="cover"
+                        />
+                      </Box>
+                    </GridItem>
+                  ))}
+                </Grid>
+              ) : (
+                <Text fontSize="lg">No images available</Text>
+              )}
             </Box>
           </Box>
           <Box flex="1" minWidth="0" height="200px">
@@ -130,7 +169,7 @@ const DetectCancerCell = () => {
                 Drag & drop images here, or click to select files
               </Text>
               {selectedFiles.length > 0 && (
-                <HStack spacing={2} mt={2} wrap="wrap" mb={4}>
+                <HStack spacing={2} mt={2} wrap="wrap">
                   {selectedFiles.map((file, index) => (
                     <Box
                       key={index}
@@ -186,56 +225,7 @@ const DetectCancerCell = () => {
             </Button>
           </HStack>
         </Flex>
-
-        <Box mt={8}>
-          <Heading as="h2" size="lg" mb={6}>
-            Results
-          </Heading>
-          <Grid templateColumns={{ sm: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
-            <GridItem>
-              <Box
-                border="1px solid"
-                borderColor={borderColor}
-                borderRadius="md"
-                p={4}
-                boxShadow={shadowColor}
-                height="200px"
-              >
-                <Text mb={2} fontSize="md" fontWeight="bold">
-                  ID: 2c7ff942-9f47-4dcb-a858-4ce574e08c09
-                </Text>
-              </Box>
-            </GridItem>
-            <GridItem>
-              <Box
-                border="1px solid"
-                borderColor={borderColor}
-                borderRadius="md"
-                p={4}
-                boxShadow={shadowColor}
-                height="200px"
-              >
-                <Text mb={2} fontSize="md" fontWeight="bold">
-                  ID: 903adf83-0500-4494-8055-2ce873d4c550
-                </Text>
-              </Box>
-            </GridItem>
-            <GridItem>
-              <Box
-                border="1px solid"
-                borderColor={borderColor}
-                borderRadius="md"
-                p={4}
-                boxShadow={shadowColor}
-                height="200px"
-              >
-                <Text mb={2} fontSize="md" fontWeight="bold">
-                  ID: 48959aba-ef59-42cf-87a7-5fe1b0089ea1
-                </Text>
-              </Box>
-            </GridItem>
-          </Grid>
-        </Box>
+        <TestResult />
       </Flex>
     </Box>
   );
