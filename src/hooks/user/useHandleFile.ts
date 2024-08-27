@@ -16,6 +16,9 @@ const useHandleFiles = (
   const [filesData, setFilesData] = useState<FileData[]>([]);
   const apiClient = useApiClientUser({ hospital });
 
+  // Base URL for accessing media files
+  const BASE_URL = "http://127.0.0.1:8000";
+
   const handleFiles = useCallback(
     async (files: File[]): Promise<void> => {
       setUploadStatus("uploading");
@@ -48,12 +51,19 @@ const useHandleFiles = (
     try {
       const url = `/patients/${patient_id}/cell_tests/${cell_test_id}/data_images`;
       const response = await apiClient.get<FileData[]>(url);
-      setFilesData(response.data);
-      console.log("Fetched files:", response.data);
+
+      // Update each file's image path to a full URL
+      const updatedFilesData = response.data.map((file) => ({
+        ...file,
+        image: `${BASE_URL}/${file.image}`,
+      }));
+
+      setFilesData(updatedFilesData);
+      console.log("Fetched files:", updatedFilesData);
     } catch (error) {
       console.error("Error fetching files:", error);
     }
-  }, [apiClient, cell_test_id, patient_id]);
+  }, [apiClient, cell_test_id, patient_id, BASE_URL]);
 
   return { handleFiles, uploadStatus, fetchFiles, filesData };
 };
