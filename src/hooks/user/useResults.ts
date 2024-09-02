@@ -4,7 +4,7 @@ import useApiClientUser from "../../services/api-client-user";
 interface ResultImage {
   image: string;
   result_id: string;
-  id: number;
+  id: string;
 }
 
 interface Result {
