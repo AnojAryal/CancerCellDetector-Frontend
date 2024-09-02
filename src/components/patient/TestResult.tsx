@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   Box,
   Grid,
@@ -5,40 +6,73 @@ import {
   Heading,
   Text,
   useColorModeValue,
+  Spinner,
+  Image,
 } from "@chakra-ui/react";
+import { useLocation } from "react-router-dom";
+import useResults from "../../hooks/user/useResults";
+
+interface LocationState {
+  title?: string;
+  description?: string;
+  patient_id: string;
+}
 
 const TestResult = () => {
   const borderColor = useColorModeValue("gray.300", "gray.600");
   const shadowColor = useColorModeValue("md", "dark-lg");
 
-  const results = [
-    "2c7ff942-9f47-4dcb-a858-4ce574e08c09",
-    "903adf83-0500-4494-8055-2ce873d4c550",
-    "48959aba-ef59-42cf-87a7-5fe1b0089ea1",
-  ];
+  const { getCellTests, cellTests, loading, error } = useResults();
+  const location = useLocation();
+
+  // Destructure state with defaults
+  const {
+    title = "Default Title",
+    description = "Default Description",
+    patient_id,
+  } = location.state as LocationState;
+
+  useEffect(() => {
+    if (patient_id) {
+      getCellTests(patient_id);
+    }
+  }, [getCellTests, patient_id]);
+
+  if (loading) return <Spinner />;
+  if (error) return <Text color="red.500">{error}</Text>;
 
   return (
     <Box mt={8}>
       <Heading as="h2" size="lg" mb={6}>
-        Results
+        Results for {title} - {description}
       </Heading>
       <Grid templateColumns={{ sm: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
-        {results.map((result, index) => (
-          <GridItem key={index}>
-            <Box
-              border="1px solid"
-              borderColor={borderColor}
-              borderRadius="md"
-              p={4}
-              boxShadow={shadowColor}
-              height="200px"
-            >
-              <Text mb={2} fontSize="md" fontWeight="bold">
-                ID: {result}
-              </Text>
-            </Box>
-          </GridItem>
-        ))}
+        {cellTests.map((test) =>
+          test.results.map((result) =>
+            result.result_images.map((image, index) => (
+              <GridItem key={image.id}>
+                <Box
+                  border="1px solid"
+                  borderColor={borderColor}
+                  borderRadius="md"
+                  p={4}
+                  boxShadow={shadowColor}
+                  height="200px"
+                >
+                  <Text mb={2} fontSize="md" fontWeight="bold">
+                    Result ID: {image.result_id}
+                  </Text>
+                  <Image
+                    src={image.image}
+                    alt={`Cell Image ${index + 1}`}
+                    boxSize="100%"
+                    objectFit="cover"
+                  />
+                </Box>
+              </GridItem>
+            ))
+          )
+        )}
       </Grid>
     </Box>
   );
