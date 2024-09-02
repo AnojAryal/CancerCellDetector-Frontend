@@ -9,11 +9,12 @@ import {
   Spinner,
   Image,
 } from "@chakra-ui/react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useResults from "../../hooks/user/useResults";
 
 interface LocationState {
   patient_id: string;
+  cell_test_id: string;
 }
 
 const TestResult = () => {
@@ -22,10 +23,9 @@ const TestResult = () => {
 
   const { getCellTests, cellTests, loading, error } = useResults();
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const {
-    patient_id,
-  } = location.state as LocationState;
+  const { patient_id, cell_test_id } = location.state as LocationState;
 
   useEffect(() => {
     if (patient_id) {
@@ -35,6 +35,12 @@ const TestResult = () => {
 
   if (loading) return <Spinner size="sm" />;
   if (error) return <Text color="red.500">{error}</Text>;
+
+  const handleImageClick = (resultId: string, imageId: string) => {
+    navigate(`/patients/${patient_id}/cell_tests/${cell_test_id}/results`, {
+      state: { resultId, imageId },
+    });
+  };
 
   return (
     <Box mt={8}>
@@ -76,6 +82,10 @@ const TestResult = () => {
                       objectFit="cover"
                       maxWidth="100%"
                       maxHeight="100%"
+                      cursor="pointer"
+                      onClick={() =>
+                        handleImageClick(image.result_id, image.id)
+                      }
                     />
                   </Box>
                 </Box>

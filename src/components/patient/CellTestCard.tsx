@@ -55,7 +55,7 @@ const CellTestsCard = ({ patient_id }: CellTestsCardProps) => {
     title: string,
     description: string
   ) => {
-    navigate(`/patients/${patient_id}/${cell_test_id}`, {
+    navigate(`/patients/${patient_id}/cell_tests/${cell_test_id}`, {
       state: { title, description, patient_id, cell_test_id },
     });
   };

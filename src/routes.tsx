@@ -12,6 +12,7 @@ import ManagePatients from "./components/patient/ManagePatients";
 import UserHandler from "./components/admin/UserHandler";
 import HandlePatients from "./components/patient/HandlePatients";
 import DetectCancerCell from "./components/patient/DetectCancerCell";
+import ResultDetails from "./components/patient/ResultDetails";
 
 const AppRoutes = () => {
   return (
@@ -39,10 +40,18 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/patients/:patient_id/:cell_test_id"
+        path="/patients/:patient_id/cell_tests/:cell_test_id"
         element={
           <ProtectedRoute isUserOrHospitalAdminRoute>
             <DetectCancerCell />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/patients/:patient_id/cell_tests/:cell_test_id/results"
+        element={
+          <ProtectedRoute isUserOrHospitalAdminRoute>
+            <ResultDetails />
           </ProtectedRoute>
         }
       />
