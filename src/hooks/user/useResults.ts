@@ -26,6 +26,7 @@ interface CellTest {
 
 const useResults = (hospital?: string | number) => {
   const apiClient = useApiClientUser({ hospital });
+  const BASE_URL = "http://127.0.0.1:8000";
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,14 +40,27 @@ const useResults = (hospital?: string | number) => {
         const response = await apiClient.get<CellTest[]>(
           `/patients/${patient_id}/cell_tests`
         );
-        setCellTests(response.data);
+
+        const updatedCellTests = response.data.map((cellTest) => ({
+          ...cellTest,
+          results: cellTest.results.map((result) => ({
+            ...result,
+            result_images: result.result_images.map((image) => ({
+              ...image,
+              // Convert image path to full URL
+              image: `${BASE_URL}/${image.image}`,
+            })),
+          })),
+        }));
+
+        setCellTests(updatedCellTests);
       } catch (err) {
         setError("Failed to fetch cell test data.");
       } finally {
         setLoading(false);
       }
     },
-    [apiClient]
+    [apiClient, BASE_URL]
   );
 
   return {
