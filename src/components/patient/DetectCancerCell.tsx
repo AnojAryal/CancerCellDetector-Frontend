@@ -218,14 +218,14 @@ const DetectCancerCell = () => {
             )}
           </Box>
         </Flex>
-        <Flex mt={4}>
-          <HStack spacing={4}>
-            <Button colorScheme="green" mt={4} size="md">
+        <Flex direction="column" mt={4}>
+          <HStack spacing={4} mb={4} mt={4}>
+            <Button colorScheme="green" size="md">
               Process Data
             </Button>
           </HStack>
+          <TestResult />
         </Flex>
-        <TestResult />
       </Flex>
     </Box>
   );

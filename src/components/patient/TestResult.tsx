@@ -13,8 +13,6 @@ import { useLocation } from "react-router-dom";
 import useResults from "../../hooks/user/useResults";
 
 interface LocationState {
-  title?: string;
-  description?: string;
   patient_id: string;
 }
 
@@ -25,10 +23,7 @@ const TestResult = () => {
   const { getCellTests, cellTests, loading, error } = useResults();
   const location = useLocation();
 
-  // Destructure state with defaults
   const {
-    title = "Default Title",
-    description = "Default Description",
     patient_id,
   } = location.state as LocationState;
 
@@ -38,13 +33,13 @@ const TestResult = () => {
     }
   }, [getCellTests, patient_id]);
 
-  if (loading) return <Spinner />;
+  if (loading) return <Spinner size="sm" />;
   if (error) return <Text color="red.500">{error}</Text>;
 
   return (
     <Box mt={8}>
       <Heading as="h2" size="lg" mb={6}>
-        Results for {title} - {description}
+        Results
       </Heading>
       <Grid templateColumns={{ sm: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
         {cellTests.map((test) =>
@@ -58,16 +53,31 @@ const TestResult = () => {
                   p={4}
                   boxShadow={shadowColor}
                   height="200px"
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="center"
+                  alignItems="center"
                 >
-                  <Text mb={2} fontSize="md" fontWeight="bold">
+                  <Text mb={2} fontSize="sm" fontWeight="bold">
                     Result ID: {image.result_id}
                   </Text>
-                  <Image
-                    src={image.image}
-                    alt={`Cell Image ${index + 1}`}
-                    boxSize="100%"
-                    objectFit="cover"
-                  />
+                  <Box
+                    width="100%"
+                    height="100%"
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    overflow="hidden"
+                    borderRadius="md"
+                  >
+                    <Image
+                      src={image.image}
+                      alt={`Cell Image ${index + 1}`}
+                      objectFit="cover"
+                      maxWidth="100%"
+                      maxHeight="100%"
+                    />
+                  </Box>
                 </Box>
               </GridItem>
             ))
