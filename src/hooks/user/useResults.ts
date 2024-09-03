@@ -1,20 +1,20 @@
 import { useState, useCallback } from "react";
 import useApiClientUser from "../../services/api-client-user";
 
-interface ResultImage {
+export interface ResultImage {
   image: string;
   result_id: string;
   id: string;
 }
 
-interface Result {
+export interface Result {
   description: string;
   created_at: string;
   celltest_id: string;
   result_images: ResultImage[];
 }
 
-interface CellTest {
+export interface CellTest {
   id: string;
   title: string;
   description: string;
