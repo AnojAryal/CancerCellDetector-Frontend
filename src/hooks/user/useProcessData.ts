@@ -6,7 +6,7 @@ interface CellTestResult {
   result: string;
 }
 
-const useProcessData = (cell_test_id: string, accessToken: string) => {
+const useProcessData = (cell_test_id: string) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CellTestResult | null>(null);
@@ -23,12 +23,7 @@ const useProcessData = (cell_test_id: string, accessToken: string) => {
     try {
       const response = await apiClient.post<CellTestResult>(
         `/process-cell-test/${cell_test_id}`,
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
+        null
       );
       setResult(response.data);
     } catch (err) {
