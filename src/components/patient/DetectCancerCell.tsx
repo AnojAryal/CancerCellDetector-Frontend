@@ -16,7 +16,7 @@ import { useLocation } from "react-router-dom";
 import { useDropzone, Accept } from "react-dropzone";
 import useHandleFiles from "../../hooks/user/useHandleFile";
 import TestResult from "./TestResult";
-
+import useProcessData from "../../hooks/user/useProcessData";
 interface LocationState {
   title?: string;
   description?: string;
@@ -45,6 +45,12 @@ const DetectCancerCell = () => {
     patient_id ?? "",
     cell_test_id ?? ""
   );
+  
+  const {
+    processData,
+    loading: processingLoading,
+    error: processingError,
+  } = useProcessData(cell_test_id ?? ""); 
 
   useEffect(() => {
     if (patient_id && cell_test_id) {
@@ -70,6 +76,15 @@ const DetectCancerCell = () => {
       setError("Upload failed");
       console.error("Upload error:", err);
     }
+  };
+
+  const handleProcessData = async () => {
+    if (!cell_test_id) {
+      setError("Cell Test ID is missing.");
+      return;
+    }
+
+    await processData();
   };
 
   const acceptTypes: Accept = {
@@ -218,12 +233,23 @@ const DetectCancerCell = () => {
             )}
           </Box>
         </Flex>
+
         <Flex direction="column" mt={4}>
           <HStack spacing={4} mb={4} mt={4}>
-            <Button colorScheme="green" size="md">
-              Process Data
+            <Button
+              colorScheme="green"
+              size="md"
+              onClick={handleProcessData}
+              isDisabled={processingLoading}
+            >
+              {processingLoading ? <Spinner size="sm" /> : "Process Data"}
             </Button>
           </HStack>
+          {processingError && (
+            <Box mt={4} p={4} bg="red.100" color="red.800" borderRadius="md">
+              <Text fontSize="sm">{processingError}</Text>
+            </Box>
+          )}
           <TestResult />
         </Flex>
       </Flex>
