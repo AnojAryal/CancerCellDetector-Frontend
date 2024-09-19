@@ -21,13 +21,14 @@ import useGetProfile, {
 import useUpdateUserProfile from "../../hooks/user/useUpdateProfile";
 
 const UserProfile = () => {
-  const { profileData, error, isLoading } = useGetProfile();
+  const { data: profileData, error: fetchError, isLoading } = useGetProfile();
   const {
+    updateProfile,
     isLoading: isUpdating,
     error: updateError,
-    success,
-    updateProfile,
+    success: updateSuccess,
   } = useUpdateUserProfile();
+
   const [isEditingDetails, setIsEditingDetails] = useState<boolean>(false);
   const [profilePicture, setProfilePicture] = useState<
     string | ArrayBuffer | null
@@ -38,22 +39,21 @@ const UserProfile = () => {
 
   useEffect(() => {
     if (profileData) {
-      setFormData(profileData);
+      setFormData(profileData as UserProfileType);
     }
   }, [profileData]);
 
   useEffect(() => {
-    if (success) {
+    if (updateSuccess) {
       setSuccessMessageVisible(true);
       const timer = setTimeout(() => setSuccessMessageVisible(false), 5000);
       return () => clearTimeout(timer);
     }
-  }, [success]);
+  }, [updateSuccess]);
 
-  const handleEditDetailsClick = async () => {
+  const handleEditDetailsClick = () => {
     if (isEditingDetails && formData) {
-      // Save changes
-      await updateProfile(formData);
+      updateProfile(formData);
     }
     setIsEditingDetails(!isEditingDetails);
   };
@@ -80,11 +80,11 @@ const UserProfile = () => {
     return <Spinner />;
   }
 
-  if (error) {
+  if (fetchError) {
     return (
       <Alert status="error">
         <AlertIcon />
-        {error}
+        {(fetchError as Error).message || "An error occurred"}
       </Alert>
     );
   }
@@ -175,13 +175,13 @@ const UserProfile = () => {
             {updateError && (
               <Alert status="error" mt="4">
                 <AlertIcon />
-                {updateError}
+                {updateError || "An error occurred"}
               </Alert>
             )}
-            {successMessageVisible && success && (
+            {successMessageVisible && (
               <Alert status="success" mt="4">
                 <AlertIcon />
-                {success}
+                Profile updated successfully!
               </Alert>
             )}
           </Flex>

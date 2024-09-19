@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import apiClient from "../../services/api-client";
 
 export interface FetchResponse<T> {
@@ -6,44 +6,31 @@ export interface FetchResponse<T> {
   results: T[];
 }
 
-const useGetData = <T>(endpoint: string, query: string = "") => {
-  const [data, setData] = useState<T[]>([]);
-  const [error, setError] = useState<string>("");
-  const [isLoading, setLoading] = useState<boolean>(false);
+const useGetData = <T>(
+  endpoint: string,
+  queryKey: string,
+  query: string = ""
+) => {
+  const fetchData = async (): Promise<T | FetchResponse<T>> => {
+    const authToken = localStorage.getItem("accessToken");
+    const headers: Record<string, string> = authToken
+      ? { Authorization: `Bearer ${authToken}` }
+      : {};
 
-  useEffect(() => {
-    setLoading(true);
-
-    const fetchData = async () => {
-      try {
-        const authToken = localStorage.getItem("accessToken");
-        const headers: Record<string, string> = authToken
-          ? { Authorization: `Bearer ${authToken}` }
-          : {};
-
-        const response = await apiClient.get<FetchResponse<T>>(
-          `${endpoint}?search=${query}`,
-          {
-            headers,
-          }
-        );
-
-        setData(response.data.results);
-        setLoading(false);
-      } catch (err) {
-        if (err instanceof Error && err.message) {
-          setError(err.message);
-        } else {
-          setError("An error occurred");
-        }
-        setLoading(false);
+    const response = await apiClient.get<T | FetchResponse<T>>(
+      `${endpoint}?search=${query}`,
+      {
+        headers,
       }
-    };
+    );
 
-    fetchData();
-  }, [endpoint, query]);
+    return response.data;
+  };
 
-  return { data, error, isLoading };
+  return useQuery([queryKey, endpoint, query], fetchData, {
+    staleTime: 60000,
+    retry: 2,
+  });
 };
 
 export default useGetData;
