@@ -18,7 +18,6 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useCreatePatient from "../../hooks/user/useCreatePatient";
 import { patientSchema } from "../../schema/validationSchema";
-import HospitalSelect from "../admin/HospitalSelect";
 import { hospitalId, isAdmin } from "../generic/DecodeToken";
 import { useState } from "react";
 
@@ -37,7 +36,7 @@ interface FormValues {
 }
 
 const PatientCreate = ({ isOpen, onClose }: PatientCreateProps) => {
-  const { createPatient, createAddress } = useCreatePatient();
+  const { createPatient, createAddress, isLoading } = useCreatePatient();
   const toast = useToast();
 
   const {
@@ -58,10 +57,6 @@ const PatientCreate = ({ isOpen, onClose }: PatientCreateProps) => {
   });
 
   const [hospital, setHospital] = useState<string>("");
-
-  const handleHospitalChange = (selectedHospitalId: string | null) => {
-    setHospital(selectedHospitalId ?? "");
-  };
 
   const onSubmit = async (data: FormValues) => {
     const [first_name = "", last_name = ""] = data.fullName.split(" ");
@@ -222,21 +217,16 @@ const PatientCreate = ({ isOpen, onClose }: PatientCreateProps) => {
                   )}
                 </FormControl>
               </Box>
-              {isAdmin && (
-                <Box gridColumn="span 2">
-                  <FormControl>
-                    <HospitalSelect
-                      value={hospital}
-                      onChange={handleHospitalChange}
-                    />
-                  </FormControl>
-                </Box>
-              )}
             </Grid>
           </VStack>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="green" mr={2} onClick={handleSubmit(onSubmit)}>
+          <Button
+            colorScheme="green"
+            mr={2}
+            onClick={handleSubmit(onSubmit)}
+            isLoading={isLoading}
+          >
             Create
           </Button>
           <Button onClick={handleClose}>Cancel</Button>
