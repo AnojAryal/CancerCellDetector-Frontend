@@ -1,67 +1,81 @@
-import { useState, useCallback } from "react";
 import useApiClientUser from "../../services/api-client-user";
 import { Patient, Address } from "../../components/patient/ManagePatients";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+const useFetchPatientById = (
+  patient_id: string,
+  hospital?: string | number
+) => {
+  const apiClient = useApiClientUser({ hospital });
+  return useQuery<Patient>(
+    ["patient", patient_id],
+    async () => {
+      const response = await apiClient.get<Patient>(`/patients/${patient_id}`);
+      return response.data;
+    },
+    {
+      enabled: !!patient_id,
+      staleTime: 300000,
+      onError: (error) => {
+        console.error("Error fetching patient:", error);
+      },
+    }
+  );
+};
 
 const useManagePatients = (hospital?: string | number) => {
   const apiClient = useApiClientUser({ hospital });
+  const queryClient = useQueryClient();
 
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchPatientById = useCallback(
-    async (patient_id: string): Promise<Patient> => {
-      setLoading(true);
-      try {
-        const response = await apiClient.get<Patient>(
-          `/patients/${patient_id}`
-        );
-        return response.data;
-      } catch (err) {
-        setError("Failed to fetch patient.");
-        throw err;
-      } finally {
-        setLoading(false);
-      }
+  const updatePatient = useMutation(
+    async ({
+      patient_id,
+      updatedData,
+    }: {
+      patient_id: string;
+      updatedData: Partial<Patient>;
+    }) => {
+      return apiClient.put(`/patients/${patient_id}`, updatedData);
     },
-    [apiClient]
+    {
+      onSuccess: (_, { patient_id }) => {
+        queryClient.invalidateQueries(["patient", patient_id]);
+      },
+      onError: (error) => {
+        console.error("Failed to update patient:", error);
+      },
+    }
   );
 
-  const updatePatient = async (
-    patient_id: string,
-    updatedData: Partial<Patient>
-  ) => {
-    try {
-      await apiClient.put(`/patients/${patient_id}`, updatedData);
-    } catch (err) {
-      setError("Failed to update patient.");
-    }
-  };
-
-  const updatePatientAddress = async (
-    patient_id: string,
-    address_id: number,
-    address: Partial<Address>
-  ) => {
-    try {
-      const requestBody = {
-        ...address,
-        patient_id,
-      };
-
-      await apiClient.put(
+  const updatePatientAddress = useMutation(
+    async ({
+      patient_id,
+      address_id,
+      address,
+    }: {
+      patient_id: string;
+      address_id: number;
+      address: Partial<Address>;
+    }) => {
+      const requestBody = { ...address, patient_id };
+      return apiClient.put(
         `/patients/${patient_id}/address/${address_id}`,
         requestBody
       );
-    } catch (err) {
-      setError("Failed to update address.");
+    },
+    {
+      onSuccess: (_, { patient_id }) => {
+        queryClient.invalidateQueries(["patient", patient_id]);
+      },
+      onError: (error) => {
+        console.error("Failed to update address:", error);
+      },
     }
-  };
+  );
 
   return {
-    loading,
-    error,
+    useFetchPatientById,
     updatePatient,
-    fetchPatientById,
     updatePatientAddress,
   };
 };
