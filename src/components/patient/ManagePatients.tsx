@@ -53,7 +53,7 @@ const ManagePatients = () => {
   const hospital_id = isHospitalAdmin?.toString();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Use the updated hook
+
   const {
     data: patients = [],
     isLoading,

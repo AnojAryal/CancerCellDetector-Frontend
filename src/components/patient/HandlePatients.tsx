@@ -48,15 +48,19 @@ const HandlePatients = () => {
     onClose: onAddressEditClose,
   } = useDisclosure();
 
-  const [patient, setPatient] = useState<Patient | null>(null);
-  const [address, setAddress] = useState<Address | null>(null);
   const [editPatient, setEditPatient] = useState<Patient | null>(null);
   const [editAddress, setEditAddress] = useState<Address | null>(null);
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  const { updatePatient, updatePatientAddress, fetchPatientById } =
+  const { useFetchPatientById, updatePatient, updatePatientAddress } =
     useManagePatients(hospital_id);
+
+  const {
+    data: fetchedPatient,
+    isError,
+    isLoading,
+  } = useFetchPatientById(patient_id);
 
   const headingFontSize = useBreakpointValue({ base: "xl", md: "2xl" });
   const bgColor = useColorModeValue("white", "gray.800");
@@ -65,21 +69,15 @@ const HandlePatients = () => {
   const borderColor = useColorModeValue("gray.200", "gray.600");
 
   useEffect(() => {
-    if (patient_id) {
-      fetchPatientById(patient_id)
-        .then((fetchedPatient) => {
-          console.log("Fetched patient details:", fetchedPatient);
-          setPatient(fetchedPatient);
-          setEditPatient(fetchedPatient);
-          if (fetchedPatient.address) {
-            console.log("Fetched address:", fetchedPatient.address);
-            setAddress(fetchedPatient.address);
-            setEditAddress(fetchedPatient.address);
-          }
-        })
-        .catch(() => setError("Failed to fetch patient details."));
+    if (fetchedPatient) {
+      console.log("Fetched Patient Data:", fetchedPatient);
+      setEditPatient(fetchedPatient);
+      if (fetchedPatient.address) {
+        setEditAddress(fetchedPatient.address);
+        console.log("Fetched Address:", fetchedPatient.address);
+      }
     }
-  }, [patient_id, fetchPatientById]);
+  }, [fetchedPatient]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -98,10 +96,11 @@ const HandlePatients = () => {
   const handleSavePatientChanges = async () => {
     if (editPatient) {
       try {
-        await updatePatient(editPatient.id, editPatient);
-        setFeedbackMessage(
-          `Patient details updated successfully. Updated details: ${editPatient.first_name} ${editPatient.last_name}, ${editPatient.email}, ${editPatient.phone}, ${editPatient.birth_date}.`
-        );
+        await updatePatient.mutateAsync({
+          patient_id: editPatient.id,
+          updatedData: editPatient,
+        });
+        setFeedbackMessage("Patient details updated successfully.");
         setTimeout(() => setFeedbackMessage(""), 5000);
         onEditClose();
       } catch {
@@ -112,21 +111,32 @@ const HandlePatients = () => {
 
   const handleSaveAddressChanges = async () => {
     if (editAddress && patient_id) {
+      const addressIdAsNumber = editAddress.id;
+      if (addressIdAsNumber === undefined) {
+        setError("Address ID is undefined.");
+        return;
+      }
+
       try {
-        const addressIdAsNumber = parseInt(editAddress.id.toString(), 10);
-        await updatePatientAddress(patient_id, addressIdAsNumber, editAddress);
+        await updatePatientAddress.mutateAsync({
+          patient_id,
+          address_id: addressIdAsNumber,
+          address: editAddress,
+        });
         setFeedbackMessage("Address updated successfully.");
         setTimeout(() => setFeedbackMessage(""), 5000);
-        const updatedPatient = await fetchPatientById(patient_id);
-        setEditAddress(updatedPatient.address || null);
         onAddressEditClose();
-      } catch {
+      } catch (error) {
+        console.error("Error updating address:", error);
         setError("Failed to update address.");
       }
     } else {
-      setError("Address ID or patient ID is undefined.");
+      setError("Address or patient ID is undefined.");
     }
   };
+
+  if (isLoading) return <Text>Loading...</Text>;
+  if (isError) return <Text>Error fetching patient details.</Text>;
 
   return (
     <Box p={5} maxW="1200px" mx="auto" mt="60px" minH="100vh" bg={bgColor}>
@@ -134,8 +144,8 @@ const HandlePatients = () => {
         <Box display="flex" flexDirection="column" mb={5}>
           <Box display="flex" alignItems="center" mb={3}>
             <Heading flex="1" fontSize={headingFontSize} color={textColor}>
-              {patient
-                ? `${patient.first_name} ${patient.last_name}`
+              {editPatient
+                ? `${editPatient.first_name} ${editPatient.last_name}`
                 : "Loading..."}
             </Heading>
             <Box display="flex" alignItems="center">
@@ -143,7 +153,7 @@ const HandlePatients = () => {
                 variant="outline"
                 onClick={onEditOpen}
                 aria-label="Edit Patient Details"
-                isDisabled={!patient}
+                isDisabled={!editPatient}
               >
                 <Icon as={BiEdit} boxSize={6} />
               </Button>
@@ -152,7 +162,7 @@ const HandlePatients = () => {
                 ml={3}
                 onClick={onAddressEditOpen}
                 aria-label="Edit Address"
-                isDisabled={!patient}
+                isDisabled={!editPatient}
               >
                 <Icon as={BiHome} boxSize={6} />
               </Button>
@@ -174,20 +184,20 @@ const HandlePatients = () => {
                   <Box display="flex" alignItems="center">
                     <Icon as={MdEmail} boxSize={5} mr={2} color={textColor} />
                     <Text color={textColor}>
-                      {patient ? patient.email : "Loading..."}
+                      {editPatient ? editPatient.email : "Loading..."}
                     </Text>
                   </Box>
                   <Box display="flex" alignItems="center">
                     <Icon as={MdPhone} boxSize={5} mr={2} color={textColor} />
                     <Text color={textColor}>
-                      {patient ? patient.phone : "Loading..."}
+                      {editPatient ? editPatient.phone : "Loading..."}
                     </Text>
                   </Box>
                   <Box display="flex" alignItems="center">
                     <Icon as={MdCake} boxSize={5} mr={2} color={textColor} />
                     <Text color={textColor}>
-                      {patient
-                        ? new Date(patient.birth_date).toLocaleDateString()
+                      {editPatient
+                        ? new Date(editPatient.birth_date).toLocaleDateString()
                         : "Loading..."}
                     </Text>
                   </Box>
@@ -198,7 +208,7 @@ const HandlePatients = () => {
                   <Box display="flex" alignItems="center">
                     <Icon as={BiHome} boxSize={5} mr={2} color={textColor} />
                     <Text color={textColor}>
-                      {address ? address.street : "Loading..."}
+                      {editAddress ? editAddress.street : "Loading..."}
                     </Text>
                   </Box>
                   <Box display="flex" alignItems="center">
@@ -209,7 +219,7 @@ const HandlePatients = () => {
                       color={textColor}
                     />
                     <Text color={textColor}>
-                      {address ? address.city : "Loading..."}
+                      {editAddress ? editAddress.city : "Loading..."}
                     </Text>
                   </Box>
                 </VStack>
@@ -273,28 +283,20 @@ const HandlePatients = () => {
               <FormControl mt={4}>
                 <FormLabel>Birth Date</FormLabel>
                 <Input
-                  name="birth_date"
                   type="date"
-                  value={
-                    editPatient?.birth_date
-                      ? new Date(editPatient.birth_date)
-                          .toISOString()
-                          .split("T")[0]
-                      : ""
-                  }
+                  name="birth_date"
+                  value={editPatient?.birth_date?.substring(0, 10) || ""}
                   onChange={handleInputChange}
                 />
               </FormControl>
             </ModalBody>
             <ModalFooter>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={handleSavePatientChanges}
-              >
+              <Button colorScheme="blue" onClick={handleSavePatientChanges}>
                 Save
               </Button>
-              <Button onClick={onEditClose}>Cancel</Button>
+              <Button variant="ghost" onClick={onEditClose}>
+                Cancel
+              </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
@@ -322,14 +324,12 @@ const HandlePatients = () => {
               </FormControl>
             </ModalBody>
             <ModalFooter>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={handleSaveAddressChanges}
-              >
+              <Button colorScheme="blue" onClick={handleSaveAddressChanges}>
                 Save
               </Button>
-              <Button onClick={onAddressEditClose}>Cancel</Button>
+              <Button variant="ghost" onClick={onAddressEditClose}>
+                Cancel
+              </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
