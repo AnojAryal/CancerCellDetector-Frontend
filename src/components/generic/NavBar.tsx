@@ -31,10 +31,15 @@ const NavBar = () => {
   const { colorMode } = useColorMode();
   const token = localStorage.getItem("accessToken");
   const username = localStorage.getItem("username");
+  const refreshToken = localStorage.getItem("refreshToken")
   const [displayWelcome, setDisplayWelcome] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const cancelRef = useRef<HTMLButtonElement>(null);
-  const { isOpen: isSettingsOpen, onOpen: openSettings, onClose: closeSettings } = useDisclosure();
+  const {
+    isOpen: isSettingsOpen,
+    onOpen: openSettings,
+    onClose: closeSettings,
+  } = useDisclosure();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -70,6 +75,7 @@ const NavBar = () => {
     setIsOpen(false);
     console.log("Logout Success!");
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("username");
     navigate("/login");
   };
@@ -110,14 +116,21 @@ const NavBar = () => {
         width="100%"
       >
         <Image src={logo} boxSize="50px" />
-        {token && (
+        {refreshToken && token && (
           <>
             <Menu>
-              <MenuButton as={Button} variant="ghost" rightIcon={<MdAccountCircle />}>
+              <MenuButton
+                as={Button}
+                variant="ghost"
+                rightIcon={<MdAccountCircle />}
+              >
                 {displayWelcome ? `Welcome, ${username}` : username}
               </MenuButton>
               <MenuList>
-                <MenuItem onClick={handleMainPageClick} icon={<BsPersonCircle />}>
+                <MenuItem
+                  onClick={handleMainPageClick}
+                  icon={<BsPersonCircle />}
+                >
                   Profile
                 </MenuItem>
                 <MenuDivider />
@@ -143,7 +156,10 @@ const NavBar = () => {
                 )}
                 {isAdmin && (
                   <>
-                    <MenuItem onClick={handleHospitalClick} icon={<FaBuilding />}>
+                    <MenuItem
+                      onClick={handleHospitalClick}
+                      icon={<FaBuilding />}
+                    >
                       Hospitals
                     </MenuItem>
                     <MenuDivider />

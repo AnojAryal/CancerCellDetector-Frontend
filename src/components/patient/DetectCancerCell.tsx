@@ -8,8 +8,6 @@ import {
   Flex,
   Spinner,
   useColorModeValue,
-  Grid,
-  GridItem,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -17,6 +15,7 @@ import { useDropzone, Accept } from "react-dropzone";
 import useHandleFiles from "../../hooks/user/useHandleFile";
 import TestResult from "./TestResult";
 import useProcessData from "../../hooks/user/useProcessData";
+
 interface LocationState {
   title?: string;
   description?: string;
@@ -45,12 +44,12 @@ const DetectCancerCell = () => {
     patient_id ?? "",
     cell_test_id ?? ""
   );
-  
+
   const {
     processData,
     loading: processingLoading,
     error: processingError,
-  } = useProcessData(cell_test_id ?? ""); 
+  } = useProcessData(cell_test_id ?? "");
 
   useEffect(() => {
     if (patient_id && cell_test_id) {
@@ -124,38 +123,47 @@ const DetectCancerCell = () => {
               p={4}
               boxShadow={shadowColor}
               height="100%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
+              overflow="hidden"
             >
-              {filesData.length > 0 ? (
-                <Grid
-                  templateColumns={{ sm: "1fr", md: "repeat(3, 1fr)" }}
-                  gap={6}
-                >
-                  {filesData.map((file, index) => (
-                    <GridItem key={index}>
-                      <Box
-                        border="1px solid"
-                        borderColor={borderColor}
-                        borderRadius="md"
-                        p={4}
-                        boxShadow={shadowColor}
-                        height="200px"
+              <Flex
+                overflowX="auto"
+                overflowY="hidden"
+                whiteSpace="nowrap"
+                alignItems="flex-start"
+                height="100%"
+              >
+                {filesData.length > 0 ? (
+                  filesData.map((file, index) => (
+                    <Box
+                      key={index}
+                      border="1px solid"
+                      borderColor={borderColor}
+                      borderRadius="md"
+                      boxShadow={shadowColor}
+                      height="100%"
+                      width="200px"
+                      display="inline-block"
+                      mr={4}
+                    >
+                      <a
+                        href={file.image}
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
                         <Image
                           src={file.image}
                           alt={`Cell Image ${index + 1}`}
-                          boxSize="100%"
+                          maxHeight="200px"
+                          width="100%"
                           objectFit="cover"
                         />
-                      </Box>
-                    </GridItem>
-                  ))}
-                </Grid>
-              ) : (
-                <Text fontSize="lg">No images available</Text>
-              )}
+                      </a>
+                    </Box>
+                  ))
+                ) : (
+                  <Text fontSize="lg">No images available</Text>
+                )}
+              </Flex>
             </Box>
           </Box>
           <Box flex="1" minWidth="0" height="200px">

@@ -87,7 +87,6 @@ const CellTestsCard = ({ patient_id }: CellTestsCardProps) => {
                 Title: {test.title}
               </Text>
               <Text color={textColor}>Description: {test.description}</Text>
-              <Text color={textColor}>Status: {test.detection_status}</Text>
               <Box mt={5} />
               <Flex
                 direction="column"
