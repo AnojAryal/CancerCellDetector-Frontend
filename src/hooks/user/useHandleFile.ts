@@ -26,7 +26,7 @@ const useHandleFiles = (
       try {
         const formData = new FormData();
         files.forEach((file) => {
-          formData.append("file", file);
+          formData.append("files", file);
         });
 
         const url = `/patients/${patient_id}/cell_tests/${cell_test_id}/data_images`;
