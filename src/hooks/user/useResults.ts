@@ -8,6 +8,7 @@ export interface ResultImage {
 }
 
 export interface Result {
+  id:string;
   description: string;
   created_at: string;
   celltest_id: string;

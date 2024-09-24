@@ -1,16 +1,16 @@
 import { useEffect } from "react";
 import {
   Box,
-  Grid,
-  GridItem,
+  SimpleGrid,
   Heading,
   Text,
   useColorModeValue,
   Spinner,
-  Image,
+  Flex,
 } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useResults, { Result } from "../../hooks/user/useResults";
+import { FaImage } from "react-icons/fa";
 
 interface LocationState {
   patient_id: string;
@@ -35,66 +35,70 @@ const TestResult = () => {
 
   if (loading) return <Spinner size="sm" />;
   if (error) return <Text color="red.500">{error}</Text>;
-
   if (!cellTests.length) return <Text>No test results available.</Text>;
 
-  const handleImageClick = (result: Result) => {
+  const filteredResults = cellTests.flatMap((test) =>
+    test.results.filter((result) => result.celltest_id === cell_test_id)
+  );
+
+  const handleResultClick = (result: Result) => {
     navigate(`/patients/${patient_id}/cell_tests/${cell_test_id}/results`, {
       state: result,
     });
   };
 
+  const renderResultImages = (images: { id: string; image: string }[]) => {
+    if (images.length === 0) {
+      return (
+        <Flex
+          direction="column"
+          alignItems="center"
+          justifyContent="center"
+          height="100%"
+        >
+          <FaImage size="50px" color="gray" />
+          <Text>No images available</Text>
+        </Flex>
+      );
+    }
+
+    return images.map((image) => (
+      <img
+        key={image.id}
+        src={image.image}
+        alt="Result Image"
+        style={{ maxWidth: "100%", maxHeight: "100%" }}
+      />
+    ));
+  };
+
   return (
     <Box mt={8}>
       <Heading as="h2" size="lg" mb={6}>
-        Results
+        Results for Cell Test ID: {cell_test_id}
       </Heading>
-      <Grid templateColumns={{ sm: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
-        {cellTests.map((test) =>
-          test.results.map((result) =>
-            result.result_images.map((image, index) => (
-              <GridItem key={image.id}>
-                <Box
-                  border="1px solid"
-                  borderColor={borderColor}
-                  borderRadius="md"
-                  p={4}
-                  boxShadow={shadowColor}
-                  height="200px"
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <Text mb={2} fontSize="sm" fontWeight="bold">
-                    Result ID: {image.result_id}
-                  </Text>
-                  <Box
-                    width="100%"
-                    height="100%"
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    overflow="hidden"
-                    borderRadius="md"
-                    cursor="pointer"
-                    _hover={{ opacity: 0.8 }}
-                  >
-                    <Image
-                      src={image.image}
-                      alt={`Cell Image ${index + 1}`}
-                      objectFit="cover"
-                      maxWidth="100%"
-                      maxHeight="100%"
-                      onClick={() => handleImageClick(result)}
-                    />
-                  </Box>
-                </Box>
-              </GridItem>
-            ))
-          )
-        )}
-      </Grid>
+      <SimpleGrid columns={{ sm: 1, md: 2, lg: 3 }} spacing={4}>
+        {filteredResults.map((result) => (
+          <Box
+            key={result.id}
+            borderWidth="1px"
+            borderRadius="lg"
+            overflow="hidden"
+            boxShadow={shadowColor}
+            cursor="pointer"
+            onClick={() => handleResultClick(result)}
+            borderColor={borderColor}
+            p={4}
+          >
+            <Text mb={2}>
+              <strong>ID:</strong> {result.id}
+            </Text>
+            <Flex justifyContent="center">
+              {renderResultImages(result.result_images)}
+            </Flex>
+          </Box>
+        ))}
+      </SimpleGrid>
     </Box>
   );
 };

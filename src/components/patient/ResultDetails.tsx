@@ -21,7 +21,7 @@ const ResultDetail = () => {
   const tealColor = useColorModeValue("teal.500", "teal.200");
 
   if (!result) {
-    return <Text>No result data available.</Text>;
+    return <Text>Result data not available at the moment.</Text>;
   }
 
   return (
