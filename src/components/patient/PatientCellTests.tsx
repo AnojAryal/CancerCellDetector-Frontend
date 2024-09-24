@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cellTestSchema } from "../../schema/validationSchema";
 import CardGrid from "../generic/CardGrid";
-  import usePostCellTest from "../../hooks/user/useCellTests";
+import usePostCellTest from "../../hooks/user/useCellTests";
 
 interface CellTestProps {
   patient_id: string;
@@ -52,11 +52,14 @@ function PatientCellTests({ patient_id }: CellTestProps) {
     };
 
     try {
-      await postCellTest(patient_id, cellTestData);
+      await postCellTest({
+        patient_id,
+        cellTestData,
+      });
       reset();
       onClose();
     } catch (err) {
-      console.log("Error");
+      console.log("Error posting cell test:", err);
     }
   };
 
