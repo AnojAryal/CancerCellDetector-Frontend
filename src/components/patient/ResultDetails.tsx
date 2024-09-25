@@ -7,6 +7,7 @@ import {
   GridItem,
   useColorModeValue,
   Flex,
+  Box,
 } from "@chakra-ui/react";
 import { useLocation } from "react-router-dom";
 import { ResultImage, Result } from "../../hooks/user/useResults";
@@ -25,7 +26,7 @@ const ResultDetail = () => {
   }
 
   return (
-    <Container maxW="container.xl" py={8} bg={containerBg}>
+    <Container maxW="container.xl" py={8} bg={containerBg} id="result-detail">
       <Heading as="h2" size="xl" mb={8} textAlign="center" color={textColor}>
         Result Details
       </Heading>
@@ -44,12 +45,6 @@ const ResultDetail = () => {
           <Text mb={4} color={textColor}>
             {result.description}
           </Text>
-          <Flex justifyContent="flex-end" alignItems="center">
-            <Text color={tealColor}>Processed At :</Text>
-            <Text color={tealColor}>
-              {new Date(result.created_at).toLocaleString()}
-            </Text>
-          </Flex>
         </GridItem>
       </Grid>
 
@@ -58,20 +53,30 @@ const ResultDetail = () => {
       </Heading>
       <Grid templateColumns={{ sm: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
         {result.result_images.map((image: ResultImage, index: number) => (
-          <Image
+          <Box
             key={image.id}
-            src={image.image}
-            alt={`Result Image ${index + 1}`}
-            objectFit="cover"
             border="1px solid"
             borderColor={borderColor}
             borderRadius="md"
-            width="100%"
-            height="auto"
-            boxShadow="md"
-          />
+            overflow="hidden"
+          >
+            <Image
+              src={image.image}
+              alt={`Result Image ${index + 1}`}
+              objectFit="cover"
+              width="100%"
+              height="auto"
+              boxShadow="md"
+            />
+          </Box>
         ))}
       </Grid>
+      <Flex justifyContent="space-between" alignItems="center" mt={8}>
+        <Text color={tealColor}>Cancer Cell Detector Team</Text>
+        <Text color={tealColor}>
+          Processed At: {new Date(result.created_at).toLocaleString()}
+        </Text>
+      </Flex>
     </Container>
   );
 };

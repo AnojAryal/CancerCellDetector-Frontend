@@ -63,18 +63,27 @@ const TestResult = () => {
     }
 
     return images.map((image) => (
-      <img
+      <Box
         key={image.id}
-        src={image.image}
-        alt="Result Image"
-        style={{ maxWidth: "100%", maxHeight: "100%" }}
-      />
+        width="100%"
+        height="200px"
+        overflow="hidden"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <img
+          src={image.image}
+          alt="Result Image"
+          style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+        />
+      </Box>
     ));
   };
 
   return (
     <Box mt={8}>
-      <Heading as="h2" size="lg" mb={6}>
+      <Heading as="h4" size="md" mb={6}>
         Results for Cell Test ID: {cell_test_id}
       </Heading>
       <SimpleGrid columns={{ sm: 1, md: 2, lg: 3 }} spacing={4}>
