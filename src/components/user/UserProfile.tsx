@@ -16,7 +16,7 @@ import {
   ModalBody,
   ModalFooter,
   useToast,
-  useColorModeValue, // Import the useColorModeValue hook
+  useColorModeValue,
 } from "@chakra-ui/react";
 import useGetProfile, {
   UserProfile as UserProfileType,
