@@ -24,7 +24,7 @@ The Cancer Cell Detector is a web application designed for the analysis and dete
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/cancer-cell-detector-frontend.git
+   git clone https://github.com/anojaryal/cancer-cell-detector-frontend.git
    ```
 
 2. Navigate to the project directory:
@@ -47,7 +47,7 @@ To start the development server, run:
 npm run dev
 ```
 
-This will start the Vite development server, and you can view the application at [http://localhost:3000](http://localhost:3000).
+This will start the Vite development server, and you can view the application at [http://localhost:5173](http://localhost:5173).
 
 ## Build
 
