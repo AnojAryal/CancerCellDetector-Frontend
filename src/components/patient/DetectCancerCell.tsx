@@ -3,18 +3,25 @@ import {
   Button,
   Heading,
   Text,
-  useColorModeValue,
   HStack,
   Image,
   Flex,
-  Grid,
-  GridItem,
   Spinner,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useDropzone, Accept } from "react-dropzone";
-import useFileUpload from "../../hooks/user/useFileUpload";
+import useHandleFiles from "../../hooks/user/useHandleFile";
+import TestResult from "./TestResult";
+import useProcessData from "../../hooks/user/useProcessData";
+
+interface LocationState {
+  title?: string;
+  description?: string;
+  patient_id?: string;
+  cell_test_id?: string;
+}
 
 const DetectCancerCell = () => {
   const borderColor = useColorModeValue("gray.300", "gray.600");
@@ -28,40 +35,59 @@ const DetectCancerCell = () => {
     description = "Default Description",
     patient_id,
     cell_test_id,
-  } = location.state || {};
+  } = location.state as LocationState;
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const { uploadFiles, uploadStatus } = useFileUpload();
+
+  const { handleFiles, uploadStatus, fetchFiles, filesData } = useHandleFiles(
+    patient_id ?? "",
+    cell_test_id ?? ""
+  );
+
+  const {
+    processData,
+    loading: processingLoading,
+    error: processingError,
+  } = useProcessData(cell_test_id ?? "");
+
+  useEffect(() => {
+    if (patient_id && cell_test_id) {
+      fetchFiles();
+    }
+  }, [fetchFiles, patient_id, cell_test_id]);
 
   const handleClear = () => {
     setSelectedFiles([]);
     setError(null);
   };
 
-  const handleUpload = () => {
-    if (!patient_id || !cell_test_id) {
-      setError("Missing patient or cell test ID");
-      return;
-    }
-
+  const handleUpload = async () => {
     if (selectedFiles.length === 0) {
       setError("No files selected");
       return;
     }
 
-    uploadFiles(patient_id, cell_test_id, selectedFiles)
-      .then(() => {
-        setError(null);
-      })
-      .catch((err) => {
-        setError("Upload failed");
-        console.error("Upload error:", err);
-      });
+    try {
+      await handleFiles(selectedFiles);
+      setError(null);
+    } catch (err) {
+      setError("Upload failed");
+      console.error("Upload error:", err);
+    }
   };
 
-   const acceptTypes: Accept = {
-    'image/*': []
+  const handleProcessData = async () => {
+    if (!cell_test_id) {
+      setError("Cell Test ID is missing.");
+      return;
+    }
+
+    await processData();
+  };
+
+  const acceptTypes: Accept = {
+    "image/*": [],
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -97,11 +123,47 @@ const DetectCancerCell = () => {
               p={4}
               boxShadow={shadowColor}
               height="100%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
+              overflow="hidden"
             >
-              <Text fontSize="lg">Dataset Overview</Text>
+              <Flex
+                overflowX="auto"
+                overflowY="hidden"
+                whiteSpace="nowrap"
+                alignItems="flex-start"
+                height="100%"
+              >
+                {filesData.length > 0 ? (
+                  filesData.map((file, index) => (
+                    <Box
+                      key={index}
+                      border="1px solid"
+                      borderColor={borderColor}
+                      borderRadius="md"
+                      boxShadow={shadowColor}
+                      height="100%"
+                      width="200px"
+                      display="inline-block"
+                      mr={4}
+                    >
+                      <a
+                        href={file.image}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Image
+                          src={file.image}
+                          alt={`Cell Image ${index + 1}`}
+                          maxHeight="200px"
+                          width="100%"
+                          objectFit="cover"
+                        />
+                      </a>
+                    </Box>
+                  ))
+                ) : (
+                  <Text fontSize="lg">No images available</Text>
+                )}
+              </Flex>
             </Box>
           </Box>
           <Box flex="1" minWidth="0" height="200px">
@@ -130,7 +192,7 @@ const DetectCancerCell = () => {
                 Drag & drop images here, or click to select files
               </Text>
               {selectedFiles.length > 0 && (
-                <HStack spacing={2} mt={2} wrap="wrap" mb={4}>
+                <HStack spacing={2} mt={2} wrap="wrap">
                   {selectedFiles.map((file, index) => (
                     <Box
                       key={index}
@@ -179,63 +241,25 @@ const DetectCancerCell = () => {
             )}
           </Box>
         </Flex>
-        <Flex mt={4}>
-          <HStack spacing={4}>
-            <Button colorScheme="green" mt={4} size="md">
-              Process Data
+
+        <Flex direction="column" mt={4}>
+          <HStack spacing={4} mb={4} mt={4}>
+            <Button
+              colorScheme="green"
+              size="md"
+              onClick={handleProcessData}
+              isDisabled={processingLoading}
+            >
+              {processingLoading ? <Spinner size="sm" /> : "Process Data"}
             </Button>
           </HStack>
+          {processingError && (
+            <Box mt={4} p={4} bg="red.100" color="red.800" borderRadius="md">
+              <Text fontSize="sm">{processingError}</Text>
+            </Box>
+          )}
+          <TestResult />
         </Flex>
-
-        <Box mt={8}>
-          <Heading as="h2" size="lg" mb={6}>
-            Results
-          </Heading>
-          <Grid templateColumns={{ sm: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
-            <GridItem>
-              <Box
-                border="1px solid"
-                borderColor={borderColor}
-                borderRadius="md"
-                p={4}
-                boxShadow={shadowColor}
-                height="200px"
-              >
-                <Text mb={2} fontSize="md" fontWeight="bold">
-                  ID: 2c7ff942-9f47-4dcb-a858-4ce574e08c09
-                </Text>
-              </Box>
-            </GridItem>
-            <GridItem>
-              <Box
-                border="1px solid"
-                borderColor={borderColor}
-                borderRadius="md"
-                p={4}
-                boxShadow={shadowColor}
-                height="200px"
-              >
-                <Text mb={2} fontSize="md" fontWeight="bold">
-                  ID: 903adf83-0500-4494-8055-2ce873d4c550
-                </Text>
-              </Box>
-            </GridItem>
-            <GridItem>
-              <Box
-                border="1px solid"
-                borderColor={borderColor}
-                borderRadius="md"
-                p={4}
-                boxShadow={shadowColor}
-                height="200px"
-              >
-                <Text mb={2} fontSize="md" fontWeight="bold">
-                  ID: 48959aba-ef59-42cf-87a7-5fe1b0089ea1
-                </Text>
-              </Box>
-            </GridItem>
-          </Grid>
-        </Box>
       </Flex>
     </Box>
   );

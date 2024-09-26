@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import apiClient from "../../services/api-client";
+import useGetData from "../generic/useGetData";
 
 export interface UserProfile {
   username: string;
@@ -12,41 +11,7 @@ export interface UserProfile {
 }
 
 const useGetProfile = () => {
-  const [profileData, setProfileData] = useState<UserProfile | null>(null);
-  const [error, setError] = useState<string>("");
-  const [isLoading, setLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    setLoading(true);
-
-    const fetchData = async () => {
-      try {
-        const authToken = localStorage.getItem("accessToken");
-        const headers: Record<string, string> = authToken
-          ? { Authorization: `Bearer ${authToken}` }
-          : {};
-
-        const response = await apiClient.get<UserProfile>("/me", { headers });
-        setProfileData(response.data);
-        setLoading(false);
-      } catch (err) {
-        if (err instanceof Error && err.message) {
-          setError(err.message);
-        } else {
-          setError("An error occurred");
-        }
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  return {
-    profileData,
-    error,
-    isLoading,
-  };
+  return useGetData<UserProfile>("/me", "userProfile");
 };
 
 export default useGetProfile;

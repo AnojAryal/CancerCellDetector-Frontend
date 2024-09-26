@@ -1,22 +1,20 @@
-import { useState } from "react";
-import axios, { AxiosError } from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import apiClient from "../../services/api-client";
 
 interface UsePostDataResult<T> {
   data: T | null;
-  error: string;
+  error: string | null;
   isLoading: boolean;
-  postData: (postData: unknown) => Promise<void>;
+  mutate: (postData: unknown, options?: {
+    onSuccess?: (data: T) => void;
+    onError?: (error: AxiosError) => void;
+  }) => void;
 }
 
 const usePostData = <T>(endpoint: string): UsePostDataResult<T> => {
-  const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<string>("");
-  const [isLoading, setLoading] = useState<boolean>(false);
-
-  const postData = async (postData: unknown): Promise<void> => {
-    setLoading(true);
-    try {
+  const { mutate, data, error, isLoading } = useMutation<T, AxiosError, unknown>(
+    async (postData) => {
       const authToken = localStorage.getItem("accessToken");
       const headers: Record<string, string> = {};
 
@@ -28,21 +26,16 @@ const usePostData = <T>(endpoint: string): UsePostDataResult<T> => {
         headers,
       });
 
-      setData(response.data);
-      setLoading(false);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        setError(axiosError.message);
-      } else {
-        setError("An error occurred.");
-      }
-      setLoading(false);
-      throw error;
+      return response.data;
     }
-  };
+  );
 
-  return { data, error, isLoading, postData };
+  return {
+    data: data || null,
+    error: error?.message || null,
+    isLoading,
+    mutate,
+  };
 };
 
 export default usePostData;

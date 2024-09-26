@@ -2,73 +2,73 @@ import React, { useState, useEffect } from "react";
 import {
   Text,
   Flex,
-  Avatar,
   VStack,
   HStack,
   Button,
   Input,
-  IconButton,
-  Card,
-  CardBody,
   Spinner,
   Alert,
   AlertIcon,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useToast,
+  useColorModeValue, // Import the useColorModeValue hook
 } from "@chakra-ui/react";
-import { FiEdit } from "react-icons/fi";
 import useGetProfile, {
   UserProfile as UserProfileType,
 } from "../../hooks/user/useGetProfile";
 import useUpdateUserProfile from "../../hooks/user/useUpdateProfile";
 
-const UserProfile = () => {
-  const { profileData, error, isLoading } = useGetProfile();
+interface UserProfileProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const UserProfile = ({ isOpen, onClose }: UserProfileProps) => {
+  const { data: profileData, error: fetchError, isLoading } = useGetProfile();
   const {
+    updateProfile,
     isLoading: isUpdating,
     error: updateError,
-    success,
-    updateProfile,
+    success: updateSuccess,
   } = useUpdateUserProfile();
+
   const [isEditingDetails, setIsEditingDetails] = useState<boolean>(false);
-  const [profilePicture, setProfilePicture] = useState<
-    string | ArrayBuffer | null
-  >(null);
   const [formData, setFormData] = useState<UserProfileType | null>(null);
-  const [successMessageVisible, setSuccessMessageVisible] =
-    useState<boolean>(false);
+  const toast = useToast();
+
+  const textColor = useColorModeValue("gray.800", "white");
+  const labelColor = useColorModeValue("gray.600", "gray.400");
+  const borderColor = useColorModeValue("teal.400", "teal.600");
+  const focusBorderColor = useColorModeValue("teal.600", "teal.300");
 
   useEffect(() => {
     if (profileData) {
-      setFormData(profileData);
+      setFormData(profileData as UserProfileType);
     }
   }, [profileData]);
 
   useEffect(() => {
-    if (success) {
-      setSuccessMessageVisible(true);
-      const timer = setTimeout(() => setSuccessMessageVisible(false), 5000);
-      return () => clearTimeout(timer);
+    if (updateSuccess) {
+      toast({
+        title: "Profile Updated.",
+        description: "Your profile has been updated successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
     }
-  }, [success]);
+  }, [updateSuccess, toast]);
 
-  const handleEditDetailsClick = async () => {
+  const handleEditDetailsClick = () => {
     if (isEditingDetails && formData) {
-      // Save changes
-      await updateProfile(formData);
+      updateProfile(formData);
     }
     setIsEditingDetails(!isEditingDetails);
-  };
-
-  const handleEditPictureClick = () => {
-    document.getElementById("profile-picture-input")?.click();
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setProfilePicture(reader.result);
-      reader.readAsDataURL(file);
-    }
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,11 +80,11 @@ const UserProfile = () => {
     return <Spinner />;
   }
 
-  if (error) {
+  if (fetchError) {
     return (
       <Alert status="error">
         <AlertIcon />
-        {error}
+        {(fetchError as Error).message || "An error occurred"}
       </Alert>
     );
   }
@@ -94,60 +94,51 @@ const UserProfile = () => {
   }
 
   return (
-    <Flex justify="center" mt="8">
-      <Card width="100%" maxW="600px" boxShadow="lg" borderRadius="lg">
-        <CardBody>
-          <Flex direction="column" align="center" p="4">
-            <Flex align="center" mb="6">
-              <Avatar
-                size="2xl"
-                name={formData.full_name}
-                src={profilePicture as string}
-                mr="4"
-              />
-              <IconButton
-                aria-label="Edit profile picture"
-                icon={<FiEdit />}
-                onClick={handleEditPictureClick}
-                ml="4"
-              />
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                display="none"
-                id="profile-picture-input"
-              />
-            </Flex>
+    <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>User Profile</ModalHeader>
+        <ModalBody>
+          <Flex direction="column" align="center" py="6">
             <VStack spacing="4" align="stretch" width="100%">
               <HStack justify="space-between" width="100%">
-                <Text fontWeight="bold" minW="100px">
-                  USERNAME:
-                </Text>
+                <HStack>
+                  <Text fontWeight="bold" fontSize="lg" color={labelColor}>
+                    Username:
+                  </Text>
+                </HStack>
                 {isEditingDetails ? (
                   <Input
                     name="username"
                     value={formData.username}
                     onChange={handleInputChange}
                     width="250px"
+                    borderColor={borderColor}
+                    focusBorderColor={focusBorderColor}
                   />
                 ) : (
-                  <Text>{formData.username}</Text>
+                  <Text fontSize="lg" color={textColor}>
+                    {formData.username}
+                  </Text>
                 )}
               </HStack>
+              {/* Only display email when not editing */}
               {!isEditingDetails && (
                 <HStack justify="space-between" width="100%">
-                  <Text fontWeight="bold" minW="100px">
-                    EMAIL:
+                  <Text fontWeight="bold" fontSize="lg" color={labelColor}>
+                    Email:
                   </Text>
-                  <Text>{formData.email}</Text>
+                  <Text fontSize="lg" color={textColor}>
+                    {formData.email}
+                  </Text>
                 </HStack>
               )}
               {Object.entries(formData).map(([key, value]) => {
+                // Skip rendering username and email fields
                 if (key === "username" || key === "email") return null;
                 return (
                   <HStack justify="space-between" key={key} width="100%">
-                    <Text fontWeight="bold" minW="100px">
+                    <Text fontWeight="bold" fontSize="lg" color={labelColor}>
                       {key.replace(/_/g, " ").toUpperCase()}:
                     </Text>
                     {isEditingDetails ? (
@@ -156,38 +147,40 @@ const UserProfile = () => {
                         value={value}
                         onChange={handleInputChange}
                         width="250px"
+                        borderColor={borderColor}
+                        focusBorderColor={focusBorderColor}
                       />
                     ) : (
-                      <Text>{value}</Text>
+                      <Text fontSize="lg" color={textColor}>
+                        {value}
+                      </Text>
                     )}
                   </HStack>
                 );
               })}
             </VStack>
-            <Button
-              mt="6"
-              colorScheme="green"
-              onClick={handleEditDetailsClick}
-              isLoading={isUpdating}
-            >
-              {isEditingDetails ? "Save Changes" : "Edit Profile"}
-            </Button>
-            {updateError && (
-              <Alert status="error" mt="4">
-                <AlertIcon />
-                {updateError}
-              </Alert>
-            )}
-            {successMessageVisible && success && (
-              <Alert status="success" mt="4">
-                <AlertIcon />
-                {success}
-              </Alert>
-            )}
           </Flex>
-        </CardBody>
-      </Card>
-    </Flex>
+          {updateError && (
+            <Alert status="error" mt="4">
+              <AlertIcon />
+              {updateError || "An error occurred"}
+            </Alert>
+          )}
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            colorScheme="teal"
+            onClick={handleEditDetailsClick}
+            isLoading={isUpdating}
+            size="md"
+            borderRadius="md"
+            px="4"
+          >
+            {isEditingDetails ? "Save Changes" : "Edit Profile"}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 

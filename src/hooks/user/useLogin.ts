@@ -42,6 +42,7 @@ export const useLogin = create<LoginFormState>((set) => ({
 
         if (response.status === 200) {
           localStorage.setItem("accessToken", response.data.access_token);
+          localStorage.setItem("refreshToken", response.data.refresh_token);
           localStorage.setItem("username", formData.username);
           set({ formErrors: {}, authError: null });
           console.log("Login successful", response.data);

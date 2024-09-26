@@ -7,11 +7,11 @@ import ProtectedRoute from "./components/generic/ProtectedRoute";
 import ManageHospitals from "./components/admin/ManageHospitals";
 import ManageUser from "./components/admin/ManageUsers";
 import NotAvailPage from "./components/generic/NotAvailPage";
-import UserProfile from "./components/user/UserProfile";
 import ManagePatients from "./components/patient/ManagePatients";
 import UserHandler from "./components/admin/UserHandler";
 import HandlePatients from "./components/patient/HandlePatients";
 import DetectCancerCell from "./components/patient/DetectCancerCell";
+import ResultDetails from "./components/patient/ResultDetails";
 
 const AppRoutes = () => {
   return (
@@ -19,7 +19,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Navigate to="/home" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/profile" element={<UserProfile />} />
+
 
       {/* Only users and hospital admins can access*/}
       <Route
@@ -39,10 +39,18 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/patients/:patient_id/:cell_test_id"
+        path="/patients/:patient_id/cell_tests/:cell_test_id"
         element={
           <ProtectedRoute isUserOrHospitalAdminRoute>
             <DetectCancerCell />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/patients/:patient_id/cell_tests/:cell_test_id/results"
+        element={
+          <ProtectedRoute isUserOrHospitalAdminRoute>
+            <ResultDetails />
           </ProtectedRoute>
         }
       />

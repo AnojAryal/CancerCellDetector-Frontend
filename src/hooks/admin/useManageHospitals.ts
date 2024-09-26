@@ -1,101 +1,66 @@
-import { useState, useEffect, useCallback } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../services/api-client";
+import { Hospital } from "./useGetHospital";
 
-export interface Hospital {
-  id: number;
-  name: string;
-  address: string;
-  phone: string;
-  email: string;
-}
+const getAccessToken = () => {
+  return localStorage.getItem("accessToken");
+};
 
 const useManageHospitals = () => {
-  const [hospitals, setHospitals] = useState<Hospital[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const getAccessToken = useCallback(() => {
-    return localStorage.getItem("accessToken");
-  }, []);
-
-  const fetchHospitals = useCallback(async () => {
-    setLoading(true);
-    try {
+  const deleteHospitalMutation = useMutation(
+    async (hospital_id: number) => {
       const token = getAccessToken();
-      const response = await apiClient.get("/hospital", {
+      await apiClient.delete(`/hospital/${hospital_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (Array.isArray(response.data)) {
-        setHospitals(response.data);
-      } else {
-        throw new Error("Unexpected response format");
-      }
-    } catch (error) {
-      setError("Failed to fetch hospitals");
-    } finally {
-      setLoading(false);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["hospitals"]);
+      },
+      onError: () => {
+        console.error("Failed to delete hospital");
+      },
     }
-  }, [getAccessToken]);
+  );
 
-  const deleteHospital = useCallback(
-    async (hospital_id: number) => {
-      try {
-        const token = getAccessToken();
-        await apiClient.delete(`/hospital/${hospital_id}`, {
+  const updateHospitalMutation = useMutation(
+    async ({
+      hospital_id,
+      updatedHospital,
+    }: {
+      hospital_id: number;
+      updatedHospital: Partial<Hospital>;
+    }) => {
+      const token = getAccessToken();
+      const response = await apiClient.put(
+        `/hospital/${hospital_id}`,
+        updatedHospital,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
-        setHospitals((prevHospitals) =>
-          prevHospitals.filter((hospital) => hospital.id !== hospital_id)
-        );
-      } catch (error) {
-        setError("Failed to delete hospital");
-      }
+        }
+      );
+      return response.data;
     },
-    [getAccessToken]
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["hospitals"]);
+      },
+      onError: () => {
+        console.error("Failed to update hospital");
+      },
+    }
   );
-
-  const updateHospital = useCallback(
-    async (hospital_id: number, updatedHospital: Partial<Hospital>) => {
-      try {
-        const token = getAccessToken();
-        const response = await apiClient.put(
-          `/hospital/${hospital_id}`,
-          updatedHospital,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setHospitals((prevHospitals) =>
-          prevHospitals.map((hospital) =>
-            hospital.id === hospital_id
-              ? { ...hospital, ...response.data }
-              : hospital
-          )
-        );
-      } catch (error) {
-        setError("Failed to update hospital");
-      }
-    },
-    [getAccessToken]
-  );
-
-  useEffect(() => {
-    fetchHospitals();
-  }, [fetchHospitals]);
 
   return {
-    hospitals,
-    loading,
-    error,
-    fetchHospitals,
-    deleteHospital,
-    updateHospital,
+    deleteHospital: deleteHospitalMutation.mutate,
+    updateHospital: updateHospitalMutation.mutate,
   };
 };
 

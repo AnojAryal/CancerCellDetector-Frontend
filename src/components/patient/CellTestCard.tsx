@@ -11,7 +11,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { CellTest, Patient } from "./ManagePatients";
+import { CellTest } from "./ManagePatients";
 import useManagePatients from "../../hooks/user/useManagePatients";
 
 interface CellTestsCardProps {
@@ -20,8 +20,6 @@ interface CellTestsCardProps {
 
 const CellTestsCard = ({ patient_id }: CellTestsCardProps) => {
   const [cellTests, setCellTests] = useState<CellTest[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
 
   const navigate = useNavigate();
   const cardBgColor = useColorModeValue("gray.50", "gray.700");
@@ -29,46 +27,37 @@ const CellTestsCard = ({ patient_id }: CellTestsCardProps) => {
   const borderColor = useColorModeValue("gray.200", "gray.600");
   const hoverBgColor = useColorModeValue("gray.100", "gray.600");
 
-  const { fetchPatientById } = useManagePatients();
+  const { useFetchPatientById } = useManagePatients();
+  const { data: patient, isError, isLoading } = useFetchPatientById(patient_id);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const patient: Patient = await fetchPatientById(patient_id);
-
-        const fetchedCellTests: CellTest[] = Array.isArray(patient.cell_tests)
-          ? patient.cell_tests
-          : [];
-
-        setCellTests(fetchedCellTests);
-      } catch {
-        setError("Failed to fetch cell tests.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    +fetchData();
-  }, [patient_id, fetchPatientById]);
+    if (patient) {
+      const fetchedCellTests: CellTest[] = Array.isArray(patient.cell_tests)
+        ? patient.cell_tests
+        : [];
+      setCellTests(fetchedCellTests);
+    }
+  }, [patient]);
 
   const handleCardClick = (
     cell_test_id: string,
     title: string,
     description: string
   ) => {
-    navigate(`/patients/${patient_id}/${cell_test_id}`, {
+    navigate(`/patients/${patient_id}/cell_tests/${cell_test_id}`, {
       state: { title, description, patient_id, cell_test_id },
     });
   };
 
-  if (loading) {
+  if (isLoading) {
     return <Spinner size="md" />;
   }
 
-  if (error) {
+  if (isError) {
     return (
       <Alert status="error">
         <AlertIcon />
-        {error}
+        {isError}
       </Alert>
     );
   }
@@ -98,7 +87,6 @@ const CellTestsCard = ({ patient_id }: CellTestsCardProps) => {
                 Title: {test.title}
               </Text>
               <Text color={textColor}>Description: {test.description}</Text>
-              <Text color={textColor}>Status: {test.detection_status}</Text>
               <Box mt={5} />
               <Flex
                 direction="column"

@@ -15,12 +15,11 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { filterItems, sortItems } from "../generic/SortSelector";
-
 import { isHospitalAdmin } from "../generic/DecodeToken";
 import PatientCreate from "./PatientCreate";
 import { useDisclosure } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import useManagePatients from "../../hooks/user/useManagePatients";
+import useGetPatients from "../../hooks/user/useGetPatients";
 
 export interface Address {
   id: number;
@@ -46,7 +45,7 @@ export interface Patient {
   phone: string;
   birth_date: string;
   address?: Address;
-  cell_tests?: CellTest;
+  cell_tests?: CellTest[];
 }
 
 const ManagePatients = () => {
@@ -54,7 +53,13 @@ const ManagePatients = () => {
   const hospital_id = isHospitalAdmin?.toString();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { patients, loading, error } = useManagePatients(hospital_id);
+
+  const {
+    data: patients = [],
+    isLoading,
+    isError,
+    error,
+  } = useGetPatients(hospital_id);
 
   const [filterText, setFilterText] = React.useState<string>("");
   const [sortOrder, setSortOrder] = React.useState<string>("asc");
@@ -66,12 +71,12 @@ const ManagePatients = () => {
     "first_name"
   );
 
-  if (loading) return <Spinner size="md" />;
-  if (error)
+  if (isLoading) return <Spinner size="md" />;
+  if (isError)
     return (
       <Alert status="error">
         <AlertIcon />
-        {error}
+        {error.message || "An unknown error occurred"}
       </Alert>
     );
 
