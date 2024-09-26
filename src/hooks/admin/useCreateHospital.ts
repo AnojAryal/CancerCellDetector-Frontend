@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import usePostData from "../generic/usePostData";
 
 interface Hospital {
@@ -9,27 +10,28 @@ interface Hospital {
 
 interface CreateHospitalResult {
   isLoading: boolean;
-  error: string;
-  createHospital: (hospitalData: Hospital) => Promise<void>;
+  error: string | null;
+  createHospital: (hospitalData: Hospital) => void;
 }
 
 const useCreateHospital = (): CreateHospitalResult => {
-  const {
-    isLoading: isPosting,
-    postData,
-    error,
-  } = usePostData<void>("/hospital");
+  const queryClient = useQueryClient();
 
-  const createHospital = async (hospitalData: Hospital): Promise<void> => {
-    try {
-      await postData(hospitalData);
-    } catch (error) {
-      console.error("Error creating hospital:", error);
-    }
+  const { mutate, isLoading, error } = usePostData<void>("/hospital");
+
+  const createHospital = (hospitalData: Hospital) => {
+    mutate(hospitalData, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["hospitals"]);
+      },
+      onError: (err: unknown) => {
+        console.error("Error creating hospital:", err);
+      },
+    });
   };
 
   return {
-    isLoading: isPosting,
+    isLoading,
     error,
     createHospital,
   };

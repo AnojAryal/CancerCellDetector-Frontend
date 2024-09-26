@@ -25,13 +25,14 @@ import { FaBuilding } from "react-icons/fa";
 import UserSetting from "../user/UserSetting";
 import { BsPerson, BsPersonCircle } from "react-icons/bs";
 import { MdAccountCircle } from "react-icons/md";
+import UserProfile from "../user/UserProfile"; 
 
 const NavBar = () => {
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
   const token = localStorage.getItem("accessToken");
   const username = localStorage.getItem("username");
-  const refreshToken = localStorage.getItem("refreshToken")
+  const refreshToken = localStorage.getItem("refreshToken");
   const [displayWelcome, setDisplayWelcome] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const cancelRef = useRef<HTMLButtonElement>(null);
@@ -39,6 +40,12 @@ const NavBar = () => {
     isOpen: isSettingsOpen,
     onOpen: openSettings,
     onClose: closeSettings,
+  } = useDisclosure();
+
+  const {
+    isOpen: isProfileOpen,
+    onOpen: openProfile,
+    onClose: closeProfile,
   } = useDisclosure();
 
   useEffect(() => {
@@ -80,11 +87,6 @@ const NavBar = () => {
     navigate("/login");
   };
 
-  const handleMainPageClick = () => {
-    console.log("profile clicked");
-    navigate("/profile");
-  };
-
   const handlePatientClick = () => {
     console.log("patient clicked");
     navigate("/patients");
@@ -98,6 +100,11 @@ const NavBar = () => {
   const handleHospitalClick = () => {
     console.log("manage hospitals clicked");
     navigate("/admin/manage-hospital");
+  };
+
+  // New function to open the UserProfile modal
+  const handleProfileClick = () => {
+    openProfile();
   };
 
   return (
@@ -127,10 +134,7 @@ const NavBar = () => {
                 {displayWelcome ? `Welcome, ${username}` : username}
               </MenuButton>
               <MenuList>
-                <MenuItem
-                  onClick={handleMainPageClick}
-                  icon={<BsPersonCircle />}
-                >
+                <MenuItem onClick={handleProfileClick} icon={<BsPersonCircle />}>
                   Profile
                 </MenuItem>
                 <MenuDivider />
@@ -198,6 +202,7 @@ const NavBar = () => {
               </AlertDialogContent>
             </AlertDialog>
             <UserSetting isOpen={isSettingsOpen} onClose={closeSettings} />
+            <UserProfile isOpen={isProfileOpen} onClose={closeProfile} />
           </>
         )}
       </HStack>

@@ -7,7 +7,6 @@ import ProtectedRoute from "./components/generic/ProtectedRoute";
 import ManageHospitals from "./components/admin/ManageHospitals";
 import ManageUser from "./components/admin/ManageUsers";
 import NotAvailPage from "./components/generic/NotAvailPage";
-import UserProfile from "./components/user/UserProfile";
 import ManagePatients from "./components/patient/ManagePatients";
 import UserHandler from "./components/admin/UserHandler";
 import HandlePatients from "./components/patient/HandlePatients";
@@ -20,7 +19,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Navigate to="/home" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/profile" element={<UserProfile />} />
+
 
       {/* Only users and hospital admins can access*/}
       <Route
