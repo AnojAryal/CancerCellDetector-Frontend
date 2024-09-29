@@ -291,7 +291,7 @@ const HandlePatients = () => {
               </FormControl>
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" onClick={handleSavePatientChanges}>
+              <Button colorScheme="blue" onClick={handleSavePatientChanges} mr={3}>
                 Save
               </Button>
               <Button variant="ghost" onClick={onEditClose}>
@@ -324,7 +324,7 @@ const HandlePatients = () => {
               </FormControl>
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" onClick={handleSaveAddressChanges}>
+              <Button colorScheme="blue" onClick={handleSaveAddressChanges} mr={3}>
                 Save
               </Button>
               <Button variant="ghost" onClick={onAddressEditClose}>
