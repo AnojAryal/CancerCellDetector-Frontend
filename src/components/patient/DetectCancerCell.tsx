@@ -8,6 +8,7 @@ import {
   Flex,
   Spinner,
   useColorModeValue,
+  IconButton,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -15,6 +16,7 @@ import { useDropzone, Accept } from "react-dropzone";
 import useHandleFiles from "../../hooks/user/useHandleFile";
 import TestResult from "./TestResult";
 import useProcessData from "../../hooks/user/useProcessData";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 interface LocationState {
   title?: string;
@@ -39,12 +41,19 @@ const DetectCancerCell = () => {
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
+  console.log(error);
+  const [editMode, setEditMode] = useState(false);
+  const [filesModified, setFilesModified] = useState(false);
+  console.log(filesModified);
 
-  const { handleFiles, uploadStatus, fetchFiles, filesData } = useHandleFiles(
-    patient_id ?? "",
-    cell_test_id ?? ""
-  );
-
+  const {
+    handleFiles,
+    uploadStatus,
+    fetchFiles,
+    filesData,
+    setFilesData,
+    deleteFileFromServer,
+  } = useHandleFiles(patient_id ?? "", cell_test_id ?? "");
   const {
     processData,
     loading: processingLoading,
@@ -60,6 +69,7 @@ const DetectCancerCell = () => {
   const handleClear = () => {
     setSelectedFiles([]);
     setError(null);
+    setFilesModified(false);
   };
 
   const handleUpload = async () => {
@@ -70,7 +80,9 @@ const DetectCancerCell = () => {
 
     try {
       await handleFiles(selectedFiles);
+      setSelectedFiles([]);
       setError(null);
+      setFilesModified(false);
     } catch (err) {
       setError("Upload failed");
       console.error("Upload error:", err);
@@ -95,6 +107,29 @@ const DetectCancerCell = () => {
     accept: acceptTypes,
   });
 
+  const toggleEditMode = () => {
+    setEditMode((prev) => !prev);
+  };
+
+ 
+  const handleDelete = async (fileIndex: number) => {
+    const updatedFilesData = [...filesData];
+    const deletedFile = updatedFilesData.splice(fileIndex, 1)[0];
+    setFilesModified(true);
+
+    setFilesData(updatedFilesData);
+
+    try {
+      if (deletedFile) {
+        await deleteFileFromServer(deletedFile.id);
+      }
+    } catch (err) {
+      setError("Failed to delete file");
+      console.error("Delete file error:", err);
+    }
+  };
+
+
   return (
     <Box p={8} pt={20} bg={boxBgColor} color={textColor} minH="100vh">
       <Flex direction="column" height="100%">
@@ -115,6 +150,12 @@ const DetectCancerCell = () => {
               <Heading as="h3" size="md" fontWeight="bold">
                 Test Dataset
               </Heading>
+              <IconButton
+                icon={<FaEdit />}
+                aria-label="Edit"
+                size="sm"
+                onClick={toggleEditMode}
+              />
             </HStack>
             <Box
               border="1px solid"
@@ -144,7 +185,20 @@ const DetectCancerCell = () => {
                       width="200px"
                       display="inline-block"
                       mr={4}
+                      position="relative"
                     >
+                      {editMode && (
+                        <IconButton
+                          icon={<FaTrash />}
+                          aria-label="Delete"
+                          size="sm"
+                          colorScheme="red"
+                          position="absolute"
+                          top="5px"
+                          right="5px"
+                          onClick={() => handleDelete(index)} 
+                        />
+                      )}
                       <a
                         href={file.image}
                         target="_blank"
@@ -166,6 +220,8 @@ const DetectCancerCell = () => {
               </Flex>
             </Box>
           </Box>
+
+          {/* File Upload Section */}
           <Box flex="1" minWidth="0" height="200px">
             <HStack justifyContent="space-between" alignItems="center" mb={4}>
               <Heading as="h3" size="md" fontWeight="bold">
@@ -233,11 +289,6 @@ const DetectCancerCell = () => {
                   </Button>
                 </HStack>
               </Flex>
-            )}
-            {error && (
-              <Box mt={4} p={4} bg="red.100" color="red.800" borderRadius="md">
-                <Text fontSize="sm">{error}</Text>
-              </Box>
             )}
           </Box>
         </Flex>
