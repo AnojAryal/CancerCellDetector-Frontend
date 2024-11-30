@@ -26,58 +26,66 @@ const ResultDetail = () => {
   }
 
   return (
-    <Container maxW="container.xl" py={8} bg={containerBg} id="result-detail">
-      <Heading as="h2" size="xl" mb={8} textAlign="center" color={textColor}>
-        Result Details
-      </Heading>
+    <Box bg={containerBg} maxHeight="100vh" overflowY="auto">
+      <Container
+        maxW="container.xl"
+        py={8}
+        pt={{ base: 20, md: 24 }}
+        bg={containerBg}
+        id="result-detail"
+      >
+        <Heading as="h2" size="xl" mb={8} textAlign="center" color={textColor}>
+          Result Details
+        </Heading>
 
-      <Grid templateColumns={{ base: "1fr", md: "1fr" }} gap={6} mb={8}>
-        <GridItem>
-          <Text fontSize="lg" fontWeight="bold" mb={2} color={textColor}>
-            Cell Test ID:
-          </Text>
-          <Text mb={4} color={textColor}>
-            {result.celltest_id}
-          </Text>
-          <Text fontSize="lg" fontWeight="bold" mb={2} color={textColor}>
-            Description:
-          </Text>
-          <Text mb={4} color={textColor}>
-            {result.description}
-          </Text>
-        </GridItem>
-      </Grid>
+        <Grid templateColumns={{ base: "1fr", md: "1fr" }} gap={6} mb={8}>
+          <GridItem>
+            <Text fontSize="lg" fontWeight="bold" mb={2} color={textColor}>
+              Cell Test ID:
+            </Text>
+            <Text mb={4} color={textColor}>
+              {result.celltest_id}
+            </Text>
+            <Text fontSize="lg" fontWeight="bold" mb={2} color={textColor}>
+              Description:
+            </Text>
+            <Text mb={4} color={textColor}>
+              {result.description}
+            </Text>
+          </GridItem>
+        </Grid>
 
-      <Heading as="h3" size="lg" mb={6} textAlign="center" color={textColor}>
-        Result Images
-      </Heading>
-      <Grid templateColumns={{ sm: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
-        {result.result_images.map((image: ResultImage, index: number) => (
-          <Box
-            key={image.id}
-            border="1px solid"
-            borderColor={borderColor}
-            borderRadius="md"
-            overflow="hidden"
-          >
-            <Image
-              src={image.image}
-              alt={`Result Image ${index + 1}`}
-              objectFit="cover"
-              width="100%"
-              height="auto"
-              boxShadow="md"
-            />
-          </Box>
-        ))}
-      </Grid>
-      <Flex justifyContent="space-between" alignItems="center" mt={8}>
-        <Text color={tealColor}>Cancer Cell Detector Team</Text>
-        <Text color={tealColor}>
-          Processed At: {new Date(result.created_at).toLocaleString()}
-        </Text>
-      </Flex>
-    </Container>
+        <Heading as="h3" size="lg" mb={6} textAlign="center" color={textColor}>
+          Result Images
+        </Heading>
+        <Grid templateColumns={{ sm: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
+          {result.result_images.map((image: ResultImage, index: number) => (
+            <Box
+              key={image.id}
+              border="1px solid"
+              borderColor={borderColor}
+              borderRadius="md"
+              overflow="hidden"
+            >
+              <Image
+                src={image.image}
+                alt={`Result Image ${index + 1}`}
+                objectFit="cover"
+                width="100%"
+                height="auto"
+                boxShadow="md"
+              />
+            </Box>
+          ))}
+        </Grid>
+        <Flex justifyContent="space-between" alignItems="center" mt={8}>
+          <Text color={tealColor}>Cancer Cell Detector Team</Text>
+          <Text color={tealColor}>
+            Processed At: {new Date(result.created_at).toLocaleString()}
+          </Text>
+        </Flex>
+      </Container>
+    </Box>
   );
 };
 

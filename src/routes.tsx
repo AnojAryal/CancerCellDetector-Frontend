@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Login from "./components/user/UserLogin";
 import UserCreate from "./components/admin/CreateUser";
 import ForgotPassword from "./components/user/UserForgotPassword";
@@ -16,7 +16,7 @@ import ResultDetails from "./components/patient/ResultDetails";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/home" />} />
+      <Route path="/home" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
