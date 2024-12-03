@@ -22,6 +22,8 @@
     "base64-url": "^2.3.3",
     "formik": "^2.4.6",
     "framer-motion": "^11.1.7",
+    "html2pdf.js": "^0.10.2",
+    "jspdf": "^2.5.2",
     "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
