@@ -8,9 +8,13 @@ import {
   useColorModeValue,
   Flex,
   Box,
+  IconButton,
 } from "@chakra-ui/react";
 import { useLocation } from "react-router-dom";
 import { ResultImage, Result } from "../../hooks/user/useResults";
+import { FaDownload } from "react-icons/fa";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
 const ResultDetail = () => {
   const location = useLocation();
@@ -21,12 +25,37 @@ const ResultDetail = () => {
   const borderColor = useColorModeValue("gray.300", "gray.600");
   const tealColor = useColorModeValue("teal.500", "teal.200");
 
+  const downloadPDF = async () => {
+    const element = document.getElementById("result-detail");
+    if (element) {
+      const canvas = await html2canvas(element, { scale: 2 });
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`Result_${result.celltest_id}.pdf`);
+    }
+  };
+
   if (!result) {
     return <Text>Result data not available at the moment.</Text>;
   }
 
   return (
-    <Box bg={containerBg} maxHeight="100vh" overflowY="auto">
+    <Box
+      bg={containerBg}
+      maxHeight="100vh"
+      overflowY="auto"
+      paddingBottom="20px"
+    >
       <Container
         maxW="container.xl"
         py={8}
@@ -78,11 +107,25 @@ const ResultDetail = () => {
             </Box>
           ))}
         </Grid>
+
         <Flex justifyContent="space-between" alignItems="center" mt={8}>
-          <Text color={tealColor}>Cancer Cell Detector Team</Text>
+          <Text fontWeight="bold" color={tealColor}>
+            Cancer Cell Detector Team
+          </Text>
           <Text color={tealColor}>
             Processed At: {new Date(result.created_at).toLocaleString()}
           </Text>
+          <Box textAlign="right">
+            <IconButton
+              icon={<FaDownload />}
+              aria-label="Download PDF"
+              onClick={downloadPDF}
+              colorScheme="teal"
+              variant="outline"
+              size="lg"
+              mb={2}
+            />
+          </Box>
         </Flex>
       </Container>
     </Box>
